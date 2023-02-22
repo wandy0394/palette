@@ -13,12 +13,18 @@ type ColourPickerProps = {
 
 function ColourPicker(props:ColourPickerProps) {
     const {colour, setColour} = props
+    const [messageVisible, setMessageVisible] = useState<boolean>(false)
     // const [colour, setColour] = useState<HEX>(initColour)
 
     function handleInputChange(e:ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
+        //regex checks if input is 6 digit hexadecimal
+        const regex = /[0-9A-Fa-f]{6}/g
         const value=e.target.value
         if (value.length > 6) return
+        if (value.length == 6) {
+            setMessageVisible(!value.match(regex))
+        }
         setColour(e.target.value)
     }
 
@@ -28,9 +34,10 @@ function ColourPicker(props:ColourPickerProps) {
                 
             </div>
             <div className='w-3/4 flex flex-col'>
-                <input className="input w-full text-center" value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
+                <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
                 <span className='flex justify-center'>RGB#</span>
             </div>
+            <span className='text-red-500' style={{visibility:messageVisible?'visible':'hidden'}}>Invalid RGB Value</span>
         </div>
     )
 }
@@ -52,7 +59,7 @@ export default function ColourPickerSection(props:Props) {
             <div className='grid grid-cols-3 w-1/2 gap-4 px-16'>
                 {
                     colours.map((colour, index)=>{
-                        return <ColourPicker colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>
+                        return <ColourPicker key={index} colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>
                     })
                 }
             </div>

@@ -6,7 +6,7 @@ import {useState} from 'react'
 
 
 export default function Palette() {
-    const [colours, setColours] = useState<HEX[]>(['000011', '000022', '000033'])
+    const [colours, setColours] = useState<HEX[]>(['33333', '4a4a4a', '6f6f6f'])
 
 
     return (
