@@ -8,22 +8,28 @@ type Props = {
 
 type ColourPickerProps = {
     colour: HEX,
-    setColour: Function
+    setColour: (colour: HEX) => void
 }
 
 function ColourPicker(props:ColourPickerProps) {
     const {colour, setColour} = props
     const [messageVisible, setMessageVisible] = useState<boolean>(false)
-    // const [colour, setColour] = useState<HEX>(initColour)
+
+
+    function isValidRGB(rgb:string):boolean {
+        const regex = /[0-9A-Fa-f]{6}/g
+        if (rgb.match(regex)) return true
+        return false
+    }
 
     function handleInputChange(e:ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
         //regex checks if input is 6 digit hexadecimal
-        const regex = /[0-9A-Fa-f]{6}/g
+        
         const value=e.target.value
         if (value.length > 6) return
         if (value.length == 6) {
-            setMessageVisible(!value.match(regex))
+            setMessageVisible(!isValidRGB(value))
         }
         setColour(e.target.value)
     }
@@ -37,7 +43,7 @@ function ColourPicker(props:ColourPickerProps) {
                 <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
                 <span className='flex justify-center'>RGB#</span>
             </div>
-            <span className='text-red-500' style={{visibility:messageVisible?'visible':'hidden'}}>Invalid RGB Value</span>
+            <span className='text-red-500' style={{visibility:messageVisible?'visible':'hidden'}}>Invalid RGB value.</span>
         </div>
     )
 }
@@ -63,7 +69,7 @@ export default function ColourPickerSection(props:Props) {
                     })
                 }
             </div>
-            
+
         </div>
     )
 }
