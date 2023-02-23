@@ -1,5 +1,6 @@
 import { HEX } from "../types/colours"
 import {useState, ChangeEvent} from "react"
+import ColourConverter from "../model/colourConverter"
 
 type Props = {
     colours: HEX[],
@@ -10,17 +11,10 @@ type ColourPickerProps = {
     colour: HEX,
     setColour: (colour: HEX) => void
 }
-
+const converter = new ColourConverter()
 function ColourPicker(props:ColourPickerProps) {
     const {colour, setColour} = props
     const [messageVisible, setMessageVisible] = useState<boolean>(false)
-
-
-    function isValidRGB(rgb:string):boolean {
-        const regex = /[0-9A-Fa-f]{6}/g
-        if (rgb.match(regex)) return true
-        return false
-    }
 
     function handleInputChange(e:ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
@@ -29,7 +23,7 @@ function ColourPicker(props:ColourPickerProps) {
         const value=e.target.value
         if (value.length > 6) return
         if (value.length == 6) {
-            setMessageVisible(!isValidRGB(value))
+            setMessageVisible(!converter.isValidRGB(value))
         }
         setColour(e.target.value)
     }
