@@ -3,7 +3,7 @@ import PaletteGenerator from "../src/model/paletteGenerator"
 import { describe } from "node:test"
 import {test, expect} from '@jest/globals'
 
-describe('Testing Palette Generator', ()=>{
+describe('Testing Palette Generator - Complementary', ()=>{
     let palette = new PaletteGenerator(new ColourConverter())
     test('Test 1: FF0000->ffff', ()=>{
         let rgb = 'FF0000'
@@ -36,3 +36,32 @@ describe('Testing Palette Generator', ()=>{
         expect(output).toEqual(null)
     })
 })
+
+describe('Testing Palette Generator - Triadic', ()=>{
+    let palette = new PaletteGenerator(new ColourConverter())
+    test('Test 1: FF0000', ()=>{
+        let rgb = 'FF0000'
+        let output = palette.getTriadicColourScheme(rgb)
+        expect(output).toEqual(['ff0000', '00ff00', '0000ff'])
+    })
+    test('Test 2: 00FF00', ()=>{
+        let rgb = '00FF00'
+        let output = palette.getTriadicColourScheme(rgb)
+        expect(output).toEqual(['ff0000', '00ff00', '0000ff'])
+    })
+    test('Test 3: 0000FF', ()=>{
+        let rgb = '0000FF'
+        let output = palette.getTriadicColourScheme(rgb)
+        expect(output).toEqual(['ff0000', '00ff00', '0000ff'])
+    })
+    test('Test 4: 000000', ()=>{
+        let rgb = '000000'
+        let output = palette.getTriadicColourScheme(rgb)
+        expect(output).toEqual(['000000', '000000', '000000'])
+    })
+    test('Test 5: FFFFFF', ()=>{
+        let rgb = 'FFFFFF'
+        let output = palette.getTriadicColourScheme(rgb)
+        expect(output).toEqual(['ffffff', 'ffffff', 'ffffff'])
+    })
+  })
