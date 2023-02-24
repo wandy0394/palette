@@ -4,3 +4,8 @@ export type HSV = {
     saturation:number,
     value:number
 }
+
+export type SchemeOutput = {
+    schemes: HEX[][]
+        
+} 

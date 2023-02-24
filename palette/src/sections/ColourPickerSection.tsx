@@ -1,6 +1,7 @@
 import { HEX } from "../types/colours"
 import {useState, ChangeEvent} from "react"
 import ColourConverter from "../model/colourConverter"
+import ColouredSquare from "../components/ColouredSquare"
 
 type Props = {
     colours: HEX[],
@@ -30,9 +31,10 @@ function ColourPicker(props:ColourPickerProps) {
 
     return (
         <div className='flex flex-col items-center justify-center gap-4'>
-            <div className={`rounded aspect-square border border-solid w-full hover:border-teal-800 hover:border-2`} style={{backgroundColor: `#${colour}`}}>
+            <ColouredSquare colour={colour}/>
+            {/* <div className={`rounded aspect-square border border-solid w-full hover:border-teal-800 hover:border-2`} style={{backgroundColor: `#${colour}`}}>
                 
-            </div>
+            </div> */}
             <div className='w-3/4 flex flex-col'>
                 <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
                 <span className='flex justify-center'>RGB#</span>

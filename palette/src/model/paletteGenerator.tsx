@@ -1,10 +1,7 @@
-import { HEX, HSV } from "../types/colours";
+import { HEX, HSV, SchemeOutput } from "../types/colours";
 import ColourConverter from "./colourConverter";
 
-type SchemeOutput = {
-    schemes: (HEX[]|null)[]
-        
-} 
+
 class PaletteGenerator {
     converter:ColourConverter
     constructor(converter:ColourConverter) {
@@ -16,12 +13,12 @@ class PaletteGenerator {
         return n- (m*Math.floor(n/m))
     }
 
-    #formatRGBOutput(colourRGB:HEX, ...coloursHSV:HSV[]) : HEX[] | null {
+    #formatRGBOutput(colourRGB:HEX, ...coloursHSV:HSV[]) : HEX[] {
         const coloursRGB:(HEX | null)[] = coloursHSV.map(colour=>{
             return this.converter.hsv2rgb(colour)
         })
 
-        if (coloursRGB.some(elem=>elem === null)) return null
+        if (coloursRGB.some(elem=>elem === null)) return []
 
 
         //aim to return colour scheme in ordered format
@@ -36,7 +33,7 @@ class PaletteGenerator {
         return colours.map((colour)=>colour.toString(16).padStart(6,'0'))
     }
 
-    #getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):SchemeOutput | null {
+    #getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):SchemeOutput {
         let output:SchemeOutput = {
             schemes: [[]]
         }
@@ -55,9 +52,12 @@ class PaletteGenerator {
         return output
     }
 
-    getComplentaryColourScheme(rgb:HEX):SchemeOutput | null {
+    getComplementaryScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
+        const output:SchemeOutput = {
+            schemes:[[]]
+        }
+        if (hsv === null) return output
 
         const angleArray:number[][] = [
             [180]
@@ -65,9 +65,12 @@ class PaletteGenerator {
         return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
-    getTriadicColourScheme(rgb:HEX):SchemeOutput | null {
+    getTriadicColourScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
+        const output:SchemeOutput = {
+            schemes:[[]]
+        }
+        if (hsv === null) return output
 
         const angleArray:number[][] = [
             [120, -120]
@@ -76,9 +79,12 @@ class PaletteGenerator {
         return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
-    getSplitComplementaryScheme(rgb:HEX):SchemeOutput | null {
+    getSplitComplementaryScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
+        const output:SchemeOutput = {
+            schemes:[[]]
+        }
+        if (hsv === null) return output
 
         let angleArray:number[][] = [
             [165, -165],
@@ -89,9 +95,12 @@ class PaletteGenerator {
         return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
-    getAnalogousScheme(rgb:HEX):SchemeOutput | null {
+    getAnalogousScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
+        const output:SchemeOutput = {
+            schemes:[[]]
+        }
+        if (hsv === null) return output
 
 
         let angleArray:number[][] = [
@@ -102,9 +111,12 @@ class PaletteGenerator {
         return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
-    getSquareScheme(rgb:HEX):SchemeOutput|null {
+    getSquareScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
+        const output:SchemeOutput = {
+            schemes:[[]]
+        }
+        if (hsv === null) return output
 
         let angleArray:number[][] = [
             [180, 90, -90]
@@ -113,9 +125,12 @@ class PaletteGenerator {
         return this.#getColoursByHueAngle(rgb, hsv, angleArray)              
     }
 
-    getTetraticScheme(rgb:HEX):SchemeOutput | null {
+    getTetraticScheme(rgb:HEX):SchemeOutput  {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
+        const output:SchemeOutput = {
+            schemes:[[]]
+        }
+        if (hsv === null) return output
 
         let angleArray:number[][] = [
             [30, 180, 210],
