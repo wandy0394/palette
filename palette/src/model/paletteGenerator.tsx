@@ -41,7 +41,7 @@ class PaletteGenerator {
         angleArray.forEach((angles, index)=>{
             let colours:HSV[] = angles.map(angle=>{
                 let colour:HSV = {
-                    hue: this.#modulo((hsv.hue + angle), 360),
+                    hue: this.#modulo((Math.round(hsv.hue) + angle), 360),
                     saturation:hsv.saturation,
                     value:hsv.value
                 }
