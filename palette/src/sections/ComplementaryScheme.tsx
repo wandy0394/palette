@@ -3,6 +3,7 @@ import ColourConverter from "../model/colourConverter"
 import { HEX, SchemeOutput } from "../types/colours"
 import ColouredSquare from "../components/ColouredSquare"
 import {useState, useEffect} from 'react'
+import SchemeGrid from "../components/SchemeGrid"
 
 const pg = new PaletteGenerator(new ColourConverter)
 type Props = {
@@ -20,21 +21,7 @@ export default function ComplementaryScheme(props:Props) {
 
     return (
         <div className='w-full flex items-center justify-center gap-4'>
-            {
-                (schemes !== null) && (
-                    schemes.schemes.map(scheme=>{
-                        return scheme.map(colour=>{
-                            return (
-                                <div className='flex flex-col gap-4 w-full items-center'>
-                                    <ColouredSquare colour={colour}/>
-                                    <div className='prose-xl'>#{colour}</div>
-                                </div>
-                            )
-                        })
-    
-                    })
-                )
-            }
+            <SchemeGrid schemes={schemes}/>
         </div>
     )
 }
