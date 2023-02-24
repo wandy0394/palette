@@ -2,7 +2,7 @@ import { HEX, HSV, SchemeOutput } from "../types/colours";
 import ColourConverter from "./colourConverter";
 
 
-class PaletteGenerator {
+abstract class PaletteGenerator {
     converter:ColourConverter
     constructor(converter:ColourConverter) {
         this.converter = converter
@@ -33,7 +33,7 @@ class PaletteGenerator {
         return colours.map((colour)=>colour.toString(16).padStart(6,'0'))
     }
 
-    #getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):SchemeOutput {
+    protected getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):SchemeOutput {
         let output:SchemeOutput = {
             schemes: [[]]
         }
@@ -52,93 +52,95 @@ class PaletteGenerator {
         return output
     }
 
-    getComplementaryScheme(rgb:HEX):SchemeOutput {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
-        if (hsv === null) return output
+    // getComplementaryScheme(rgb:HEX):SchemeOutput {
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:SchemeOutput = {
+    //         schemes:[[]]
+    //     }
+    //     if (hsv === null) return output
 
-        const angleArray:number[][] = [
-            [180]
-        ]
-        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
-    }
+    //     const angleArray:number[][] = [
+    //         [180]
+    //     ]
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)
+    // }
 
-    getTriadicColourScheme(rgb:HEX):SchemeOutput {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
-        if (hsv === null) return output
+    // getTriadicColourScheme(rgb:HEX):SchemeOutput {
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:SchemeOutput = {
+    //         schemes:[[]]
+    //     }
+    //     if (hsv === null) return output
 
-        const angleArray:number[][] = [
-            [120, -120]
-        ]
+    //     const angleArray:number[][] = [
+    //         [120, -120]
+    //     ]
         
-        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
-    }
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)
+    // }
 
-    getSplitComplementaryScheme(rgb:HEX):SchemeOutput {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
-        if (hsv === null) return output
+    // getSplitComplementaryScheme(rgb:HEX):SchemeOutput {
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:SchemeOutput = {
+    //         schemes:[[]]
+    //     }
+    //     if (hsv === null) return output
 
-        let angleArray:number[][] = [
-            [165, -165],
-            [30, -165],
-            [-30, 165]
-        ]
+    //     let angleArray:number[][] = [
+    //         [165, -165],
+    //         [30, -165],
+    //         [-30, 165]
+    //     ]
 
-        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
-    }
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)
+    // }
 
-    getAnalogousScheme(rgb:HEX):SchemeOutput {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
-        if (hsv === null) return output
+    // getAnalogousScheme(rgb:HEX):SchemeOutput {
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:SchemeOutput = {
+    //         schemes:[[]]
+    //     }
+    //     if (hsv === null) return output
 
 
-        let angleArray:number[][] = [
-            [15, -15],
-            [30, 15],
-            [-15, -30]
-        ]
-        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
-    }
+    //     let angleArray:number[][] = [
+    //         [15, -15],
+    //         [30, 15],
+    //         [-15, -30]
+    //     ]
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)
+    // }
 
-    getSquareScheme(rgb:HEX):SchemeOutput {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
-        if (hsv === null) return output
+    // getSquareScheme(rgb:HEX):SchemeOutput {
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:SchemeOutput = {
+    //         schemes:[[]]
+    //     }
+    //     if (hsv === null) return output
 
-        let angleArray:number[][] = [
-            [180, 90, -90]
-        ]
+    //     let angleArray:number[][] = [
+    //         [180, 90, -90]
+    //     ]
 
-        return this.#getColoursByHueAngle(rgb, hsv, angleArray)              
-    }
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)              
+    // }
 
-    getTetraticScheme(rgb:HEX):SchemeOutput  {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
-        if (hsv === null) return output
+    // getTetraticScheme(rgb:HEX):SchemeOutput  {
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:SchemeOutput = {
+    //         schemes:[[]]
+    //     }
+    //     if (hsv === null) return output
 
-        let angleArray:number[][] = [
-            [30, 180, 210],
-            [-30, 180, -210]
-        ]
-        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
+    //     let angleArray:number[][] = [
+    //         [30, 180, 210],
+    //         [-30, 180, -210]
+    //     ]
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)
 
-    }
+    // }
+
+    abstract generateScheme(rgb:HEX):SchemeOutput 
 
 }
 
