@@ -35,50 +35,50 @@ class PaletteGenerator {
 
         return colours.map((colour)=>colour.toString(16).padStart(6,'0'))
     }
-    getComplentaryColourScheme(rgb:HEX):HEX[] | null {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        if (hsv === null) return null
 
-        const complementaryHSV:HSV = {
-            hue: (hsv.hue + 180) % 360,
-            saturation:hsv.saturation,
-            value:hsv.value
+    #getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):SchemeOutput | null {
+        let output:SchemeOutput = {
+            schemes: [[]]
         }
-        let output:HEX|null = this.converter.hsv2rgb(complementaryHSV)
-        if (output === null) return null
-        return [rgb.toLowerCase(), output]
+
+        angleArray.forEach((angles, index)=>{
+            let colours:HSV[] = angles.map(angle=>{
+                let colour:HSV = {
+                    hue: this.#modulo((hsv.hue + angle), 360),
+                    saturation:hsv.saturation,
+                    value:hsv.value
+                }
+                return colour
+            })
+            output.schemes[index] = this.#formatRGBOutput(rgb, ...colours)
+        })        
+        return output
     }
 
-    getTriadicColourScheme(rgb:HEX):HEX[] | null {
+    getComplentaryColourScheme(rgb:HEX):SchemeOutput | null {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         if (hsv === null) return null
 
-        const colour1:HSV = {
-            hue: this.#modulo((hsv.hue + 120), 360),
-            saturation:hsv.saturation,
-            value:hsv.value
-        }
+        const angleArray:number[][] = [
+            [180]
+        ]
+        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
+    }
+
+    getTriadicColourScheme(rgb:HEX):SchemeOutput | null {
+        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+        if (hsv === null) return null
+
+        const angleArray:number[][] = [
+            [120, -120]
+        ]
         
-        const colour2:HSV = {
-            hue: this.#modulo((hsv.hue - 120), 360),
-            saturation:hsv.saturation,
-            value:hsv.value
-        }
-        
-         return this.#formatRGBOutput(rgb, colour1, colour2)
+        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
     getSplitComplementaryScheme(rgb:HEX):SchemeOutput | null {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         if (hsv === null) return null
-
-        let output:SchemeOutput = {
-            schemes:[
-                [],
-                [],
-                []
-            ]
-        }
 
         let angleArray:number[][] = [
             [165, -165],
@@ -86,112 +86,43 @@ class PaletteGenerator {
             [-30, 165]
         ]
 
-        angleArray.forEach((angles, index)=>{
-            let colours:HSV[] = angles.map(angle=>{
-                let colour:HSV = {
-                    hue: this.#modulo((hsv.hue + angle), 360),
-                    saturation:hsv.saturation,
-                    value:hsv.value
-                }
-                return colour
-            })
-
-            output.schemes[index] = this.#formatRGBOutput(rgb, ...colours)
-        })
-
-        return output
+        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
     getAnalogousScheme(rgb:HEX):SchemeOutput | null {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         if (hsv === null) return null
 
-        let output:SchemeOutput = {
-            schemes:[
-                [],
-                [],
-                []
-            ]
-        }
+
         let angleArray:number[][] = [
             [15, -15],
             [30, 15],
             [-15, -30]
         ]
-
-        angleArray.forEach((angles, index)=>{
-            let colours:HSV[] = angles.map(angle=>{
-                let colour:HSV = {
-                    hue: this.#modulo((hsv.hue + angle), 360),
-                    saturation:hsv.saturation,
-                    value:hsv.value
-                }
-                return colour
-            })
-
-            output.schemes[index] = this.#formatRGBOutput(rgb, ...colours)
-        })
-
-
-        return output        
+        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
     }
 
-    getSquareScheme(rgb:HEX):HEX[]|null {
+    getSquareScheme(rgb:HEX):SchemeOutput|null {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         if (hsv === null) return null
 
+        let angleArray:number[][] = [
+            [180, 90, -90]
+        ]
 
-        let colour1:HSV = {
-            hue: this.#modulo((hsv.hue + 180), 360),
-            saturation:hsv.saturation,
-            value:hsv.value
-        }
-        let colour2:HSV = {
-            hue: this.#modulo((hsv.hue + 90), 360),
-            saturation:hsv.saturation,
-            value:hsv.value
-        }
-        let colour3:HSV = {
-            hue: this.#modulo((hsv.hue - 90), 360),
-            saturation:hsv.saturation,
-            value:hsv.value
-        }
-        let output = this.#formatRGBOutput(rgb, colour1, colour2, colour3)
-        
-
-        return output              
+        return this.#getColoursByHueAngle(rgb, hsv, angleArray)              
     }
 
     getTetraticScheme(rgb:HEX):SchemeOutput | null {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         if (hsv === null) return null
 
-        let output:SchemeOutput = {
-            schemes:[
-                [], 
-                []
-            ]
-        }
-
-
         let angleArray:number[][] = [
             [30, 180, 210],
-            [-30, 180, -210],
+            [-30, 180, -210]
         ]
+        return this.#getColoursByHueAngle(rgb, hsv, angleArray)
 
-        angleArray.forEach((angles, index)=>{
-            let colours:HSV[] = angles.map(angle=>{
-                let colour:HSV = {
-                    hue: this.#modulo((hsv.hue + angle), 360),
-                    saturation:hsv.saturation,
-                    value:hsv.value
-                }
-                return colour
-            })
-
-            output.schemes[index] = this.#formatRGBOutput(rgb, ...colours)
-        })
-        return output              
     }
 
 }

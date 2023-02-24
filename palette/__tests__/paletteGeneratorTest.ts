@@ -8,27 +8,27 @@ describe('Testing Palette Generator - Complementary', ()=>{
     test('Test 1: FF0000->ffff', ()=>{
         let rgb = 'FF0000'
         let output = palette.getComplentaryColourScheme(rgb)
-        expect(output).toEqual(['ff0000', '00ffff'])
+        expect(output?.schemes).toEqual([['ff0000', '00ffff']])
     })
     test('Test 2: 00FF00->ff00ff', ()=>{
         let rgb = '00FF00'
         let output = palette.getComplentaryColourScheme(rgb)
-        expect(output).toEqual(['00ff00', 'ff00ff'])
+        expect(output?.schemes).toEqual([['ff00ff', '00ff00']])
     })
     test('Test 3: 0000FF->ffff00', ()=>{
         let rgb = '0000FF'
         let output = palette.getComplentaryColourScheme(rgb)
-        expect(output).toEqual(['0000ff', 'ffff00'])
+        expect(output?.schemes).toEqual([['ffff00', '0000ff']])
     })
     test('Test 4: 000000->000000', ()=>{
         let rgb = '000000'
         let output = palette.getComplentaryColourScheme(rgb)
-        expect(output).toEqual(['000000', '000000'])
+        expect(output?.schemes).toEqual([['000000', '000000']])
     })
     test('Test 5: FFFFFF->ffffff', ()=>{
         let rgb = 'FFFFFF'
         let output = palette.getComplentaryColourScheme(rgb)
-        expect(output).toEqual(['ffffff', 'ffffff'])
+        expect(output?.schemes).toEqual([['ffffff', 'ffffff']])
     })
     test('Test 6: FFFFF@->null', ()=>{
         let rgb = 'FFFFF@'
@@ -42,42 +42,42 @@ describe('Testing Palette Generator - Triadic', ()=>{
     test('Test 1: FF0000', ()=>{
         let rgb = 'FF0000'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ff0000', '00ff00', '0000ff'])
+        expect(output?.schemes).toEqual([['ff0000', '00ff00', '0000ff']])
     })
     test('Test 2: 00FF00', ()=>{
         let rgb = '00FF00'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ff0000', '00ff00', '0000ff'])
+        expect(output?.schemes).toEqual([['ff0000', '00ff00', '0000ff']])
     })
     test('Test 3: 0000FF', ()=>{
         let rgb = '0000FF'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ff0000', '00ff00', '0000ff'])
+        expect(output?.schemes).toEqual([['ff0000', '00ff00', '0000ff']])
     })
     test('Test 4: 000000', ()=>{
         let rgb = '000000'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['000000', '000000', '000000'])
+        expect(output?.schemes).toEqual([['000000', '000000', '000000']])
     })
     test('Test 5: FFFFFF', ()=>{
         let rgb = 'FFFFFF'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ffffff', 'ffffff', 'ffffff'])
+        expect(output?.schemes).toEqual([['ffffff', 'ffffff', 'ffffff']])
     })
     test('Test 6: FF00FF', ()=>{
         let rgb = 'FF00FF'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ffff00', 'ff00ff', '00ffff'])
+        expect(output?.schemes).toEqual([['ffff00', 'ff00ff', '00ffff']])
     })
     test('Test 7: FFFF00', ()=>{
         let rgb = 'FFFF00'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ffff00', 'ff00ff', '00ffff'])
+        expect(output?.schemes).toEqual([['ffff00', 'ff00ff', '00ffff']])
     })
     test('Test 8: 00FFFF', ()=>{
         let rgb = '00FFFF'
         let output = palette.getTriadicColourScheme(rgb)
-        expect(output).toEqual(['ffff00', 'ff00ff', '00ffff'])
+        expect(output?.schemes).toEqual([['ffff00', 'ff00ff', '00ffff']])
     })
 })
 
@@ -163,19 +163,19 @@ describe('Testing Palette Generator - Triadic', ()=>{
     test('Test 1: FF0000', ()=>{
         let output = palette.getSquareScheme('FF0000')
         expect(output).not.toEqual(null)
-        expect(output).toEqual(['ff0000', '80ff00', '8000ff', '00ffff'])
+        expect(output?.schemes).toEqual([['ff0000', '80ff00', '8000ff', '00ffff']])
     })
 
     test('Test 2: 000000', ()=>{
         let output = palette.getSquareScheme('000000')
         expect(output).not.toEqual(null)
-        expect(output).toEqual(['000000', '000000', '000000', '000000'])
+        expect(output?.schemes).toEqual([['000000', '000000', '000000', '000000']])
     })
 
     test('Test 3: FFFFFF', ()=>{
         let output = palette.getSquareScheme('FFFFFF')
         expect(output).not.toEqual(null)
-        expect(output).toEqual(['ffffff', 'ffffff', 'ffffff', 'ffffff'])
+        expect(output?.schemes).toEqual([['ffffff', 'ffffff', 'ffffff', 'ffffff']])
     })
     test('Test 4: !FFFFF', ()=>{
         let output = palette.getSquareScheme('!FFFFF')
