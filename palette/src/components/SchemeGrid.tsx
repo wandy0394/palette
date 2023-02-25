@@ -1,8 +1,8 @@
 import { HEX, SchemeOutput } from "../types/colours"
 import ColouredSquare from "./ColouredSquare"
 
-export default function SchemeGrid(props:{schemes:SchemeOutput}) {    
-    const {schemes} = props
+export default function SchemeGrid(props:{schemes:SchemeOutput, swatches:HEX[][]}) {    
+    const {schemes, swatches} = props
     return (
         <div className='w-full flex flex-col items-center justify-center gap-8'>
             {
@@ -25,6 +25,26 @@ export default function SchemeGrid(props:{schemes:SchemeOutput}) {
                     })
                 )
             }
+            <div className='w-full flex flex-col items-center justify-center gap-4 '>
+                {
+                    swatches.map(swatch=>{
+                        return (
+                            <div className='w-full flex'>
+                                {
+                                    swatch.map(colour=>{
+                                        return(
+                                            <div className='flex flex-col justify-center items-center w-full'>
+                                                <ColouredSquare colour={colour}/>
+                                                <p>{colour}</p>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        )
+                    })
+                }
+            </div>
         </div>
-)
+    )
 }

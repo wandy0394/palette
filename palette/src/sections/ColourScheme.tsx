@@ -14,16 +14,16 @@ type Props = {
 export default function ColourScheme(props:Props) {
     const {rgb, generator} = props
     const [schemes, setSchemes] = useState<SchemeOutput>({schemes:[[]]})
-    const [swatch, setSwatch] = useState<HEX[]>([])
+    const [swatches, setSwatches] = useState<HEX[][]>([])
     
     useEffect(()=>{
         setSchemes(generator.generateScheme(rgb))
-        setSwatch(generator.generateRandomSwatch(rgb))
+        setSwatches(generator.generateRandomSwatch(rgb))
     }, [rgb])
 
 
     function generateSwatch() {
-        setSwatch(generator.generateRandomSwatch(rgb))
+        setSwatches(generator.generateRandomSwatch(rgb))
     }
 
     return (
@@ -35,19 +35,8 @@ export default function ColourScheme(props:Props) {
                 </h2>
             </div>
             
-            <SchemeGrid schemes={schemes}/>
-            <div className='w-full flex gap-4'>
-                {
-                    swatch.map(colour=>{
-                        return(
-                            <div className='flex flex-col justify-center items-center w-full'>
-                                <ColouredSquare colour={colour}/>
-                                <p>{colour}</p>
-                            </div>
-                        )
-                    })
-                }
-            </div>
+            <SchemeGrid schemes={schemes} swatches={swatches}/>
+
         </div>
     )
 }

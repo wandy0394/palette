@@ -88,7 +88,8 @@ abstract class PaletteGenerator {
 
     abstract generateScheme(rgb:HEX):SchemeOutput 
     abstract getName():string 
-    abstract generateRandomSwatch(rgb:HEX):HEX[]
+    abstract generateRandomSwatch(rgb:HEX):HEX[][]
+    
 
 }
 

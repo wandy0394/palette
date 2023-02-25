@@ -9,7 +9,7 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         super(converter)
     }
 
-    generateRandomSwatch(rgb:HEX):HEX[] {
+    generateRandomSwatch(rgb:HEX):HEX[][] {
         //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
         //moving along the straight line varies hue and saturation, value is randomised
         const colours:SchemeOutput = this.generateScheme(rgb)
@@ -24,7 +24,7 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         let p1:Point = coloursCartersian[0]
         let p2:Point = coloursCartersian[1]
 
-        let randomRGB:HEX[] = []
+        let temp:HEX[] = []
         for (let i = 0; i < 10; i++) {
             let a = Math.random()
             let randomPoint:Point = {
@@ -35,10 +35,11 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
             rHSV.hue = Math.round(rHSV.hue)
             rHSV.value = Math.random()
             let rRGB = this.converter.hsv2rgb(rHSV) as HEX
-            randomRGB.push(rRGB)
+            temp.push(rRGB)
 
         }        
-        return this.sortColoursByHexcode(randomRGB)
+        let output:HEX[][] = [this.sortColoursByHexcode(temp)]
+        return output
     }
 
     generateScheme(rgb:HEX):SchemeOutput {
