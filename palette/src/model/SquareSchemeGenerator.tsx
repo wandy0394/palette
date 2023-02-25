@@ -61,7 +61,7 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
             } 
 
             let rHSV = this.cartesian2hsv(randomPoint)
-            rHSV.hue = Math.round(rHSV.hue)
+            rHSV.hue = Math.floor(rHSV.hue)
             rHSV.value = Math.random()
             let rRGB = this.converter.hsv2rgb(rHSV) as HEX
             temp.push(rRGB)
@@ -80,7 +80,7 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
             } 
 
             let rHSV = this.cartesian2hsv(randomPoint)
-            rHSV.hue = Math.round(rHSV.hue)
+            rHSV.hue = Math.floor(rHSV.hue)
             rHSV.value = Math.random()
             let rRGB = this.converter.hsv2rgb(rHSV) as HEX
             temp.push(rRGB)
