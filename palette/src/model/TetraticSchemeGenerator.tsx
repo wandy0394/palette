@@ -6,7 +6,9 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-
+    generateRandomSwatch(rgb: string): HEX[] {
+        return []
+    }
     generateScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         const output:SchemeOutput = {
@@ -20,4 +22,7 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
         ]
         return this.getColoursByHueAngle(rgb, hsv, angleArray)
     } 
+    getName():string {
+        return "Tetratic Complementary Colour Scheme"
+    }
 }

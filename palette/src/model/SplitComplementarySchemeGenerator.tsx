@@ -7,6 +7,9 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
         super(converter)
     }
 
+    generateRandomSwatch(rgb: string): HEX[] {
+        return []
+    }
     generateScheme(rgb:HEX):SchemeOutput {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         const output:SchemeOutput = {
@@ -22,4 +25,7 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
 
         return this.getColoursByHueAngle(rgb, hsv, angleArray)
     } 
+    getName():string {
+        return "Split Complementary Colour Scheme"
+    }
 }

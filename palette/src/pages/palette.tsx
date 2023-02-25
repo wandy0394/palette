@@ -14,8 +14,8 @@ import SplitComplementarySchemeGenerator from "../model/SplitComplementaryScheme
 const converter = new ColourConverter()
 
 export default function Palette() {
-    const [colours, setColours] = useState<HEX[]>(['33333', '4a4a4a', '6f6f6f'])
-    const [dominantColour, setDominantColour] = useState<HEX>('333333')
+    const [colours, setColours] = useState<HEX[]>(['1f1f6b'])
+    const [dominantColour, setDominantColour] = useState<HEX>('1f1f6b')
     function generatePalettes() {
         setDominantColour(colours[0])
     }
@@ -26,7 +26,6 @@ export default function Palette() {
                 <ColourPickerSection colours={colours} setColours={setColours}/>
                 <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
             </section>
-
             <section className='bg-neutral-900 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new ComplementarySchemeGenerator(converter)}/>
             </section>

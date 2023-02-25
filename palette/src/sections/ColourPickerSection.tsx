@@ -32,9 +32,6 @@ function ColourPicker(props:ColourPickerProps) {
     return (
         <div className='flex flex-col items-center justify-center gap-4'>
             <ColouredSquare colour={colour}/>
-            {/* <div className={`rounded aspect-square border border-solid w-full hover:border-teal-800 hover:border-2`} style={{backgroundColor: `#${colour}`}}>
-                
-            </div> */}
             <div className='w-3/4 flex flex-col'>
                 <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
                 <span className='flex justify-center'>RGB#</span>
@@ -55,10 +52,10 @@ export default function ColourPickerSection(props:Props) {
     return (
         <div className='flex flex-col items-center justify-center w-full gap-4'>
             <div className='prose flex flex-col items-center'>
-                <h2>Choose up to 3 colours</h2>
+                <h2>Choose a favourite colour</h2>
                 <p>We will generate swatches for you</p>
             </div>
-            <div className='grid grid-cols-3 w-1/2 gap-4 px-16'>
+            <div className='w-1/2 gap-4 px-16'>
                 {
                     colours.map((colour, index)=>{
                         return <ColourPicker key={index} colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>

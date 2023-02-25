@@ -1,10 +1,44 @@
+import { Point } from "../types/cartesian";
 import { HEX, HSV, SchemeOutput } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
 export default class ComplementarySchemeGenerator extends PaletteGenerator {
+    
     constructor(converter:ColourConverter) {
         super(converter)
+    }
+
+    generateRandomSwatch(rgb:HEX):HEX[] {
+        //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
+        //moving along the straight line varies hue and saturation, value is randomised
+        const colours:SchemeOutput = this.generateScheme(rgb)
+
+        const coloursCartersian:Point[] = colours.schemes[0].map(colour=>{
+            let hsv:HSV|null = this.converter.rgb2hsv(colour) 
+            if (hsv === null) return {x:NaN, y:NaN}
+            let point:Point = this.hsv2cartesian(hsv)
+            return point
+        })
+
+        let p1:Point = coloursCartersian[0]
+        let p2:Point = coloursCartersian[1]
+
+        let randomRGB:HEX[] = []
+        for (let i = 0; i < 10; i++) {
+            let a = Math.random()
+            let randomPoint:Point = {
+                x:(1-a)*p1.x + a*p2.x,
+                y:(1-a)*p1.y + a*p2.y
+            } 
+            let rHSV = this.cartesian2hsv(randomPoint)
+            rHSV.hue = Math.round(rHSV.hue)
+            rHSV.value = Math.random()
+            let rRGB = this.converter.hsv2rgb(rHSV) as HEX
+            randomRGB.push(rRGB)
+
+        }        
+        return this.sortColoursByHexcode(randomRGB)
     }
 
     generateScheme(rgb:HEX):SchemeOutput {
@@ -19,4 +53,8 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         ]
         return this.getColoursByHueAngle(rgb, hsv, angleArray)
     } 
+    getName():string {
+        return "Complementary Colour Scheme"
+    }
 }
+
