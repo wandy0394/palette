@@ -63,7 +63,6 @@ abstract class PaletteGenerator {
         hsv.hue = Math.atan2(point.y, point.x) 
         if (hsv.hue < 0) hsv.hue += 2*Math.PI
         hsv.hue  *= (180 / Math.PI)
-        
         return hsv
     }
 

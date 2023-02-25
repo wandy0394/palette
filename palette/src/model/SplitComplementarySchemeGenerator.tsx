@@ -9,18 +9,25 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
     }
 
     generateRandomSwatch(rgb: string): HEX[][] {
-        //generate 10 random colours within the triangle bounded by the triadic colours
+        //generate 10 random colours within the triangle bounded by the split complementary colours
         const colours:SchemeOutput = this.generateScheme(rgb)
 
+        //convert scheme colours from rgb to cartesian coords
+        let errorFound:boolean = false
         const coloursCartersian:Point[][] = colours.schemes.map(scheme=>{
             return scheme.map(colour=>{
                 let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-                if (hsv === null) return {x:NaN, y:NaN}
+                if (hsv === null) {
+                    errorFound = true
+                    return {x:NaN, y:NaN}
+                }
                 let point:Point = this.hsv2cartesian(hsv)
                 return point
             })
         })
+        if (errorFound) return [[]]
 
+        //generate random cartesian points within the triangle formed by the 3 colours
         let randomRGB:HEX[][] = []
         coloursCartersian.forEach((points, index)=>{
             let p1:Point = points[0]
@@ -34,12 +41,12 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
     
                 let r1sq = Math.sqrt(r1)
                 let randomPoint:Point = {
-                    x:(1-r1sq)*p1.x + r1sq*(1-r2)*p2.x+ r2*r1sq*p3.x,
-                    y:(1-r1sq)*p1.y + r1sq*(1-r2)*p2.y+ r2*r1sq*p3.y
+                    x:(1-r1sq)*p1.x + r1sq*(1-r2)*p2.x + r2*r1sq*p3.x,
+                    y:(1-r1sq)*p1.y + r1sq*(1-r2)*p2.y + r2*r1sq*p3.y
                 } 
     
                 let rHSV = this.cartesian2hsv(randomPoint)
-                rHSV.hue = Math.round(rHSV.hue)
+                rHSV.hue = Math.floor(rHSV.hue)
                 rHSV.value = Math.random()
                 let rRGB = this.converter.hsv2rgb(rHSV) as HEX
                 tempArray.push(rRGB)

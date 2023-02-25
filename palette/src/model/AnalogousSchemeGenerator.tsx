@@ -7,7 +7,7 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-    generateRandomSwatch(rgb:HEX):HEX[] {
+    generateRandomSwatch(rgb:HEX):HEX[][] {
         const colours:SchemeOutput = this.generateScheme(rgb)
         const coloursHSV:(HSV|null)[][] = colours.schemes.map(scheme=>{
             return scheme.map(colour=>{

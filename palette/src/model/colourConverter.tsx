@@ -81,7 +81,7 @@ class ColourConverter {
         let x:number = chroma * (1-Math.abs((hsv.hue / 60) % 2 - 1))
 
         let redPrime:number = 0, greenPrime:number = 0, bluePrime:number = 0
-        if (hsv.hue >= 0 && hsv.hue < 60) {
+        if ((hsv.hue >= 0) && hsv.hue < 60) {
             redPrime = chroma
             greenPrime = x
             bluePrime = 0 
