@@ -5,7 +5,12 @@ export type HSV = {
     value:number
 }
 
-export type SchemeOutput = {
-    schemes: HEX[][]
+// export type SchemeOutput = {
+//     schemes: Scheme[]
         
-} 
+// } 
+
+export type Scheme = {
+    palette:HEX[]
+    colourVerticies:HEX[]
+}  | undefined

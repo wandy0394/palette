@@ -1,5 +1,6 @@
+import { palette } from "@mui/system";
 import { Point } from "../types/cartesian";
-import { HEX, HSV, SchemeOutput } from "../types/colours";
+import { HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 
 
@@ -11,7 +12,7 @@ abstract class PaletteGenerator {
     #modulo(n:number, m:number):number {
         if (!Number.isInteger(n) || !Number.isInteger(m)) return NaN
 
-        return n- (m*Math.floor(n/m))
+        return n - (m*Math.floor(n/m))
     }
 
     protected sortColoursByHexcode(rgb:HEX[]):HEX[] {
@@ -20,7 +21,7 @@ abstract class PaletteGenerator {
         rgb.forEach(colour=>{
             colours.push(parseInt(colour as string, 16))
         })
-        colours.sort((a,b)=>(b-a))
+        colours.sort((a, b)=>(b - a))
 
         return colours.map((colour)=>colour.toString(16).padStart(6, '0'))
     }
@@ -66,12 +67,11 @@ abstract class PaletteGenerator {
         return hsv
     }
 
-    protected getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):SchemeOutput {
-        let output:SchemeOutput = {
-            schemes: [[]]
-        }
+    protected getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):HEX[][] {
+        let output:HEX[][] = []
 
         angleArray.forEach((angles, index)=>{
+
             let colours:HSV[] = angles.map(angle=>{
                 let colour:HSV = {
                     hue: this.#modulo((Math.round(hsv.hue) + angle), 360),
@@ -80,15 +80,20 @@ abstract class PaletteGenerator {
                 }
                 return colour
             })
-            output.schemes[index] = this.#formatRGBOutput(rgb, ...colours)
+            output.push(this.#formatRGBOutput(rgb, ...colours))
         })        
         return output
     }
 
-    abstract generateScheme(rgb:HEX):SchemeOutput 
+    // abstract generateScheme(rgb:HEX):SchemeOutput 
+    // abstract generateRandomSwatches(rgb:HEX):HEX[][]
+    // abstract generateRandomSwatch(scheme:SchemeOutput):HEX[]
+    abstract generateSchemes(rgb:HEX):HEX[][]
+    //abstract generateRandomSwatches(schemes:Scheme[]):HEX[][]
+    abstract generateRandomSwatches(colours:HEX[][]):Scheme[]
+    // abstract generateRandomSwatch(scheme:Scheme):HEX[]
+    abstract generateRandomSwatch(colours:HEX[]):Scheme
     abstract getName():string 
-    abstract generateRandomSwatch(rgb:HEX):HEX[][]
-    
 
 }
 

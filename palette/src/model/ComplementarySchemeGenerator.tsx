@@ -1,5 +1,5 @@
 import { Point } from "../types/cartesian";
-import { HEX, HSV, SchemeOutput } from "../types/colours";
+import { HEX, HSV,  Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
@@ -9,13 +9,13 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         super(converter)
     }
 
-    generateRandomSwatch(rgb:HEX):HEX[][] {
+    generateRandomSwatch(colours:HEX[]):Scheme {
         //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
         //moving along the straight line varies hue and saturation, value is randomised
-        const colours:SchemeOutput = this.generateScheme(rgb)
 
         let errorFound:boolean = false
-        const coloursCartersian:Point[] = colours.schemes[0].map(colour=>{
+        //if (scheme === undefined) return []
+        const coloursCartersian:Point[] = colours.map(colour=>{
             let hsv:HSV|null = this.converter.rgb2hsv(colour) 
             if (hsv === null) {
                 errorFound = true
@@ -25,7 +25,7 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
             return point
         })
 
-        if (errorFound) return [[]]
+        if (errorFound) return undefined
 
         let p1:Point = coloursCartersian[0]
         let p2:Point = coloursCartersian[1]
@@ -44,15 +44,69 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
             temp.push(rRGB)
 
         }        
-        let output:HEX[][] = [this.sortColoursByHexcode(temp)]
+        let sortedColours:HEX[] = this.sortColoursByHexcode(temp)
+
+        let output:Scheme = {
+            palette:sortedColours,
+            colourVerticies:colours
+        }
+        return output
+    }
+    generateRandomSwatches(colours:HEX[][]):Scheme[] {
+        let output:Scheme[] = []
+        colours.forEach(colourList=>{
+            let swatch = this.generateRandomSwatch(colourList)
+            if (swatch !== undefined) {
+                swatch.colourVerticies = colourList
+                output.push(swatch)
+            }
+        })
         return output
     }
 
-    generateScheme(rgb:HEX):SchemeOutput {
+    // generateRandomSwatches(rgb:HEX):HEX[][] {
+    //     //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
+    //     //moving along the straight line varies hue and saturation, value is randomised
+    //     const colours:SchemeOutput = this.generateScheme(rgb)
+
+    //     let errorFound:boolean = false
+    //     const coloursCartersian:Point[] = colours.schemes[0].map(colour=>{
+    //         let hsv:HSV|null = this.converter.rgb2hsv(colour) 
+    //         if (hsv === null) {
+    //             errorFound = true
+    //             return {x:NaN, y:NaN}
+    //         }
+    //         let point:Point = this.hsv2cartesian(hsv)
+    //         return point
+    //     })
+
+    //     if (errorFound) return [[]]
+
+    //     let p1:Point = coloursCartersian[0]
+    //     let p2:Point = coloursCartersian[1]
+
+    //     let temp:HEX[] = []
+    //     for (let i = 0; i < 10; i++) {
+    //         let a = Math.random()
+    //         let randomPoint:Point = {
+    //             x:(1-a)*p1.x + a*p2.x,
+    //             y:(1-a)*p1.y + a*p2.y
+    //         } 
+    //         let rHSV = this.cartesian2hsv(randomPoint)
+    //         rHSV.hue = Math.floor(rHSV.hue)
+    //         rHSV.value = Math.random()
+    //         let rRGB = this.converter.hsv2rgb(rHSV) as HEX
+    //         temp.push(rRGB)
+
+    //     }        
+    //     let output:HEX[][] = [this.sortColoursByHexcode(temp)]
+    //     return output
+    // }
+
+    generateSchemes(rgb:HEX):HEX[][] {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
+        const output:HEX[][] = [[]]
+
         if (hsv === null) return output
 
         const angleArray:number[][] = [
