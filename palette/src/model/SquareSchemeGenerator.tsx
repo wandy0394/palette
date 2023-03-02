@@ -1,5 +1,5 @@
 import { Point } from "../types/cartesian";
-import { HEX, HSV, SchemeOutput } from "../types/colours";
+import { HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
@@ -7,13 +7,13 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-    generateRandomSwatch(rgb: string): HEX[][] {
+    generateRandomScheme(colourVerticies:HEX[]): Scheme {
+
         //generate 10 random colours within the triangle bounded by the square colours
-        const colours:SchemeOutput = this.generateScheme(rgb)
 
         let errorFound:boolean = false
         const hsvPoints:HSV[] = []
-        colours.schemes[0].forEach(colour=>{
+        colourVerticies.forEach(colour=>{
             let hsv:HSV|null = this.converter.rgb2hsv(colour) 
             if (hsv === null) {
                 errorFound = true
@@ -22,7 +22,7 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
                 hsvPoints.push(hsv)
             }
         })
-        if (errorFound) return [[]]
+        if (errorFound) undefined
 
         //sort hsvPoints by hue in increasing order
         hsvPoints.sort((a,b)=>{
@@ -50,7 +50,7 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
 
         let temp:HEX[] = []
         //generate random points in triangle1
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
             let r1 = Math.random()
             let r2 = Math.random()
 
@@ -69,7 +69,7 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
 
 
         //generate random points in triangle2 and add onto set of points
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
             let r1 = Math.random()
             let r2 = Math.random()
 
@@ -85,14 +85,29 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
             let rRGB = this.converter.hsv2rgb(rHSV) as HEX
             temp.push(rRGB)
         }        
-        let output:HEX[][] = [this.sortColoursByHexcode(temp)]
+        let sortedColours:HEX[] = this.sortColoursByHexcode(temp) 
+        let output:Scheme = {
+            palette:[...sortedColours, ...colourVerticies],
+            colourVerticies:colourVerticies
+        }
+        
         return output
     }
-    generateScheme(rgb:HEX):SchemeOutput {
+    generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
+        let output:Scheme[] = []
+        colourVerticies.forEach(colourList=>{
+            let scheme:Scheme = this.generateRandomScheme(colourList)
+            if (scheme !== undefined) {
+                scheme.colourVerticies = colourList
+                output.push(scheme)
+            }
+        })
+        return output
+    }
+    generateColourVerticies(rgb:HEX):HEX[][] {
+
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
+        const output:HEX[][]=[[]]
         if (hsv === null) return output
 
         let angleArray:number[][] = [

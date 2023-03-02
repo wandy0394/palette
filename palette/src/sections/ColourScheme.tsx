@@ -13,33 +13,28 @@ type Props = {
 
 export default function ColourScheme(props:Props) {
     const {rgb, generator} = props
-    const [schemes, setSchemes] = useState<HEX[][]>([])
-    const [swatches, setSwatches] = useState<Scheme[]>([])
+    const [verticies, setVerticies] = useState<HEX[][]>([])
+    const [schemes, setSchemes] = useState<Scheme[]>([])
     
     useEffect(()=>{
-        let schemes:HEX[][] = generator.generateSchemes(rgb)
-        let swatches:Scheme[] = generator.generateRandomSwatches(schemes)
+        let verticies:HEX[][] = generator.generateColourVerticies(rgb)
+        let schemes:Scheme[] = generator.generateRandomSchemes(verticies)
         console.log(schemes)
-        console.log(swatches)
+        console.log(verticies)
         setSchemes(schemes)
-        setSwatches(swatches)
+        setVerticies(verticies)
     }, [rgb])
 
-
-    function generateSwatch() {
-        //setSwatches(generator.generateRandomSwatch(rgb))
-    }
 
     return (
         <div className='w-full flex flex-col items-center justify-center gap-16'>
             <div className="prose align-center">
                 <h2 className='flex gap-2 items-center'>
                     {generator.getName()} 
-                    <div className="btn btn-primary btn-xs" onClick={generateSwatch}>Regen</div>
                 </h2>
             </div>
             
-            <SchemeGrid schemes={schemes} swatches={swatches}/>
+            <SchemeGrid schemes={schemes} generateScheme={(verticies:HEX[])=>generator.generateRandomScheme(verticies)}/>
 
         </div>
     )

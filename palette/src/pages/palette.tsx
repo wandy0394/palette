@@ -29,7 +29,7 @@ export default function Palette() {
             <section className='bg-neutral-900 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new ComplementarySchemeGenerator(converter)}/>
             </section>
-            {/* <section className='bg-neutral-800 w-full py-16 px-24'>
+            <section className='bg-neutral-800 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new SplitComplementarySchemeGenerator(converter)}/>
             </section>
             <section className='bg-neutral-900 w-full py-16 px-24'>
@@ -43,7 +43,7 @@ export default function Palette() {
             </section>
             <section className='bg-neutral-800 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new TetraticSchemeGenerator(converter)}/>
-            </section> */}
+            </section> 
 
         </div>
     )

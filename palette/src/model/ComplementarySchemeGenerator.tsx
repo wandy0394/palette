@@ -9,13 +9,13 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         super(converter)
     }
 
-    generateRandomSwatch(colours:HEX[]):Scheme {
+    generateRandomScheme(colourVerticies:HEX[]):Scheme {
         //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
         //moving along the straight line varies hue and saturation, value is randomised
 
         let errorFound:boolean = false
         //if (scheme === undefined) return []
-        const coloursCartersian:Point[] = colours.map(colour=>{
+        const coloursCartersian:Point[] = colourVerticies.map(colour=>{
             let hsv:HSV|null = this.converter.rgb2hsv(colour) 
             if (hsv === null) {
                 errorFound = true
@@ -47,23 +47,36 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         let sortedColours:HEX[] = this.sortColoursByHexcode(temp)
 
         let output:Scheme = {
-            palette:sortedColours,
-            colourVerticies:colours
+            palette:[...sortedColours, ...colourVerticies],
+            colourVerticies:colourVerticies
         }
         return output
     }
-    generateRandomSwatches(colours:HEX[][]):Scheme[] {
+    generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
         let output:Scheme[] = []
-        colours.forEach(colourList=>{
-            let swatch = this.generateRandomSwatch(colourList)
-            if (swatch !== undefined) {
-                swatch.colourVerticies = colourList
-                output.push(swatch)
+        colourVerticies.forEach(colourList=>{
+            let scheme:Scheme = this.generateRandomScheme(colourList)
+            if (scheme !== undefined) {
+                scheme.colourVerticies = colourList
+                output.push(scheme)
             }
         })
         return output
     }
+    generateColourVerticies(rgb:HEX):HEX[][] {
+        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+        const output:HEX[][] = [[]]
 
+        if (hsv === null) return output
+
+        const angleArray:number[][] = [
+            [180]
+        ]
+        return this.getColoursByHueAngle(rgb, hsv, angleArray)
+    } 
+    getName():string {
+        return "Complementary Colour Scheme"
+    }
     // generateRandomSwatches(rgb:HEX):HEX[][] {
     //     //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
     //     //moving along the straight line varies hue and saturation, value is randomised
@@ -103,19 +116,6 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
     //     return output
     // }
 
-    generateSchemes(rgb:HEX):HEX[][] {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:HEX[][] = [[]]
 
-        if (hsv === null) return output
-
-        const angleArray:number[][] = [
-            [180]
-        ]
-        return this.getColoursByHueAngle(rgb, hsv, angleArray)
-    } 
-    getName():string {
-        return "Complementary Colour Scheme"
-    }
 }
 

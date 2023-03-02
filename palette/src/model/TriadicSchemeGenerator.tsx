@@ -1,5 +1,5 @@
 import { Point } from "../types/cartesian";
-import { HEX, HSV, SchemeOutput } from "../types/colours";
+import { HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
@@ -7,12 +7,13 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-    generateRandomSwatch(rgb: string): HEX[][] {
+    generateRandomScheme(colourVerticies:HEX[]): Scheme {
+
         //generate 10 random colours within the triangle bounded by the triadic colours
-        const colours:SchemeOutput = this.generateScheme(rgb)
+        
 
         let errorFound:boolean = false
-        const coloursCartersian:Point[] = colours.schemes[0].map(colour=>{
+        const coloursCartersian:Point[] = colourVerticies.map(colour=>{
             let hsv:HSV|null = this.converter.rgb2hsv(colour) 
             if (hsv === null) {
                 errorFound = true
@@ -22,7 +23,7 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
             return point
         })
 
-        if (errorFound) return [[]]
+        if (errorFound) undefined
 
 
         let p1:Point = coloursCartersian[0]
@@ -47,14 +48,30 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
             temp.push(rRGB)
         }        
 
-        let output:HEX[][] = [this.sortColoursByHexcode(temp)]
+        let sortedColours:HEX[] = this.sortColoursByHexcode(temp) 
+        let output:Scheme = {
+            palette:[...sortedColours, ...colourVerticies],
+            colourVerticies:colourVerticies
+        }
+        
         return output
     }
-    generateScheme(rgb:HEX):SchemeOutput {
+    generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
+        let output:Scheme[] = []
+        colourVerticies.forEach(colourList=>{
+            let scheme:Scheme = this.generateRandomScheme(colourList)
+            if (scheme !== undefined) {
+                scheme.colourVerticies = colourList
+                output.push(scheme)
+            }
+        })
+        return output
+    }
+    generateColourVerticies(rgb:HEX):HEX[][] {
+
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:SchemeOutput = {
-            schemes:[[]]
-        }
+        const output:HEX[][]=[[]]
+
         if (hsv === null) return output
 
         const angleArray:number[][] = [

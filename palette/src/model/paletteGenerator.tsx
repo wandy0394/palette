@@ -85,14 +85,10 @@ abstract class PaletteGenerator {
         return output
     }
 
-    // abstract generateScheme(rgb:HEX):SchemeOutput 
-    // abstract generateRandomSwatches(rgb:HEX):HEX[][]
-    // abstract generateRandomSwatch(scheme:SchemeOutput):HEX[]
-    abstract generateSchemes(rgb:HEX):HEX[][]
-    //abstract generateRandomSwatches(schemes:Scheme[]):HEX[][]
-    abstract generateRandomSwatches(colours:HEX[][]):Scheme[]
-    // abstract generateRandomSwatch(scheme:Scheme):HEX[]
-    abstract generateRandomSwatch(colours:HEX[]):Scheme
+    abstract generateColourVerticies(rgb:HEX):HEX[][]
+    abstract generateRandomSchemes(colours:HEX[][]):Scheme[]
+    abstract generateRandomScheme(colours:HEX[]):Scheme
+
     abstract getName():string 
 
 }
