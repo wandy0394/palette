@@ -24,7 +24,7 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
         })
         if (errorFound) return undefined
         //sort hsvPoints by hue in increasing order
-            hsvPoints.sort((a,b)=>{
+        hsvPoints.sort((a,b)=>{
             return a.hue - b.hue
         })
     
@@ -92,17 +92,17 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
         
         return output
     }
-    generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
-        let output:Scheme[] = []
-        colourVerticies.forEach(colourList=>{
-            let scheme:Scheme = this.generateRandomScheme(colourList)
-            if (scheme !== undefined) {
-                scheme.colourVerticies = colourList
-                output.push(scheme)
-            }
-        })
-        return output
-    }
+    // generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
+    //     let output:Scheme[] = []
+    //     colourVerticies.forEach(colourList=>{
+    //         let scheme:Scheme = this.generateRandomScheme(colourList)
+    //         if (scheme !== undefined) {
+    //             scheme.colourVerticies = colourList
+    //             output.push(scheme)
+    //         }
+    //     })
+    //     return output
+    // }
     generateColourVerticies(rgb:HEX):HEX[][] {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
         const output:HEX[][]=[[]]

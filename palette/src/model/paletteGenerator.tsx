@@ -85,8 +85,18 @@ abstract class PaletteGenerator {
         return output
     }
 
+    generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
+        let output:Scheme[] = []
+        colourVerticies.forEach(colourList=>{
+            let scheme:Scheme = this.generateRandomScheme(colourList)
+            if (scheme !== undefined) {
+                scheme.colourVerticies = colourList
+                output.push(scheme)
+            }
+        })
+        return output
+    }
     abstract generateColourVerticies(rgb:HEX):HEX[][]
-    abstract generateRandomSchemes(colours:HEX[][]):Scheme[]
     abstract generateRandomScheme(colours:HEX[]):Scheme
 
     abstract getName():string 
