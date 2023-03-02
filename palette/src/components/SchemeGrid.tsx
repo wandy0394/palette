@@ -43,18 +43,34 @@ export default function SchemeGrid(props:Props) {
                 (palettes.length > 0) && (
                     palettes.map((palette, index)=>{
                         return (
-                            <div className='w-full flex items-center justify-center gap-8 py-8 px-8 border rounded  border-neutral-500'>
-                                <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette?.colourVerticies, index)}>Regen</button>
-                                {
-                                    palette?.palette.map(colour=>{
-                                        return (
-                                            <div className='flex flex-col gap-4 w-full items-center'>
-                                                <ColouredSquare colour={colour}/>
-                                                <div className='prose-xl'>#{colour}</div>
-                                            </div>
-                                        )
-                                    })
-                                }
+                            <div className='w-full flex flex-col border rounded  border-neutral-500'>
+                                <div className='w-full flex items-center justify-end p-4 border border-solid border-red-400'>
+                                    <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette?.colourVerticies, index)}>Regen</button>
+                                </div>
+                                <div className='grid grid-cols-2 items-center justify-center gap-4 border border-solid border-red-400 justify-items-center'>
+                                    <div className='w-full flex items-center justify-center gap-8 border border-solid border-blue-400 h-full flex-wrap'>
+                                        {
+                                            palette?.palette.map(colour=>{
+                                                return (
+                                                    <div className='flex flex-col gap-4 w-1/12 items-center'>
+                                                        <ColouredSquare colour={colour}/>
+                                                        <div className='prose-xl'>#{colour}</div>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                    {/* <div className='w-1/2 rounded-full aspect-square bg-gradient-radial from-white border border-solid border-red-400'></div> */}
+                                    <div style={{
+                                            width:'50%', 
+                                            aspectRatio:'1/1', 
+                                            border:'1px solid', 
+                                            borderRadius:'100%', 
+                                            background:'radial-gradient(white, transparent 80%), conic-gradient(#ff0000, #ff0080, #ff00ff, #8000ff, #0000ff, #0080ff, #00ffff, #00ff80, #00ff00, #80ff00, #ffff00, #ff8000, #ff0000)',
+                                            transform:'rotate(90deg)'
+                                    }}>
+                                    </div>
+                                </div>
                             </div>
                         )
                     })
