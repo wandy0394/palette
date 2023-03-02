@@ -14,38 +14,6 @@ export default function SchemeGrid(props:Props) {
     const [palettes, setPalettes] = useState<Scheme[]>([])
     const [errorMessage, setErrorMessage] = useState<string>('')
 
-    // function arrangePalette(schemes:Scheme[], swatches:HEX[][]):HEX[][] | undefined {
-    //     if (schemes === null || schemes === undefined) return
-    //     if (swatches === null || schemes === undefined) return            
-    //     if (schemes.schemes.length !== swatches.length) return
-
-    //     let newPalettes:HEX[][] = []
-
-    //     for (let i = 0; i < schemes.schemes.length; i++) {
-    //         let palette:HEX[] = []
-    //         for (let j = 0; j < schemes.schemes[i].length; j++) {
-    //             palette.push(schemes.schemes[i][j])
-    //         }
-    //         for (let k = 0; k < swatches[i].length; k++) {
-    //             palette.push(swatches[i][k])
-    //         }
-    //         newPalettes.push(palette)
-    //     }
-    //     return newPalettes
-    // }
-
-    // useEffect(()=>{
-    //     let newPalettes:HEX[][] | undefined = arrangePalette(schemes, swatches)
-    //     if (newPalettes !== undefined) {
-    //         setPalettes(newPalettes)
-    //         setErrorMessage('')
-    //     }
-    //     else {
-    //         setPalettes([[]])
-    //         setErrorMessage(errorString)
-    //     }
-    // }, [schemes, swatches])
-
     function generateNewScheme(colourList:(HEX[]|undefined), index:number) {
         if (colourList === undefined) {
             setErrorMessage(errorMessage)

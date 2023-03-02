@@ -56,17 +56,7 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
         
         return output
     }
-    // generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
-    //     let output:Scheme[] = []
-    //     colourVerticies.forEach(colourList=>{
-    //         let scheme:Scheme = this.generateRandomScheme(colourList)
-    //         if (scheme !== undefined) {
-    //             scheme.colourVerticies = colourList
-    //             output.push(scheme)
-    //         }
-    //     })
-    //     return output
-    // }
+
     generateColourVerticies(rgb:HEX):HEX[][] {
 
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
