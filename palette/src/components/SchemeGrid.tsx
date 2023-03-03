@@ -147,11 +147,26 @@ export default function SchemeGrid(props:Props) {
                                                     let hsv:HSV|null = rgb2hsv(vertex)
                                                     if (hsv === null) return
                                                     let angle:number = Math.floor(hsv.hue) 
-                                                    let radius:number = hsv.saturation * 1900 + 50
+                                                    let radius:number = hsv.saturation * (1900/2) + 50 + (1900/2)
+                                                    return (
+                                                        <div className={`absolute w-full z-[60]`} style={{transform:`rotate(-${angle}deg)`}}>
+
+                                                            <div className='w-[5%] aspect-square rounded-full bg-gray-500 border-gray-500 border-4' style={{transform:`translate(${radius}%)`}}>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                            {
+                                                palette?.palette.map(vertex=>{
+                                                    let hsv:HSV|null = rgb2hsv(vertex)
+                                                    if (hsv === null) return
+                                                    let angle:number = Math.floor(hsv.hue) 
+                                                    let radius:number = hsv.saturation * (4900/2) + 50 + (4900/2)
                                                     return (
                                                         <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
 
-                                                            <div className='w-[5%] aspect-square rounded-full border-gray-500 border-4' style={{transform:`translate(${radius}%)`}}>
+                                                            <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
                                                             </div>
                                                         </div>
                                                     )
