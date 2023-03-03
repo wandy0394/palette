@@ -1,18 +1,63 @@
-import { HEX, Scheme } from "../types/colours"
+import { HEX, HSV, Scheme } from "../types/colours"
 import ColouredSquare from "./ColouredSquare"
 import {useEffect, useState, MouseEventHandler} from 'react'
+import ColourConverter from "../model/colourConverter"
 
+const cc = new ColourConverter()
 type Props = {
     schemes:Scheme[], 
     generateScheme: (colour:HEX[])=>Scheme
 }
 
 const errorString:string = 'An error has occurred.'
+function range (start:number, stop:number, step:number):number[] {
+    let output:number[] = []
+    if (start >= stop) {
+        for (let i = start; i > stop; i+=step) {
+            output.push(i)
+        }
+    }
+    else {
+        for (let i = stop; i < stop; i+=step) {
+            output.push(i)
+        }
+    }
+    return output
+}
+
+function getWheelHSV(saturation:number, value:number): HSV[] {
+    let output:HSV[] = []
+    output.push({
+        hue:0, 
+        saturation:saturation,
+        value:value
+    })
+    for (let i = 330; i >= 0; i-= 30) {
+        output.push({
+            hue:i, 
+            saturation:saturation,
+            value:value
+        })
+    }
+    return output
+}
+function getColourString(colours:HSV[]):string {
+    let output:string = ''
+
+    colours.forEach(colour=>{
+        output += (`#${cc.hsv2rgb(colour)}, `)
+    })
+    output = output.slice(0, -2)
+    return output
+}
+const wheelWidths:number[] = range(100, 0, -2)
+
 export default function SchemeGrid(props:Props) {    
     const {schemes, generateScheme} = props
     
     const [palettes, setPalettes] = useState<Scheme[]>([])
     const [errorMessage, setErrorMessage] = useState<string>('')
+    const [values, setValues] = useState<number[]>([])
 
     function generateNewScheme(colourList:(HEX[]|undefined), index:number) {
         if (colourList === undefined) {
@@ -32,10 +77,21 @@ export default function SchemeGrid(props:Props) {
         return
     }
 
+    function updateValue(newValue:number, index:number) {
+        let newValues:number[] = [...values]
+        newValues[index] = newValue
+        setValues(newValues)
+    }
 
     useEffect(()=>{
         setPalettes(schemes)
+        let newValues:number[] = []
+        for (let i = 0; i < schemes.length; i++) {
+            newValues.push(100)
+        }
+        setValues(newValues)
     }, [schemes])
+
 
     return (
         <div className='w-full flex flex-col items-center justify-center gap-8'>
@@ -60,15 +116,33 @@ export default function SchemeGrid(props:Props) {
                                             })
                                         }
                                     </div>
-                                    {/* <div className='w-1/2 rounded-full aspect-square bg-gradient-radial from-white border border-solid border-red-400'></div> */}
-                                    <div style={{
-                                            width:'50%', 
-                                            aspectRatio:'1/1', 
-                                            border:'1px solid', 
-                                            borderRadius:'100%', 
-                                            background:'radial-gradient(white, transparent 80%), conic-gradient(#ff0000, #ff0080, #ff00ff, #8000ff, #0000ff, #0080ff, #00ffff, #00ff80, #00ff00, #80ff00, #ffff00, #ff8000, #ff0000)',
-                                            transform:'rotate(90deg)'
-                                    }}>
+                                    <div className='h-full w-full flex items-center justify-center gap-8 border border-solid border-red-400'>
+                                        <div className='relative w-1/2 flex items-center justify-center aspect-square'>
+                                            {
+                                                wheelWidths.map((width, wheelIndex)=>{
+                                                    
+                                                    let saturation:number = (100-((wheelIndex+1)*2)) / 100
+                                                    let wheelHSVs:HSV[] = getWheelHSV(saturation, values[index]/100)
+                                                    let colours = getColourString(wheelHSVs)
+                                                    return (
+                                                        <div style={{
+                                                            position:'absolute',
+                                                            width:`${width}%`, 
+                                                            aspectRatio:'1/1', 
+                                                            borderRadius:'100%', 
+                                                            background:`conic-gradient(${colours})`,
+                                                            transform:'rotate(90deg)',
+                                                            zIndex:`${wheelIndex}`
+                                                        }}> 
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                
+                                        </div>
+                                        <div className='flex items-center justify-center rotate-[270deg]'>
+                                            <input type='range' min="0" max="100" value={values[index]} className="range" onChange={e=>updateValue(parseInt(e.target.value), index)}/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

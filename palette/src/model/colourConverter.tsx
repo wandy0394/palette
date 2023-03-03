@@ -120,6 +120,7 @@ class ColourConverter {
 
         return output
     }
+    
 }
 
 export default ColourConverter
