@@ -6,7 +6,8 @@ import ColourConverter from "../model/colourConverter"
 const cc = new ColourConverter()
 type Props = {
     schemes:Scheme[], 
-    generateScheme: (colour:HEX[])=>Scheme
+    generateScheme: (colour:HEX[]) => Scheme,
+    rgb2hsv: (rgb:HEX) => HSV | null
 }
 
 const errorString:string = 'An error has occurred.'
@@ -50,10 +51,13 @@ function getColourString(colours:HSV[]):string {
     output = output.slice(0, -2)
     return output
 }
+
+
+
 const wheelWidths:number[] = range(100, 0, -2)
 
 export default function SchemeGrid(props:Props) {    
-    const {schemes, generateScheme} = props
+    const {schemes, generateScheme, rgb2hsv} = props
     
     const [palettes, setPalettes] = useState<Scheme[]>([])
     const [errorMessage, setErrorMessage] = useState<string>('')
@@ -138,7 +142,21 @@ export default function SchemeGrid(props:Props) {
                                                     )
                                                 })
                                             }
-                
+                                            {
+                                                palette?.colourVerticies.map(vertex=>{
+                                                    let hsv:HSV|null = rgb2hsv(vertex)
+                                                    if (hsv === null) return
+                                                    let angle:number = Math.floor(hsv.hue) 
+                                                    let radius:number = hsv.saturation * 1900 + 50
+                                                    return (
+                                                        <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
+
+                                                            <div className='w-[5%] aspect-square rounded-full border-gray-500 border-4' style={{transform:`translate(${radius}%)`}}>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
                                         </div>
                                         <div className='flex items-center justify-center rotate-[270deg]'>
                                             <input type='range' min="0" max="100" value={values[index]} className="range" onChange={e=>updateValue(parseInt(e.target.value), index)}/>
