@@ -10,6 +10,7 @@ import SquareSchemeGenerator from "../model/SquareSchemeGenerator";
 import AnalogousSchemeGenerator from "../model/AnalogousSchemeGenerator";
 import TriadicSchemeGenerator from "../model/TriadicSchemeGenerator";
 import SplitComplementarySchemeGenerator from "../model/SplitComplementarySchemeGenerator";
+import ContentBox from "../components/common/ContentBox";
 
 const converter = new ColourConverter()
 
@@ -21,7 +22,7 @@ export default function Palette() {
     }
 
     return (
-        <div className='w-full flex flex-col items-center justify-center'>
+        <ContentBox>
             <section className='bg-neutral-800 w-full py-16 px-24'>
                 <ColourPickerSection colours={colours} setColours={setColours}/>
                 <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
@@ -44,7 +45,6 @@ export default function Palette() {
             <section className='bg-neutral-800 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new TetraticSchemeGenerator(converter)}/>
             </section> 
-
-        </div>
+        </ContentBox>
     )
 }

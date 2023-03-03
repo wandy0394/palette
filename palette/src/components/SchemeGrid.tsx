@@ -151,7 +151,7 @@ export default function SchemeGrid(props:Props) {
                                                     return (
                                                         <div className={`absolute w-full z-[60]`} style={{transform:`rotate(-${angle}deg)`}}>
 
-                                                            <div className='w-[5%] aspect-square rounded-full bg-gray-500 border-gray-500 border-4' style={{transform:`translate(${radius}%)`}}>
+                                                            <div className='w-[5%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
                                                             </div>
                                                         </div>
                                                     )

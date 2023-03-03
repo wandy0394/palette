@@ -19,8 +19,6 @@ export default function ColourScheme(props:Props) {
     useEffect(()=>{
         let verticies:HEX[][] = generator.generateColourVerticies(rgb)
         let schemes:Scheme[] = generator.generateRandomSchemes(verticies)
-        console.log(schemes)
-        console.log(verticies)
         setSchemes(schemes)
         setVerticies(verticies)
     }, [rgb])
@@ -29,7 +27,7 @@ export default function ColourScheme(props:Props) {
     return (
         <div className='w-full flex flex-col items-center justify-center gap-16'>
             <div className="prose align-center">
-                <h2 className='flex gap-2 items-center'>
+                <h2 className='flex gap-2 items-center text-neutral-400'>
                     {generator.getName()} 
                 </h2>
             </div>

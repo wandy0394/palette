@@ -51,9 +51,9 @@ export default function ColourPickerSection(props:Props) {
     }
     return (
         <div className='flex flex-col items-center justify-center w-full gap-4'>
-            <div className='prose flex flex-col items-center'>
-                <h2>Choose a favourite colour</h2>
-                <p>We will generate swatches for you</p>
+            <div className='prose flex flex-col items-center '>
+                <h2 className='text-neutral-400'>Choose a favourite colour</h2>
+                <p className='text-neutral-400'>We will generate swatches for you</p>
             </div>
             <div className='w-1/2 gap-4 px-16'>
                 {
