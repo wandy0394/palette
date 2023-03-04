@@ -1,6 +1,6 @@
 import ContentBox from "../components/common/ContentBox"
 import { useState, useEffect } from 'react'
-import { HEX, Scheme } from "../types/colours"
+import { HEX, HSV, Scheme } from "../types/colours"
 import PaletteSwatch from "../components/PaletteSwatch"
 import ColourWheel from "../components/ColourWheel"
 import ValueSlider from "../components/ValueSlider"
@@ -14,6 +14,9 @@ import TetraticSchemeGenerator from "../model/TetraticSchemeGenerator"
 import SquareSchemeGenerator from "../model/SquareSchemeGenerator"
 import PaletteGenerator from "../model/paletteGenerator"
 import PaletteSwatchEditor from "../components/PaletteSwatchEditor"
+import ColourWheelPicker from "../components/ColourWheelPicker"
+import { Point } from "../types/cartesian"
+import { modulo } from "../model/common/utils"
 
 const dummyScheme = {
     palette:['ff0000', '00ffff'],
@@ -51,19 +54,60 @@ function SchemeSelector(props:{value:any, setValue:Function, harmonies:any}) {
         </select>
     )
 }
-
+type ColourChoice = {
+    colour:HEX,
+    index:number
+}
+const wheelWidth = 400
+const handleWidth = 20
 export default function Editor() {
     const [palette, setPalette] = useState<Scheme>(dummyScheme)
     const [value, setValue] = useState<number>(100)
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
-    const [selected, setSelected] = useState<string>('')
-    const [generator, setGenerator] = useState<PaletteGenerator|null>(colourHarmonies.complementary.generator)
+    const [selectedHarmony, setSelectedHarmony] = useState<string>('')
+    const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
+    const [chosenColour, setChosenColor] = useState<ColourChoice>({colour:'ffffff', index:-1})
+    const [handlePosition, setHandlePostion] = useState<Point>({x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2})
+    //const [chosenIndex, setChosenIndex] = useState<number>()
+
+    function setChosenColour(colourChoice:ColourChoice) {
+        if (palette) {
+            let newPalette:Scheme = {...palette}
+            let newSwatch:HEX[] = [...palette.palette]
+            newSwatch[colourChoice.index] = colourChoice.colour
+            newPalette.palette = newSwatch
+            setPalette(newPalette)
+            setChosenColor(colourChoice)
+        }
+    }
+
+    function rgb2cartesian(rgb:HEX):Point {
+        let output:Point = {x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2}   //center of circle
+        if (generator) {
+            let hsv:HSV|null= generator.converter.rgb2hsv(rgb)
+            if (hsv) {
+                const theta:number = -(modulo(Math.round(hsv.hue), 360)) * Math.PI / 180
+                const radius:number = Math.abs(hsv.saturation) * wheelWidth/2
+                output.x = radius * Math.cos(theta) + wheelWidth/2 - handleWidth/2
+                output.y = radius * Math.sin(theta) + wheelWidth/2 - handleWidth/2
+            }
+        }
+
+        return output
+    }
+
+    function showColourPicker(colour:HEX, index:number) {
+        setChosenColor({colour:colour, index:index})
+        let newPosition = rgb2cartesian(colour)
+        setHandlePostion(newPosition)
+    }
 
     function generatePalettes() {
         if (generator) {
             let verticies:HEX[][] = generator.generateColourVerticies(colours[0])
             let newPalette:Scheme = generator.generateRandomScheme(verticies[0])
             setPalette(newPalette)
+            setChosenColor({colour:colours[0], index:newPalette?.palette.indexOf(colours[0]) as number})
         }
         
     }
@@ -74,7 +118,7 @@ export default function Editor() {
     }
 
     function makeSelection(value:string) {
-        setSelected(value)
+        setSelectedHarmony(value)
         if (value in colourHarmonies) {
             setGenerator(colourHarmonies[value as keyof Harmonies].generator)
         }
@@ -91,19 +135,26 @@ export default function Editor() {
                         <ColourPickerSection colours={colours} setColours={setColours}/>
                     </div>
                     <div className='w-1/2 flex flex-col items-center justify-center gap-16'>
-                        <SchemeSelector value={selected} setValue={makeSelection} harmonies={colourHarmonies}/>
+                        <SchemeSelector value={selectedHarmony} setValue={makeSelection} harmonies={colourHarmonies}/>
                         <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
                     </div>
                 </div>
             </section>
             <section className='bg-neutral-800 w-full py-16 px-24'>
-                <div className='grid grid-cols-[5fr_1fr] items-center justify-center gap-4 justify-items-center pb-8'>
-                    <PaletteSwatchEditor initPalette={palette}/>
+                <div className='grid grid-cols-[1fr_1fr] items-center justify-center gap-4 justify-items-center pb-8'>
+                    <PaletteSwatchEditor initPalette={palette} chosenColour={chosenColour} showColourPicker={showColourPicker}/>
                     <div className='h-full w-full flex items-center justify-center gap-8'>
-                        {/* {
-                            generator &&
-                                <ColourWheel palette={palette?.palette} colourVerticies={palette?.colourVerticies} generator={generator} colourValue={value}/>
-                        } */}
+                        <ColourWheelPicker 
+                            colourValue={value} 
+                            palette={palette?.palette} 
+                            colourVerticies={palette?.colourVerticies} 
+                            generator={generator} 
+                            chosenColour={chosenColour}
+                            setChosenColour={(colour:ColourChoice)=>setChosenColour(colour)}
+                            wheelWidth={wheelWidth}
+                            handleWidth={handleWidth}
+                            handlePosition={handlePosition}
+                        />
                         <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
                     </div>
                 </div>

@@ -10,6 +10,7 @@ class ColourConverter {
     }
 
     rgb2hsv(rgb:HEX): HSV | null {
+        if (rgb === null) return null
         if (!this.isValidRGB(rgb)) return null
         let output:HSV = {
             hue: 0,

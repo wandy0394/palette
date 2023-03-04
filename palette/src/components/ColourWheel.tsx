@@ -58,7 +58,7 @@ const wheelWidths:number[] = range(100, 0, -2)
 export default function ColourWheel(props:Props) {
     const {palette, colourValue=100, colourVerticies, generator} = props
     return (
-        <div className='relative flex items-center justify-center aspect-square'>
+        <div className='relative flex items-center justify-center aspect-square border-2 border-solid w-full'>
             {
                 wheelWidths.map((width, wheelIndex)=>{
                     
@@ -97,16 +97,18 @@ export default function ColourWheel(props:Props) {
             {
                 (palette !== undefined && generator) &&
                 palette.map(vertex=>{
-                    let hsv:HSV|null = generator.converter.rgb2hsv(vertex)
-                    if (hsv === null) return
-                    let angle:number = Math.floor(hsv.hue) 
-                    let radius:number = hsv.saturation * (4900/2) + 50 + (4900/2)
-                    return (
-                        <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                            <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
+                    if (vertex) {
+                        let hsv:HSV|null = generator.converter.rgb2hsv(vertex)
+                        if (hsv === null) return
+                        let angle:number = Math.floor(hsv.hue) 
+                        let radius:number = hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%
+                        return (
+                            <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
+                                <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
+                                </div>
                             </div>
-                        </div>
-                    )
+                        )
+                    }
                 })
             }
         </div>

@@ -119,7 +119,7 @@ export default function SchemeGrid(props:Props) {
                                 </div>
                                 <div className='grid grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
                                     <PaletteSwatch palette={palette}/>
-                                    <div className='h-full w-full flex items-center justify-center gap-8'>
+                                    <div className='h-full w-2/3 flex items-center justify-center gap-8'>
                                         <ColourWheel palette={palette?.palette} colourVerticies={palette?.colourVerticies} generator={generator} colourValue={values[index]}/>
                                         <ValueSlider value={values[index]} updateValue={(value)=>updateValue(value, index)}/>
                                     </div>
