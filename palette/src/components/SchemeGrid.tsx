@@ -2,12 +2,17 @@ import { HEX, HSV, Scheme } from "../types/colours"
 import ColouredSquare from "./ColouredSquare"
 import {useEffect, useState, MouseEventHandler} from 'react'
 import ColourConverter from "../model/colourConverter"
+import PaletteSwatch from "./PaletteSwatch"
+import PaletteGenerator from "../model/paletteGenerator"
+import ColourWheel from "./ColourWheel"
+import ValueSlider from "./ValueSlider"
 
 const cc = new ColourConverter()
 type Props = {
     schemes:Scheme[], 
     generateScheme: (colour:HEX[]) => Scheme,
-    rgb2hsv: (rgb:HEX) => HSV | null
+    rgb2hsv: (rgb:HEX) => HSV | null,
+    generator:PaletteGenerator
 }
 
 const errorString:string = 'An error has occurred.'
@@ -57,7 +62,7 @@ function getColourString(colours:HSV[]):string {
 const wheelWidths:number[] = range(100, 0, -2)
 
 export default function SchemeGrid(props:Props) {    
-    const {schemes, generateScheme, rgb2hsv} = props
+    const {schemes, generateScheme, rgb2hsv, generator} = props
     
     const [palettes, setPalettes] = useState<Scheme[]>([])
     const [errorMessage, setErrorMessage] = useState<string>('')
@@ -87,6 +92,10 @@ export default function SchemeGrid(props:Props) {
         setValues(newValues)
     }
 
+    function editPalette() {
+        //save chosen palette to sessionStorage, then redirect to /editor
+    }
+
     useEffect(()=>{
         setPalettes(schemes)
         let newValues:number[] = []
@@ -104,78 +113,15 @@ export default function SchemeGrid(props:Props) {
                     palettes.map((palette, index)=>{
                         return (
                             <div className='w-full flex flex-col border rounded  border-neutral-500'>
-                                <div className='w-full flex items-center justify-end p-4 border border-solid border-red-400'>
-                                    <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette?.colourVerticies, index)}>Regen</button>
+                                <div className='w-full flex items-center justify-end gap-4 p-4'>
+                                    <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette?.colourVerticies, index)}>Randomize</button>
+                                    <button className='btn btn-sm btn-secondary'>Edit</button>
                                 </div>
-                                <div className='grid grid-cols-2 items-center justify-center gap-4 border border-solid border-red-400 justify-items-center'>
-                                    <div className='w-full flex items-center justify-center gap-8 border border-solid border-blue-400 h-full flex-wrap'>
-                                        {
-                                            palette?.palette.map(colour=>{
-                                                return (
-                                                    <div className='flex flex-col gap-4 w-1/12 items-center'>
-                                                        <ColouredSquare colour={colour}/>
-                                                        <div className='prose-xl'>#{colour}</div>
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                    <div className='h-full w-full flex items-center justify-center gap-8 border border-solid border-red-400'>
-                                        <div className='relative w-1/2 flex items-center justify-center aspect-square'>
-                                            {
-                                                wheelWidths.map((width, wheelIndex)=>{
-                                                    
-                                                    let saturation:number = (100-((wheelIndex+1)*2)) / 100
-                                                    let wheelHSVs:HSV[] = getWheelHSV(saturation, values[index]/100)
-                                                    let colours = getColourString(wheelHSVs)
-                                                    return (
-                                                        <div style={{
-                                                            position:'absolute',
-                                                            width:`${width}%`, 
-                                                            aspectRatio:'1/1', 
-                                                            borderRadius:'100%', 
-                                                            background:`conic-gradient(${colours})`,
-                                                            transform:'rotate(90deg)',
-                                                            zIndex:`${wheelIndex}`
-                                                        }}> 
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                            {
-                                                palette?.colourVerticies.map(vertex=>{
-                                                    let hsv:HSV|null = rgb2hsv(vertex)
-                                                    if (hsv === null) return
-                                                    let angle:number = Math.floor(hsv.hue) 
-                                                    let radius:number = hsv.saturation * (1900/2) + 50 + (1900/2)
-                                                    return (
-                                                        <div className={`absolute w-full z-[60]`} style={{transform:`rotate(-${angle}deg)`}}>
-
-                                                            <div className='w-[5%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                            {
-                                                palette?.palette.map(vertex=>{
-                                                    let hsv:HSV|null = rgb2hsv(vertex)
-                                                    if (hsv === null) return
-                                                    let angle:number = Math.floor(hsv.hue) 
-                                                    let radius:number = hsv.saturation * (4900/2) + 50 + (4900/2)
-                                                    return (
-                                                        <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-
-                                                            <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-                                        <div className='flex items-center justify-center rotate-[270deg]'>
-                                            <input type='range' min="0" max="100" value={values[index]} className="range" onChange={e=>updateValue(parseInt(e.target.value), index)}/>
-                                        </div>
+                                <div className='grid grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
+                                    <PaletteSwatch palette={palette}/>
+                                    <div className='h-full w-full flex items-center justify-center gap-8'>
+                                        <ColourWheel palette={palette?.palette} colourVerticies={palette?.colourVerticies} generator={generator} colourValue={values[index]}/>
+                                        <ValueSlider value={values[index]} updateValue={(value)=>updateValue(value, index)}/>
                                     </div>
                                 </div>
                             </div>

@@ -36,6 +36,7 @@ export default function ColourScheme(props:Props) {
                 schemes={schemes} 
                 generateScheme={(verticies:HEX[])=>generator.generateRandomScheme(verticies)} 
                 rgb2hsv={(rgb:HEX)=>generator.converter.rgb2hsv(rgb)}
+                generator={generator}
             />
 
         </div>
