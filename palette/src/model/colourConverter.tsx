@@ -115,7 +115,6 @@ class ColourConverter {
         let red:number = Math.round((redPrime + m) * 255)
         let green:number = Math.round((greenPrime + m) * 255)
         let blue:number = Math.round((bluePrime + m) * 255)
-
         output = red.toString(16).padStart(2, '0') + green.toString(16).padStart(2, '0') + blue.toString(16).padStart(2, '0')
 
         return output

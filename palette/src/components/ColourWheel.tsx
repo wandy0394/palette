@@ -48,17 +48,17 @@ function getColourString(colours:HSV[]):string {
 }
 
 type Props = {
-    palette:HEX[] | undefined,
-    colourValue:number,
-    colourVerticies:HEX[] | undefined,
-    generator:PaletteGenerator
+    palette?:HEX[] | undefined,
+    colourValue?:number,
+    colourVerticies?:HEX[] | undefined,
+    generator?:PaletteGenerator
 }
 
 const wheelWidths:number[] = range(100, 0, -2)
 export default function ColourWheel(props:Props) {
-    const {palette, colourValue, colourVerticies, generator} = props
+    const {palette, colourValue=100, colourVerticies, generator} = props
     return (
-        <div className='relative w-1/2 flex items-center justify-center aspect-square'>
+        <div className='relative flex items-center justify-center aspect-square'>
             {
                 wheelWidths.map((width, wheelIndex)=>{
                     
@@ -80,7 +80,7 @@ export default function ColourWheel(props:Props) {
                 })
             }
             {
-                (colourVerticies !== undefined) &&
+                (colourVerticies !== undefined && generator) &&
                 colourVerticies.map(vertex=>{
                     let hsv:HSV|null = generator.converter.rgb2hsv(vertex)
                     if (hsv === null) return
@@ -88,15 +88,14 @@ export default function ColourWheel(props:Props) {
                     let radius:number = hsv.saturation * (1900/2) + 50 + (1900/2)
                     return (
                         <div className={`absolute w-full z-[60]`} style={{transform:`rotate(-${angle}deg)`}}>
-
-                            <div className='w-[5%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
+                            <div className='w-[5%] aspect-square rounded-full border border-solid border-black' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
                             </div>
                         </div>
                     )
                 })
             }
             {
-                (palette !== undefined) &&
+                (palette !== undefined && generator) &&
                 palette.map(vertex=>{
                     let hsv:HSV|null = generator.converter.rgb2hsv(vertex)
                     if (hsv === null) return
@@ -104,7 +103,6 @@ export default function ColourWheel(props:Props) {
                     let radius:number = hsv.saturation * (4900/2) + 50 + (4900/2)
                     return (
                         <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-
                             <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex}`, transform:`translate(${radius}%)`}}>
                             </div>
                         </div>
