@@ -98,6 +98,10 @@ export default function Editor() {
 
     function showColourPicker(colour:HEX, index:number) {
         setChosenColor({colour:colour, index:index})
+        if (generator) {
+            let hsv = generator.converter.rgb2hsv(colour)
+            if (hsv) setValue(hsv.value*100)
+        }
         let newPosition = rgb2cartesian(colour)
         setHandlePostion(newPosition)
     }
