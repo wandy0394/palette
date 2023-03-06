@@ -17,6 +17,8 @@ type Props = {
     handleWidth?:number
     handlePosition?:Point
     chosenColour:{colour:HEX, index:number}
+    position:Point,
+    setPosition:React.Dispatch<React.SetStateAction<Point>>
     setChosenColour: (colour:{colour:HEX, index:number}) => void
 }
 
@@ -30,9 +32,11 @@ export default function ColourWheelPicker(props:Props) {
         colourVerticies=undefined, 
         generator=undefined, 
         chosenColour={colour:'ffffff', index:-1}, 
+        position,
+        setPosition,
         setChosenColour
     } = props
-    const [position, setPosition] = useState<{x:number, y:number}>({x:0, y:0})
+    // const [position, setPosition] = useState<{x:number, y:number}>({x:0, y:0})
     const [width, setWidth] = useState<number>(wheelWidth)
     //const [handleWidth, setHandleWidth] = useState<number>((wheelWidth/20 > 1) ? (wheelWidth / 20) : 1)
     const [testColour, setTestColour] = useState<{colour:HEX, index:number}>(chosenColour)
@@ -105,13 +109,13 @@ export default function ColourWheelPicker(props:Props) {
     }
 
     useEffect(()=>{
-        let newColour:string = cc.hsv2rgb(cartesian2hsv({x:position.x, y:position.y})) as string
-        let newTestColour={
-            colour:newColour,
-            index:testColour.index
-        }
-        setTestColour(newTestColour)
-        setChosenColour(newTestColour)
+        // let newColour:string = cc.hsv2rgb(cartesian2hsv({x:position.x, y:position.y})) as string
+        // let newTestColour={
+        //     colour:newColour,
+        //     index:testColour.index
+        // }
+        // setTestColour(newTestColour)
+        // setChosenColour(newTestColour)
     }, [colourValue])
 
     useEffect(()=>{
