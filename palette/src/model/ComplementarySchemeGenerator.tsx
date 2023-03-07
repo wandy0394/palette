@@ -1,5 +1,5 @@
 import { Point } from "../types/cartesian";
-import { HEX, HSV,  Scheme } from "../types/colours";
+import { Colour, HEX, HSV,  Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
@@ -9,20 +9,13 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         super(converter)
     }
 
-    generateRandomScheme(colourVerticies:HEX[]):Scheme {
+    generateRandomScheme(colourVerticies:Colour[]):Scheme {
         //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
         //moving along the straight line varies hue and saturation, value is randomised
 
         let errorFound:boolean = false
-        //if (scheme === undefined) return []
         const coloursCartersian:Point[] = colourVerticies.map(colour=>{
-            let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-            if (hsv === null) {
-                errorFound = true
-                return {x:NaN, y:NaN}
-            }
-            let point:Point = this.hsv2cartesian(hsv)
-            return point
+            return this.hsv2cartesian(colour.hsv)
         })
 
         if (errorFound) return undefined
@@ -30,7 +23,7 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         let p1:Point = coloursCartersian[0]
         let p2:Point = coloursCartersian[1]
 
-        let temp:HEX[] = []
+        let temp:Colour[] = []
         for (let i = 0; i < 10; i++) {
             let a = Math.random()
             let randomPoint:Point = {
@@ -38,13 +31,19 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
                 y:(1-a)*p1.y + a*p2.y
             } 
             let rHSV = this.cartesian2hsv(randomPoint)
-            rHSV.hue = Math.floor(rHSV.hue)
-            rHSV.value = Math.random()
-            let rRGB = this.converter.hsv2rgb(rHSV) as HEX
-            temp.push(rRGB)
+            if (rHSV) {
+                rHSV.hue = Math.floor(rHSV.hue)
+                rHSV.value = Math.random()
+                let rRGB = this.converter.hsv2rgb(rHSV) as HEX
+                temp.push({
+                    rgb:rRGB,
+                    hsv:rHSV
+                })
+
+            }
 
         }        
-        let sortedColours:HEX[] = this.sortColoursByHexcode(temp)
+        let sortedColours:Colour[] = this.sortColoursByHex(temp)
 
         let output:Scheme = {
             palette:[...sortedColours, ...colourVerticies],
@@ -53,9 +52,9 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         return output
     }
 
-    generateColourVerticies(rgb:HEX):HEX[][] {
+    generateColourVerticies(rgb:HEX):Colour[][] {
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:HEX[][] = [[]]
+        const output:Colour[][] = [[]]
 
         if (hsv === null) return output
 
@@ -67,45 +66,5 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
     getName():string {
         return "Complementary Colour Scheme"
     }
-    // generateRandomSwatches(rgb:HEX):HEX[][] {
-    //     //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
-    //     //moving along the straight line varies hue and saturation, value is randomised
-    //     const colours:SchemeOutput = this.generateScheme(rgb)
-
-    //     let errorFound:boolean = false
-    //     const coloursCartersian:Point[] = colours.schemes[0].map(colour=>{
-    //         let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-    //         if (hsv === null) {
-    //             errorFound = true
-    //             return {x:NaN, y:NaN}
-    //         }
-    //         let point:Point = this.hsv2cartesian(hsv)
-    //         return point
-    //     })
-
-    //     if (errorFound) return [[]]
-
-    //     let p1:Point = coloursCartersian[0]
-    //     let p2:Point = coloursCartersian[1]
-
-    //     let temp:HEX[] = []
-    //     for (let i = 0; i < 10; i++) {
-    //         let a = Math.random()
-    //         let randomPoint:Point = {
-    //             x:(1-a)*p1.x + a*p2.x,
-    //             y:(1-a)*p1.y + a*p2.y
-    //         } 
-    //         let rHSV = this.cartesian2hsv(randomPoint)
-    //         rHSV.hue = Math.floor(rHSV.hue)
-    //         rHSV.value = Math.random()
-    //         let rRGB = this.converter.hsv2rgb(rHSV) as HEX
-    //         temp.push(rRGB)
-
-    //     }        
-    //     let output:HEX[][] = [this.sortColoursByHexcode(temp)]
-    //     return output
-    // }
-
-
 }
 

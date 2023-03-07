@@ -1,5 +1,5 @@
 import { Point } from "../types/cartesian";
-import { HEX, HSV, Scheme } from "../types/colours";
+import { Colour, HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
@@ -7,27 +7,29 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-    generateRandomScheme(colourVerticies:HEX[]): Scheme {
+    #compare(h1:HSV, h2:HSV):number {
+        if (h1 === null && h2 === null) return 0
+        if (h1 !== null && h2 === null) return -1
+        if (h1 === null && h2 !== null) return 1
+        if (h1 !== null && h2 !== null) return (h1.hue - h2.hue)
+        
+        //typescript complains without this last line
+        return 0
+    }
+    generateRandomScheme(colourVerticies:Colour[]): Scheme {
+
 
         //generate 10 random colours within the triangle bounded by the square colours
 
         let errorFound:boolean = false
         const hsvPoints:HSV[] = []
         colourVerticies.forEach(colour=>{
-            let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-            if (hsv === null) {
-                errorFound = true
-            }
-            else {
-                hsvPoints.push(hsv)
-            }
+                hsvPoints.push(colour.hsv)
         })
         if (errorFound) undefined
 
         //sort hsvPoints by hue in increasing order
-        hsvPoints.sort((a,b)=>{
-            return a.hue - b.hue
-        })
+        hsvPoints.sort((a,b)=>this.#compare(a,b))
 
 
         //convert points to cartesian coords
@@ -48,7 +50,7 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
             cartPoints[3]
         ]
 
-        let temp:HEX[] = []
+        let temp:Colour[] = []
         //generate random points in triangle1
         for (let i = 0; i < 4; i++) {
             let r1 = Math.random()
@@ -61,10 +63,12 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
             } 
 
             let rHSV = this.cartesian2hsv(randomPoint)
-            rHSV.hue = Math.floor(rHSV.hue)
-            rHSV.value = Math.random()
-            let rRGB = this.converter.hsv2rgb(rHSV) as HEX
-            temp.push(rRGB)
+            if (rHSV) {
+                rHSV.hue = Math.floor(rHSV.hue)
+                rHSV.value = Math.random()
+                let rRGB = this.converter.hsv2rgb(rHSV)
+                temp.push({rgb:rRGB, hsv:rHSV})
+            }
         }        
 
 
@@ -80,12 +84,14 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
             } 
 
             let rHSV = this.cartesian2hsv(randomPoint)
-            rHSV.hue = Math.floor(rHSV.hue)
-            rHSV.value = Math.random()
-            let rRGB = this.converter.hsv2rgb(rHSV) as HEX
-            temp.push(rRGB)
+            if (rHSV) {
+                rHSV.hue = Math.floor(rHSV.hue)
+                rHSV.value = Math.random()
+                let rRGB = this.converter.hsv2rgb(rHSV)
+                temp.push({rgb:rRGB, hsv:rHSV})
+            }
         }        
-        let sortedColours:HEX[] = this.sortColoursByHexcode(temp) 
+        let sortedColours:Colour[] = this.sortColoursByHex(temp) 
         let output:Scheme = {
             palette:[...sortedColours, ...colourVerticies],
             colourVerticies:colourVerticies
@@ -94,10 +100,10 @@ export default class SquareSchemeGenerator extends PaletteGenerator {
         return output
     }
 
-    generateColourVerticies(rgb:HEX):HEX[][] {
+    generateColourVerticies(rgb:HEX):Colour[][] {
 
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:HEX[][]=[[]]
+        const output:Colour[][]=[[]]
         if (hsv === null) return output
 
         let angleArray:number[][] = [

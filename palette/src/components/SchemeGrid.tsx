@@ -1,4 +1,4 @@
-import { HEX, HSV, Scheme } from "../types/colours"
+import { Colour, HEX, HSV, Scheme } from "../types/colours"
 import ColouredSquare from "./ColouredSquare"
 import {useEffect, useState, MouseEventHandler} from 'react'
 import ColourConverter from "../model/colourConverter"
@@ -10,7 +10,7 @@ import ValueSlider from "./ValueSlider"
 const cc = new ColourConverter()
 type Props = {
     schemes:Scheme[], 
-    generateScheme: (colour:HEX[]) => Scheme,
+    generateScheme: (colour:Colour[]) => Scheme,
     rgb2hsv: (rgb:HEX) => HSV | null,
     generator:PaletteGenerator
 }
@@ -68,7 +68,7 @@ export default function SchemeGrid(props:Props) {
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [values, setValues] = useState<number[]>([])
 
-    function generateNewScheme(colourList:(HEX[]|undefined), index:number) {
+    function generateNewScheme(colourList:(Colour[]|undefined), index:number) {
         if (colourList === undefined) {
             setErrorMessage(errorMessage)
             return

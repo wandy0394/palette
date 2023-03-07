@@ -1,6 +1,6 @@
 import PaletteGenerator from "../model/paletteGenerator"
 import ColourConverter from "../model/colourConverter"
-import { HEX, Scheme } from "../types/colours"
+import { Colour, HEX, Scheme } from "../types/colours"
 import ColouredSquare from "../components/ColouredSquare"
 import {useState, useEffect} from 'react'
 import SchemeGrid from "../components/SchemeGrid"
@@ -13,11 +13,11 @@ type Props = {
 
 export default function ColourScheme(props:Props) {
     const {rgb, generator} = props
-    const [verticies, setVerticies] = useState<HEX[][]>([])
+    const [verticies, setVerticies] = useState<Colour[][]>([])
     const [schemes, setSchemes] = useState<Scheme[]>([])
     
     useEffect(()=>{
-        let verticies:HEX[][] = generator.generateColourVerticies(rgb)
+        let verticies:Colour[][] = generator.generateColourVerticies(rgb)
         let schemes:Scheme[] = generator.generateRandomSchemes(verticies)
         setSchemes(schemes)
         setVerticies(verticies)
@@ -34,7 +34,7 @@ export default function ColourScheme(props:Props) {
             
             <SchemeGrid 
                 schemes={schemes} 
-                generateScheme={(verticies:HEX[])=>generator.generateRandomScheme(verticies)} 
+                generateScheme={(verticies:Colour[])=>generator.generateRandomScheme(verticies)} 
                 rgb2hsv={(rgb:HEX)=>generator.converter.rgb2hsv(rgb)}
                 generator={generator}
             />

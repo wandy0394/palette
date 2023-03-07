@@ -13,8 +13,8 @@ export default function PaletteSwatch(props:Props) {
                 palette?.palette.map(colour=>{
                     return (
                         <div className='flex flex-col gap-4 w-1/12 items-center'>
-                            <ColouredSquare colour={colour}/>
-                            <div className='prose-xl'>#{colour}</div>
+                            <ColouredSquare colour={colour.rgb}/>
+                            <div className='prose-xl'>#{colour.rgb}</div>
                         </div>
                     )
                 })

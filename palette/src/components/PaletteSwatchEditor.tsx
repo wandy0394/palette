@@ -8,7 +8,7 @@ import ColourWheelPicker from "./ColourWheelPicker";
 
 type Props = {
     initPalette: Scheme
-    chosenColour:{colour:HEX, index:number}
+    chosenColour:{rgb:HEX, index:number}
     showColourPicker: (colour:HEX, index:number) => void
 }
 
@@ -30,8 +30,8 @@ export default function PaletteSwatchEditor(props:Props) {
                     palette?.palette.map((colour, index)=>{
                         return (
                             <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColour.index===index)?'2px solid white':''}}>
-                                <ColouredSquare colour={colour} onSelect={()=>showColourPicker(colour, index)}/>
-                                <div className='prose-xl'>#{colour}</div>
+                                <ColouredSquare colour={colour.rgb} onSelect={()=>showColourPicker(colour.rgb, index)}/>
+                                <div className='prose-xl'>#{colour.rgb}</div>
                             </div>
                         )
                     })

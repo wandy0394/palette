@@ -1,6 +1,6 @@
 import { palette } from "@mui/system";
 import { Point } from "../types/cartesian";
-import { HEX, HSV, Scheme } from "../types/colours";
+import { Colour, HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 
 
@@ -26,23 +26,58 @@ abstract class PaletteGenerator {
         return colours.map((colour)=>colour.toString(16).padStart(6, '0'))
     }
 
-    #formatRGBOutput(colourRGB:HEX, ...coloursHSV:HSV[]) : HEX[] {
-        //take the original rgb hex and generated hsv colours and output a sorted list of rgb hexcode
-        const coloursRGB:(HEX | null)[] = coloursHSV.map(colour=>{
-            return this.converter.hsv2rgb(colour)
+    protected sortColoursByHex(colours:Colour[]):Colour[] {
+        //convert hexcode to integer then sort largest to smallest
+        let sortedColours:Colour[] = []
+        colours.forEach(colour=>{
+            sortedColours.push(colour)
+        })
+        sortedColours.sort((a, b)=>{
+            if (b.rgb === null && a.rgb !== null) return -1
+            if (b.rgb !== null && a.rgb === null) return 1
+            if (b.rgb === null && a.rgb === null) return 0
+            return (parseInt(b.rgb as string, 16) - parseInt(a.rgb as string, 16))
         })
 
-        if (coloursRGB.some(elem=>elem === null)) return []
-        coloursRGB.push(colourRGB)
+        //return colours.map((colour)=>colour.toString(16).padStart(6, '0'))
+        return sortedColours
+    }
+
+    #formatRGBOutput(colourRGB:HEX, ...coloursHSV:HSV[]) : Colour[] {
+        //take the original rgb hex and generated hsv colours and output a sorted list of rgb hexcode
         
-        return this.sortColoursByHexcode(coloursRGB as HEX[])
+        const colours:Colour[] = []
+        let hsv:HSV = this.converter.rgb2hsv(colourRGB)
+        if (hsv) {
+            colours.push({
+                rgb:colourRGB,
+                hsv:hsv
+            })
+        }
+        else return []
+
+        // const coloursRGB:(HEX | null)[] = coloursHSV.map(colour=>{
+        //     return this.converter.hsv2rgb(colour)
+        // })
+        coloursHSV.forEach(colour=>{
+            let newColour:Colour = {
+                rgb:this.converter.hsv2rgb(colour),
+                hsv:colour
+            }
+            colours.push(newColour)
+        })
+
+        if (colours.some(elem=>elem.hsv === null)) return []
+        
+        
+        return this.sortColoursByHex(colours)
     }
     protected hsv2cartesian(hsv:HSV): Point {
         const point:Point = {
             x:0,
             y:0
         }
-
+        if (hsv === null) return point //to clean up error handling
         const theta:number = (this.#modulo(Math.round(hsv.hue), 360)) * Math.PI / 180
         const radius:number = Math.abs(hsv.saturation)
         point.x = radius * Math.cos(theta)
@@ -67,9 +102,9 @@ abstract class PaletteGenerator {
         return hsv
     }
 
-    protected getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):HEX[][] {
-        let output:HEX[][] = []
-
+    protected getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):Colour[][] {
+        let output:Colour[][] = []
+        if (hsv === null) return []  //to clean up error handling
         angleArray.forEach((angles, index)=>{
 
             let colours:HSV[] = angles.map(angle=>{
@@ -85,7 +120,7 @@ abstract class PaletteGenerator {
         return output
     }
 
-    generateRandomSchemes(colourVerticies:HEX[][]):Scheme[] {
+    generateRandomSchemes(colourVerticies:Colour[][]):Scheme[] {
         let output:Scheme[] = []
         colourVerticies.forEach(colourList=>{
             let scheme:Scheme = this.generateRandomScheme(colourList)
@@ -96,9 +131,10 @@ abstract class PaletteGenerator {
         })
         return output
     }
-    abstract generateColourVerticies(rgb:HEX):HEX[][]
-    abstract generateRandomScheme(colours:HEX[]):Scheme
-
+    abstract generateColourVerticies(rgb:HEX):Colour[][]
+    abstract generateRandomScheme(colours:Colour[]):Scheme
+    // abstract generateColourVerticies(rgb:HEX):HEX[][]
+    // abstract generateRandomScheme(colours:HEX[]):Scheme
     abstract getName():string 
 
 }

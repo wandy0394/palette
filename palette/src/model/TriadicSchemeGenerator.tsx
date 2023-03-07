@@ -1,5 +1,5 @@
 import { Point } from "../types/cartesian";
-import { HEX, HSV, Scheme } from "../types/colours";
+import { Colour, HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 import PaletteGenerator from "./paletteGenerator";
 
@@ -7,19 +7,17 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-    generateRandomScheme(colourVerticies:HEX[]): Scheme {
-
+    generateRandomScheme(colourVerticies:Colour[]): Scheme {
         //generate 10 random colours within the triangle bounded by the triadic colours
-        
 
         let errorFound:boolean = false
         const coloursCartersian:Point[] = colourVerticies.map(colour=>{
-            let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-            if (hsv === null) {
-                errorFound = true
-                return {x:NaN, y:NaN}
-            }
-            let point:Point = this.hsv2cartesian(hsv)
+            // let hsv:HSV|null = this.converter.rgb2hsv(colour) 
+            // if (hsv === null) {
+            //     errorFound = true
+            //     return {x:NaN, y:NaN}
+            // }
+            let point:Point = this.hsv2cartesian(colour.hsv)
             return point
         })
 
@@ -30,7 +28,7 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
         let p2:Point = coloursCartersian[1]
         let p3:Point = coloursCartersian[2]
 
-        let temp:HEX[] = []
+        let temp:Colour[] = []
         for (let i = 0; i < 10; i++) {
             let r1 = Math.random()
             let r2 = Math.random()
@@ -42,13 +40,19 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
             } 
 
             let rHSV = this.cartesian2hsv(randomPoint)
-            rHSV.hue = Math.floor(rHSV.hue)
-            rHSV.value = Math.random()
-            let rRGB = this.converter.hsv2rgb(rHSV) as HEX
-            temp.push(rRGB)
+            if (rHSV) {
+                rHSV.hue = Math.floor(rHSV.hue)
+                rHSV.value = Math.random()
+                let rRGB = this.converter.hsv2rgb(rHSV)
+                temp.push({
+                    rgb:rRGB,
+                    hsv:rHSV
+                })
+
+            }
         }        
 
-        let sortedColours:HEX[] = this.sortColoursByHexcode(temp) 
+        let sortedColours:Colour[] = this.sortColoursByHex(temp) 
         let output:Scheme = {
             palette:[...sortedColours, ...colourVerticies],
             colourVerticies:colourVerticies
@@ -57,10 +61,10 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
         return output
     }
 
-    generateColourVerticies(rgb:HEX):HEX[][] {
+    generateColourVerticies(rgb:HEX):Colour[][] {
 
         const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:HEX[][]=[[]]
+        const output:Colour[][]=[[]]
 
         if (hsv === null) return output
 

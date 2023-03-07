@@ -1,6 +1,6 @@
 import ContentBox from "../components/common/ContentBox"
 import { useState, useEffect } from 'react'
-import { HEX, HSV, Scheme } from "../types/colours"
+import { Colour, HEX, HSV, Scheme } from "../types/colours"
 import PaletteSwatch from "../components/PaletteSwatch"
 import ColourWheel from "../components/ColourWheel"
 import ValueSlider from "../components/ValueSlider"
@@ -55,7 +55,8 @@ function SchemeSelector(props:{value:any, setValue:Function, harmonies:any}) {
     )
 }
 type ColourChoice = {
-    colour:HEX,
+    rgb:HEX,
+    hsv:HSV,
     index:number
 }
 const wheelWidth = 400
@@ -68,7 +69,7 @@ export default function Editor() {
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
-    const [chosenColour, setChosenColour] = useState<ColourChoice>({colour:'ffffff', index:-1})
+    const [chosenColour, setChosenColour] = useState<ColourChoice>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}, index:-1})
     const [handlePosition, setHandlePostion] = useState<Point>({x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2})
     const [position, setPosition] = useState<Point>({x:0, y:0})
 
@@ -78,15 +79,15 @@ export default function Editor() {
         if (newPalette) {
             setPalette(newPalette)
             setChosenColour(colourChoice)
-            let newValue = cc.rgb2hsv(colourChoice.colour)?.value 
+            let newValue = cc.rgb2hsv(colourChoice.rgb)?.value 
             if (newValue) setValue(newValue*100)
-            let newPosition = rgb2cartesian(colourChoice.colour)
+            let newPosition = rgb2cartesian(colourChoice.rgb)
             setHandlePostion(newPosition)
         }
         else if (palette) {
             let newPalette:Scheme = {...palette}
-            let newSwatch:HEX[] = [...palette.palette]
-            newSwatch[colourChoice.index] = colourChoice.colour
+            let newSwatch:Colour[] = [...palette.palette]
+            newSwatch[colourChoice.index] = {rgb:colourChoice.rgb, hsv:colourChoice.}
             newPalette.palette = newSwatch
             setPalette(newPalette)
             setChosenColour(colourChoice)
@@ -109,7 +110,7 @@ export default function Editor() {
     }
 
     function showColourPicker(colour:HEX, index:number) {
-        updateChosenColour({colour:colour, index:index})
+        updateChosenColour({rgb:colour, index:index})
         if (generator) {
             let hsv = generator.converter.rgb2hsv(colour)
             if (hsv) setValue(hsv.value*100)
@@ -120,10 +121,10 @@ export default function Editor() {
 
     function generatePalettes() {
         if (generator) {
-            let verticies:HEX[][] = generator.generateColourVerticies(colours[0])
+            let verticies:Colour[][] = generator.generateColourVerticies(colours[0])
             let newPalette:Scheme = generator.generateRandomScheme(verticies[0])
             //etPalette(newPalette)
-            updateChosenColour({colour:colours[0], index:newPalette?.palette.indexOf(colours[0]) as number}, newPalette)
+            updateChosenColour({rgb:colours[0], index:newPalette?.palette.indexOf(colours[0]) as number}, newPalette)
         }
         
     }
@@ -156,7 +157,7 @@ export default function Editor() {
         if (hsv) {
             let newColour:string = cc.hsv2rgb(hsv) as string
             let newTestColour={
-                colour:newColour,
+                rgb:newColour,
                 index:chosenColour.index
             }
             updateChosenColour(newTestColour)

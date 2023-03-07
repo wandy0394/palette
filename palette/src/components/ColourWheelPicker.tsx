@@ -1,7 +1,7 @@
 import Interactive, { Interaction } from '@uiw/react-drag-event-interactive';
 import { useState, useEffect, useRef } from 'react'
 import { Point } from '../types/cartesian';
-import { HEX, HSV } from '../types/colours';
+import { Colour, HEX, HSV } from '../types/colours';
 import ColourWheel from './ColourWheel';
 import ColourConverter from '../model/colourConverter';
 import PaletteGenerator from '../model/paletteGenerator';
@@ -10,16 +10,16 @@ import { modulo } from '../model/common/utils';
 const cc = new ColourConverter()
 type Props = {
     colourValue:number,
-    palette?:HEX[] | undefined,
-    colourVerticies?:HEX[] | undefined,
+    palette?:Colour[] | undefined,
+    colourVerticies?:Colour[] | undefined,
     generator?:PaletteGenerator
     wheelWidth?:number
     handleWidth?:number
     handlePosition?:Point
-    chosenColour:{colour:HEX, index:number}
+    chosenColour:{rgb:HEX, index:number}
     position:Point,
     setPosition:React.Dispatch<React.SetStateAction<Point>>
-    setChosenColour: (colour:{colour:HEX, index:number}) => void
+    setChosenColour: (colour:{rgb:HEX, index:number}) => void
 }
 
 export default function ColourWheelPicker(props:Props) {
@@ -31,7 +31,7 @@ export default function ColourWheelPicker(props:Props) {
         palette=undefined, 
         colourVerticies=undefined, 
         generator=undefined, 
-        chosenColour={colour:'ffffff', index:-1}, 
+        chosenColour={rgb:'ffffff', index:-1}, 
         position,
         setPosition,
         setChosenColour
@@ -39,7 +39,7 @@ export default function ColourWheelPicker(props:Props) {
     // const [position, setPosition] = useState<{x:number, y:number}>({x:0, y:0})
     const [width, setWidth] = useState<number>(wheelWidth)
     //const [handleWidth, setHandleWidth] = useState<number>((wheelWidth/20 > 1) ? (wheelWidth / 20) : 1)
-    const [testColour, setTestColour] = useState<{colour:HEX, index:number}>(chosenColour)
+    const [testColour, setTestColour] = useState<{rgb:HEX, index:number}>(chosenColour)
 
 
 
@@ -101,7 +101,7 @@ export default function ColourWheelPicker(props:Props) {
 
         let newColour:string = cc.hsv2rgb(cartesian2hsv({x:newPosition.x, y:newPosition.y})) as string
         let newTestColour={
-            colour:newColour,
+            rgb:newColour,
             index:testColour.index
         }
         setTestColour(newTestColour)
@@ -155,8 +155,8 @@ export default function ColourWheelPicker(props:Props) {
                 />
                 <ColourWheel colourValue={colourValue} palette={palette} colourVerticies={colourVerticies} generator={generator}/>
             </Interactive>
-            <div className='w-10 text-2xl' style={{color:`#${testColour.colour}`}}>
-                #{testColour.colour}
+            <div className='w-10 text-2xl' style={{color:`#${testColour.rgb}`}}>
+                #{testColour.rgb}
             </div>
         </div>
     )
