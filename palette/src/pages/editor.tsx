@@ -16,7 +16,7 @@ import PaletteGenerator from "../model/paletteGenerator"
 import PaletteSwatchEditor from "../components/PaletteSwatchEditor"
 import ColourWheelPicker from "../components/ColourWheelPicker"
 import { Point } from "../types/cartesian"
-import { modulo } from "../model/common/utils"
+import { cartesian2hsv, modulo } from "../model/common/utils"
 
 // const dummyScheme = {
 //     palette:['ff0000', '00ffff'],
@@ -133,31 +133,13 @@ export default function Editor() {
         
     }
 
-    function cartesian2hsv(point:Point):HSV {
-        let radius = wheelWidth/2, xCenter = wheelWidth/2, yCenter = wheelWidth/2
-        const hsv = {
-            hue:0,
-            saturation:0,
-            value:value / 100
-        }
-
-        let centeredPoint:Point = {
-            x:point.x + handleWidth/2 - xCenter,
-            y:-point.y - handleWidth/2 + yCenter
-        }
-
-        hsv.saturation = Math.sqrt(centeredPoint.x*centeredPoint.x + centeredPoint.y*centeredPoint.y) / radius
-        
-        //according to MDN docs, atan2 handles cales where x == 0
-        hsv.hue = Math.atan2(centeredPoint.y, centeredPoint.x) 
-        if (hsv.hue < 0) hsv.hue += 2*Math.PI
-        hsv.hue  *= (180 / Math.PI)
-        return hsv
-    }
-
     function updateValue(value:number) {
         setValue(value)
-        let hsv = cartesian2hsv({x:position.x, y:position.y})
+        let radius:number = wheelWidth / 2
+        let xOffset:number = handleWidth / 2 - radius
+        let yOffset:number = handleWidth / 2 - radius
+
+        let hsv = cartesian2hsv({x:position.x, y:position.y}, radius, xOffset, yOffset, value)
         if (hsv) {
             let newColour:string = cc.hsv2rgb(hsv) as string
             let newTestColour={
@@ -198,8 +180,8 @@ export default function Editor() {
                     <div className='h-full w-full flex items-center justify-center gap-8'>
                         <ColourWheelPicker 
                             colourValue={value} 
-                            palette={palette?.palette} 
-                            colourVerticies={palette?.colourVerticies} 
+                            scheme = {palette}
+
                             generator={generator} 
                             chosenColour={chosenColour}
                             setChosenColour={(colour:Colour)=>updateChosenColour(colour)}

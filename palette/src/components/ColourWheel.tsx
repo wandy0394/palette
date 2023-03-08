@@ -1,26 +1,11 @@
 import ColourConverter from "../model/colourConverter"
+import { range } from "../model/common/utils"
 import PaletteGenerator from "../model/paletteGenerator"
-import { Colour, HEX, HSV } from "../types/colours"
+import { HSV, Scheme } from "../types/colours"
 
 
 const cc = new ColourConverter()
-
-
-function range (start:number, stop:number, step:number):number[] {
-    let output:number[] = []
-    if (start >= stop) {
-        for (let i = start; i > stop; i+=step) {
-            output.push(i)
-        }
-    }
-    else {
-        for (let i = stop; i < stop; i+=step) {
-            output.push(i)
-        }
-    }
-    return output
-}
-
+//return an array of HSV that represents the 12 major axes of the colour wheel
 function getWheelHSV(saturation:number, value:number): HSV[] {
     let output:HSV[] = []
     output.push({
@@ -28,7 +13,8 @@ function getWheelHSV(saturation:number, value:number): HSV[] {
         saturation:saturation,
         value:value
     })
-    for (let i = 330; i >= 0; i-= 30) {
+    let degrees:number = 30
+    for (let i = 330; i >= 0; i-= degrees) {
         output.push({
             hue:i, 
             saturation:saturation,
@@ -37,34 +23,37 @@ function getWheelHSV(saturation:number, value:number): HSV[] {
     }
     return output
 }
-function getColourString(colours:HSV[]):string {
+
+//convert HSV array into a string with RGB values
+function getRGBColourString(colours:HSV[]):string {
     let output:string = ''
 
     colours.forEach(colour=>{
         output += (`#${cc.hsv2rgb(colour)}, `)
     })
+    //remove trailing white space
     output = output.slice(0, -2)
     return output
 }
 
 type Props = {
-    palette?:Colour[] | undefined,
+    scheme?:Scheme
     colourValue?:number,
-    colourVerticies?:Colour[] | undefined,
     generator?:PaletteGenerator
 }
 
-const wheelWidths:number[] = range(100, 0, -2)
+const stepSize:number = 2
+const wheelWidths:number[] = range(100, 0, -stepSize)
 export default function ColourWheel(props:Props) {
-    const {palette, colourValue=100, colourVerticies, generator} = props
+    const {scheme, colourValue=100,  generator} = props
     return (
         <div className='relative flex items-center justify-center aspect-square border-2 border-solid w-full'>
             {
                 wheelWidths.map((width, wheelIndex)=>{
                     
-                    let saturation:number = (100-((wheelIndex+1)*2)) / 100
+                    let saturation:number = (100-((wheelIndex+1)*stepSize)) / 100
                     let wheelHSVs:HSV[] = getWheelHSV(saturation, colourValue/100)
-                    let colours = getColourString(wheelHSVs)
+                    let colours = getRGBColourString(wheelHSVs)
                     return (
                         <div style={{
                             position:'absolute',
@@ -80,12 +69,11 @@ export default function ColourWheel(props:Props) {
                 })
             }
             {
-                (colourVerticies !== undefined && generator) &&
-                colourVerticies.map(vertex=>{
-                    //let hsv:HSV|null = generator.converter.rgb2hsv(vertex)
+                (scheme?.colourVerticies && generator) &&
+                scheme.colourVerticies.map(vertex=>{
                     if (vertex.hsv === null) return
                     let angle:number = Math.floor(vertex.hsv.hue) 
-                    let radius:number = vertex.hsv.saturation * (1900/2) + 50 + (1900/2)
+                    let radius:number = vertex.hsv.saturation * (1900/2) + 50 + (1900/2) //1900 scales with width of 5%
                     return (
                         <div className={`absolute w-full z-[60]`} style={{transform:`rotate(-${angle}deg)`}}>
                             <div className='w-[5%] aspect-square rounded-full border border-solid border-black' style={{backgroundColor:`#${vertex.rgb}`, transform:`translate(${radius}%)`}}>
@@ -95,10 +83,9 @@ export default function ColourWheel(props:Props) {
                 })
             }
             {
-                (palette !== undefined && generator) &&
-                palette.map(vertex=>{
+                (scheme?.palette && generator) &&
+                scheme.palette.map(vertex=>{
                     if (vertex) {
-                        //let hsv:HSV|null = generator.converter.rgb2hsv(vertex)
                         if (vertex.hsv === null) return
                         let angle:number = Math.floor(vertex.hsv.hue) 
                         let radius:number = vertex.hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%

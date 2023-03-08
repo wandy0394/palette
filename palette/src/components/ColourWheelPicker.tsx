@@ -1,17 +1,17 @@
 import Interactive, { Interaction } from '@uiw/react-drag-event-interactive';
 import { useState, useEffect, useRef } from 'react'
 import { Point } from '../types/cartesian';
-import { Colour, HEX, HSV } from '../types/colours';
+import { Colour, HEX, HSV, Scheme } from '../types/colours';
 import ColourWheel from './ColourWheel';
 import ColourConverter from '../model/colourConverter';
 import PaletteGenerator from '../model/paletteGenerator';
-import { modulo } from '../model/common/utils';
+import { cartesian2hsv, modulo } from '../model/common/utils';
 
 const cc = new ColourConverter()
 type Props = {
     colourValue:number,
-    palette?:Colour[] | undefined,
-    colourVerticies?:Colour[] | undefined,
+    scheme?:Scheme
+
     generator?:PaletteGenerator
     wheelWidth?:number
     handleWidth?:number
@@ -28,49 +28,21 @@ export default function ColourWheelPicker(props:Props) {
         wheelWidth=400, 
         handleWidth=20, 
         handlePosition={x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2},
-        palette=undefined, 
-        colourVerticies=undefined, 
+        scheme=undefined,
+
         generator=undefined, 
         chosenColour, 
         position,
         setPosition,
         setChosenColour
     } = props
-    // const [position, setPosition] = useState<{x:number, y:number}>({x:0, y:0})
     const [width, setWidth] = useState<number>(wheelWidth)
-    //const [handleWidth, setHandleWidth] = useState<number>((wheelWidth/20 > 1) ? (wheelWidth / 20) : 1)
     const [testColour, setTestColour] = useState<Colour>(chosenColour)
-
-
-
-
 
     function getCursorPosition(interaction: Interaction):Point {
         let x = (interaction.x < 0) ? 0 : interaction.x 
         let y = (interaction.y < 0) ? 0 : interaction.y
         return {x:x, y:y}
-    }
-
-    function cartesian2hsv(point:Point):HSV {
-        let radius = width/2, xCenter = width/2, yCenter = width/2
-        const hsv = {
-            hue:0,
-            saturation:0,
-            value:colourValue / 100
-        }
-
-        let centeredPoint:Point = {
-            x:point.x + handleWidth/2 - xCenter,
-            y:-point.y - handleWidth/2 + yCenter
-        }
-
-        hsv.saturation = Math.sqrt(centeredPoint.x*centeredPoint.x + centeredPoint.y*centeredPoint.y) / radius
-        
-        //according to MDN docs, atan2 handles cales where x == 0
-        hsv.hue = Math.atan2(centeredPoint.y, centeredPoint.x) 
-        if (hsv.hue < 0) hsv.hue += 2*Math.PI
-        hsv.hue  *= (180 / Math.PI)
-        return hsv
     }
 
     function boundHandleInWheel(point:Point, width:number):Point {
@@ -95,10 +67,14 @@ export default function ColourWheelPicker(props:Props) {
     }
 
 
-    const handleChange = (interaction: Interaction, event: MouseEvent | TouchEvent) => {
+    const handleChange = (interaction: Interaction) => {
         let newPosition = boundHandleInWheel(getCursorPosition(interaction), width)
         setPosition({x:newPosition.x, y:newPosition.y})
-        let hsv:HSV = cartesian2hsv({x:newPosition.x, y:newPosition.y})
+        let radius:number = width / 2
+        let xOffset:number = handleWidth / 2 - radius
+        let yOffset:number = handleWidth / 2 - radius
+
+        let hsv:HSV = cartesian2hsv({x:newPosition.x, y:newPosition.y}, radius, xOffset, yOffset, colourValue)
         let newColour:string = cc.hsv2rgb(hsv) as string
         let newTestColour={
             rgb:newColour,
@@ -140,7 +116,7 @@ export default function ColourWheelPicker(props:Props) {
                         border:`2px solid  ${(colourValue < 50)?'white':'black'}`
                     }}
                 />
-                <ColourWheel colourValue={colourValue} palette={palette} colourVerticies={colourVerticies} generator={generator}/>
+                <ColourWheel scheme={scheme} colourValue={colourValue}  generator={generator}/>
             </Interactive>
             <div className='w-10 text-2xl' style={{color:`#${testColour.rgb}`}}>
                 #{testColour.rgb}

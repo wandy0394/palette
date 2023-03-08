@@ -2,6 +2,7 @@ import { HEX, HSV } from "../types/colours"
 
 class ColourConverter {
     isValidRGB(rgb:HEX):boolean {
+        if (rgb === null) return false
         if (rgb.length !== 6) return false
 
         const regex = /[0-9A-Fa-f]{6}/g
@@ -73,6 +74,7 @@ class ColourConverter {
 
     hsv2rgb(hsv:HSV):HEX | null  {
         let output:string = '000000'
+        if (hsv === null) return null
         if (hsv.hue < 0 || hsv.hue >= 360 || hsv.saturation < 0 || hsv.saturation > 1 || hsv.value < 0 || hsv.value > 1) return null
         if (Number.isNaN(hsv.hue)|| Number.isNaN(hsv.saturation) || Number.isNaN(hsv.value)) return null
         
