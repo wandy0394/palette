@@ -16,10 +16,10 @@ type Props = {
     wheelWidth?:number
     handleWidth?:number
     handlePosition?:Point
-    chosenColour:{rgb:HEX, index:number}
+    chosenColour:Colour
     position:Point,
     setPosition:React.Dispatch<React.SetStateAction<Point>>
-    setChosenColour: (colour:{rgb:HEX, index:number}) => void
+    setChosenColour: (colour:Colour) => void
 }
 
 export default function ColourWheelPicker(props:Props) {
@@ -31,7 +31,7 @@ export default function ColourWheelPicker(props:Props) {
         palette=undefined, 
         colourVerticies=undefined, 
         generator=undefined, 
-        chosenColour={rgb:'ffffff', index:-1}, 
+        chosenColour, 
         position,
         setPosition,
         setChosenColour
@@ -39,7 +39,7 @@ export default function ColourWheelPicker(props:Props) {
     // const [position, setPosition] = useState<{x:number, y:number}>({x:0, y:0})
     const [width, setWidth] = useState<number>(wheelWidth)
     //const [handleWidth, setHandleWidth] = useState<number>((wheelWidth/20 > 1) ? (wheelWidth / 20) : 1)
-    const [testColour, setTestColour] = useState<{rgb:HEX, index:number}>(chosenColour)
+    const [testColour, setTestColour] = useState<Colour>(chosenColour)
 
 
 
@@ -98,30 +98,17 @@ export default function ColourWheelPicker(props:Props) {
     const handleChange = (interaction: Interaction, event: MouseEvent | TouchEvent) => {
         let newPosition = boundHandleInWheel(getCursorPosition(interaction), width)
         setPosition({x:newPosition.x, y:newPosition.y})
-
-        let newColour:string = cc.hsv2rgb(cartesian2hsv({x:newPosition.x, y:newPosition.y})) as string
+        let hsv:HSV = cartesian2hsv({x:newPosition.x, y:newPosition.y})
+        let newColour:string = cc.hsv2rgb(hsv) as string
         let newTestColour={
             rgb:newColour,
+            hsv:hsv,
             index:testColour.index
         }
         setTestColour(newTestColour)
         setChosenColour(newTestColour)
     }
 
-    useEffect(()=>{
-        // let newColour:string = cc.hsv2rgb(cartesian2hsv({x:position.x, y:position.y})) as string
-        // let newTestColour={
-        //     colour:newColour,
-        //     index:testColour.index
-        // }
-        // setTestColour(newTestColour)
-        // setChosenColour(newTestColour)
-    }, [colourValue])
-
-    useEffect(()=>{
-        //setPosition({x:width/2 - handleWidth/2, y:width/2 - handleWidth/2})
-        // setHandleWidth(width/20)
-    }, [width])
 
     //move this such that it is only called on swatch click
     useEffect(()=>{

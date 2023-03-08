@@ -1,4 +1,4 @@
-import { HEX, Scheme } from "../types/colours"
+import { Colour, HEX, Scheme } from "../types/colours"
 import ColouredSquare from "./ColouredSquare"
 import { useState, useEffect, useRef } from 'react'
 import {Chrome, ColorResult} from '@uiw/react-color'
@@ -8,8 +8,8 @@ import ColourWheelPicker from "./ColourWheelPicker";
 
 type Props = {
     initPalette: Scheme
-    chosenColour:{rgb:HEX, index:number}
-    showColourPicker: (colour:HEX, index:number) => void
+    chosenColour:Colour
+    showColourPicker: (colour:Colour, index:number) => void
 }
 
 
@@ -30,7 +30,7 @@ export default function PaletteSwatchEditor(props:Props) {
                     palette?.palette.map((colour, index)=>{
                         return (
                             <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColour.index===index)?'2px solid white':''}}>
-                                <ColouredSquare colour={colour.rgb} onSelect={()=>showColourPicker(colour.rgb, index)}/>
+                                <ColouredSquare colour={colour.rgb} onSelect={()=>showColourPicker(colour, index)}/>
                                 <div className='prose-xl'>#{colour.rgb}</div>
                             </div>
                         )

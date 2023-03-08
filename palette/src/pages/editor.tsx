@@ -18,10 +18,10 @@ import ColourWheelPicker from "../components/ColourWheelPicker"
 import { Point } from "../types/cartesian"
 import { modulo } from "../model/common/utils"
 
-const dummyScheme = {
-    palette:['ff0000', '00ffff'],
-    colourVerticies:['ff0000', '00ffff']
-}
+// const dummyScheme = {
+//     palette:['ff0000', '00ffff'],
+//     colourVerticies:['ff0000', '00ffff']
+// }
 
 type Harmonies = {
     [key:string]:{id:number, label:string, generator:PaletteGenerator},
@@ -64,33 +64,35 @@ const handleWidth = 20
 const cc = new ColourConverter()
 
 export default function Editor() {
-    const [palette, setPalette] = useState<Scheme>(dummyScheme)
+    const [palette, setPalette] = useState<Scheme>()
     const [value, setValue] = useState<number>(100)
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
-    const [chosenColour, setChosenColour] = useState<ColourChoice>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}, index:-1})
+    const [chosenColour, setChosenColour] = useState<Colour>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}, index:-1})
     const [handlePosition, setHandlePostion] = useState<Point>({x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2})
     const [position, setPosition] = useState<Point>({x:0, y:0})
 
     //const [chosenIndex, setChosenIndex] = useState<number>()
 
-    function updateChosenColour(colourChoice:ColourChoice, newPalette?:Scheme) {
+    function updateChosenColour(colour:Colour, newPalette?:Scheme) {
         if (newPalette) {
             setPalette(newPalette)
-            setChosenColour(colourChoice)
-            let newValue = cc.rgb2hsv(colourChoice.rgb)?.value 
+            setChosenColour(colour)
+            let newValue = cc.rgb2hsv(colour.rgb)?.value 
             if (newValue) setValue(newValue*100)
-            let newPosition = rgb2cartesian(colourChoice.rgb)
+            let newPosition = rgb2cartesian(colour.rgb)
             setHandlePostion(newPosition)
         }
         else if (palette) {
             let newPalette:Scheme = {...palette}
             let newSwatch:Colour[] = [...palette.palette]
-            newSwatch[colourChoice.index] = {rgb:colourChoice.rgb, hsv:colourChoice.}
-            newPalette.palette = newSwatch
-            setPalette(newPalette)
-            setChosenColour(colourChoice)
+            if (colour.index) {
+                newSwatch[colour.index] = {rgb:colour.rgb, hsv:colour.hsv, index:colour.index}
+                newPalette.palette = newSwatch
+                setPalette(newPalette)
+            }
+            setChosenColour(colour)
         }
     }
 
@@ -109,13 +111,13 @@ export default function Editor() {
         return output
     }
 
-    function showColourPicker(colour:HEX, index:number) {
-        updateChosenColour({rgb:colour, index:index})
-        if (generator) {
-            let hsv = generator.converter.rgb2hsv(colour)
-            if (hsv) setValue(hsv.value*100)
+    function showColourPicker(colour:Colour, index:number) {
+        colour.index = index
+        updateChosenColour(colour)
+        if (colour.hsv) {
+            setValue(colour.hsv.value*100)
         }
-        let newPosition = rgb2cartesian(colour)
+        let newPosition = rgb2cartesian(colour.rgb)
         setHandlePostion(newPosition)
     }
 
@@ -123,8 +125,10 @@ export default function Editor() {
         if (generator) {
             let verticies:Colour[][] = generator.generateColourVerticies(colours[0])
             let newPalette:Scheme = generator.generateRandomScheme(verticies[0])
-            //etPalette(newPalette)
-            updateChosenColour({rgb:colours[0], index:newPalette?.palette.indexOf(colours[0]) as number}, newPalette)
+            //setPalette(newPalette)
+            let colour:Colour[] = verticies[0].filter((colour)=>colour.rgb ===colours[0])
+            colour[0].index = newPalette?.palette.indexOf(colour[0])
+            if (colour.length > 0) updateChosenColour(colour[0], newPalette)
         }
         
     }
@@ -158,6 +162,7 @@ export default function Editor() {
             let newColour:string = cc.hsv2rgb(hsv) as string
             let newTestColour={
                 rgb:newColour,
+                hsv:hsv,
                 index:chosenColour.index
             }
             updateChosenColour(newTestColour)
@@ -197,7 +202,7 @@ export default function Editor() {
                             colourVerticies={palette?.colourVerticies} 
                             generator={generator} 
                             chosenColour={chosenColour}
-                            setChosenColour={(colour:ColourChoice)=>updateChosenColour(colour)}
+                            setChosenColour={(colour:Colour)=>updateChosenColour(colour)}
                             wheelWidth={wheelWidth}
                             handleWidth={handleWidth}
                             handlePosition={handlePosition}
