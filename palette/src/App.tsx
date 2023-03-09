@@ -1,4 +1,4 @@
-import { Link, Route, Router, Routes } from 'react-router-dom'
+import { Link, Route, Router, Routes, useLocation } from 'react-router-dom'
 import {useState} from 'react'
 import './App.css'
 import Editor from './pages/editor'
@@ -9,23 +9,23 @@ import Signup from './pages/signup'
 
 type Props = {
   isActive:(targetPath:string)=>boolean,
-  setActive:React.Dispatch<React.SetStateAction<string>> 
   targetPath:string,
   title:string
 }
 
 function NavLink(props:Props) {
-  const {isActive, setActive, targetPath, title} = props
+  const {isActive, targetPath, title} = props
   return (
-    <Link to={targetPath} className={`md:text-2xl tab tab-bordered ${isActive(targetPath)?'tab-active':''}`} onClick={()=>setActive(targetPath)}>{title}</Link>
+    <Link to={targetPath} className={`md:text-2xl tab tab-bordered ${isActive(targetPath)?'tab-active':''}`} >{title}</Link>
 
   )
 }
 
 function App() {
-  const [active, setActive] = useState<string>(window.location.pathname)
+  const location = useLocation()
+
   function isActive(target:string):boolean {
-    return (target === active)
+    return (target === location.pathname)
   }
   
   
@@ -35,8 +35,8 @@ function App() {
         <div className="navbar-start"></div>
         <div className="navbar-center">
           <div className='tabs flex gap-16'>
-            <NavLink isActive={isActive} setActive={setActive} targetPath='/' title='Generator'/>
-            <NavLink isActive={isActive} setActive={setActive} targetPath='/editor' title='Editor'/>
+            <NavLink isActive={isActive} targetPath='/' title='Generator'/>
+            <NavLink isActive={isActive} targetPath='/editor' title='Editor'/>
           </div>
         </div>
         <div className="navbar-end flex items-center justify-end gap-4 py-1">

@@ -33,6 +33,7 @@ export default function Palette() {
             <section className='bg-neutral-800 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new SplitComplementarySchemeGenerator(converter)}/>
             </section>
+            
             <section className='bg-neutral-900 w-full py-16 px-24'>
                 <ColourScheme rgb={dominantColour} generator={new TriadicSchemeGenerator(converter)}/>
             </section>

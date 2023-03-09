@@ -56,9 +56,6 @@ abstract class PaletteGenerator {
         }
         else return []
 
-        // const coloursRGB:(HEX | null)[] = coloursHSV.map(colour=>{
-        //     return this.converter.hsv2rgb(colour)
-        // })
         coloursHSV.forEach(colour=>{
             let newColour:Colour = {
                 rgb:this.converter.hsv2rgb(colour),

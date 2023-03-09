@@ -17,11 +17,10 @@ import PaletteSwatchEditor from "../components/PaletteSwatchEditor"
 import ColourWheelPicker from "../components/ColourWheelPicker"
 import { Point } from "../types/cartesian"
 import { cartesian2hsv, modulo } from "../model/common/utils"
+import useSessionStorage from "../hooks/useSessionStorage"
+import { useLocation } from "react-router-dom"
 
-// const dummyScheme = {
-//     palette:['ff0000', '00ffff'],
-//     colourVerticies:['ff0000', '00ffff']
-// }
+
 
 type Harmonies = {
     [key:string]:{id:number, label:string, generator:PaletteGenerator},
@@ -72,8 +71,14 @@ export default function Editor() {
     const [chosenColour, setChosenColour] = useState<Colour>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}, index:-1})
     const [handlePosition, setHandlePostion] = useState<Point>({x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2})
     const [position, setPosition] = useState<Point>({x:0, y:0})
+    const location = useLocation()
 
-    //const [chosenIndex, setChosenIndex] = useState<number>()
+    useEffect(()=>{
+        console.log(location.state)
+        if (location.state) {
+            setPalette(location.state)
+        }
+    }, [location])
 
     function updateChosenColour(colour:Colour, newPalette?:Scheme) {
         if (newPalette) {

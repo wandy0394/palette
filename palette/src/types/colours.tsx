@@ -17,4 +17,5 @@ export type Colour = {
 export type Scheme = {
     palette:Colour[]
     colourVerticies:Colour[]
+    mainColour:Colour
 }  | undefined

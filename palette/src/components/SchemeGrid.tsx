@@ -6,6 +6,8 @@ import PaletteSwatch from "./PaletteSwatch"
 import PaletteGenerator from "../model/paletteGenerator"
 import ColourWheel from "./ColourWheel"
 import ValueSlider from "./ValueSlider"
+import useSessionStorage from "../hooks/useSessionStorage"
+import { useNavigate } from "react-router-dom"
 
 const cc = new ColourConverter()
 type Props = {
@@ -16,61 +18,17 @@ type Props = {
 }
 
 const errorString:string = 'An error has occurred.'
-function range (start:number, stop:number, step:number):number[] {
-    let output:number[] = []
-    if (start >= stop) {
-        for (let i = start; i > stop; i+=step) {
-            output.push(i)
-        }
-    }
-    else {
-        for (let i = stop; i < stop; i+=step) {
-            output.push(i)
-        }
-    }
-    return output
-}
-
-function getWheelHSV(saturation:number, value:number): HSV[] {
-    let output:HSV[] = []
-    output.push({
-        hue:0, 
-        saturation:saturation,
-        value:value
-    })
-    for (let i = 330; i >= 0; i-= 30) {
-        output.push({
-            hue:i, 
-            saturation:saturation,
-            value:value
-        })
-    }
-    return output
-}
-function getColourString(colours:HSV[]):string {
-    let output:string = ''
-
-    colours.forEach(colour=>{
-        output += (`#${cc.hsv2rgb(colour)}, `)
-    })
-    output = output.slice(0, -2)
-    return output
-}
-
-
-
-const wheelWidths:number[] = range(100, 0, -2)
 
 export default function SchemeGrid(props:Props) {    
     const {schemes, generateScheme, rgb2hsv, generator} = props
-    
     const [palettes, setPalettes] = useState<Scheme[]>([])
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [values, setValues] = useState<number[]>([])
+    const navigate = useNavigate()
 
     function generateNewScheme(colourList:(Colour[]|undefined), index:number) {
         if (colourList === undefined) {
-            setErrorMessage(errorMessage)
+            setErrorMessage(errorMessage)   //redo this
             return
         }
         let swatch:Scheme = generateScheme(colourList)
@@ -92,8 +50,8 @@ export default function SchemeGrid(props:Props) {
         setValues(newValues)
     }
 
-    function editPalette() {
-        //save chosen palette to sessionStorage, then redirect to /editor
+    function editPalette(palette:Scheme) {
+        navigate('/editor', {state:palette})
     }
 
     useEffect(()=>{
@@ -115,7 +73,7 @@ export default function SchemeGrid(props:Props) {
                             <div className='w-full flex flex-col border rounded  border-neutral-500'>
                                 <div className='w-full flex items-center justify-end gap-4 p-4'>
                                     <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette?.colourVerticies, index)}>Randomize</button>
-                                    <button className='btn btn-sm btn-secondary'>Edit</button>
+                                    <button className='btn btn-sm btn-secondary' onClick={()=>editPalette(palette)}>Edit</button>
                                 </div>
                                 <div className='grid grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
                                     <PaletteSwatch palette={palette}/>
