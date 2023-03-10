@@ -1,7 +1,6 @@
 import PaletteGenerator from "../model/paletteGenerator"
 import { Colour, HEX, Palette, Scheme } from "../types/colours"
 import {useState, useEffect} from 'react'
-import SchemeGrid from "../components/SchemeGrid"
 import PaletteGrid from "../components/PaletteGrid"
 
 
@@ -37,12 +36,6 @@ export default function ColourScheme(props:Props) {
                 generatePalette={(rgb:HEX, verticies:Colour[])=>generator.generatePalette(rgb, verticies)} 
                 generator={generator}
             />
-            {/* <SchemeGrid 
-                schemes={schemes} 
-                generateScheme={(verticies:Colour[])=>generator.generateRandomScheme(verticies)} 
-                generator={generator}
-            /> */}
-
         </div>
     )
 }
