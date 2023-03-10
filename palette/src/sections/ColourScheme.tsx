@@ -1,9 +1,8 @@
 import PaletteGenerator from "../model/paletteGenerator"
-import ColourConverter from "../model/colourConverter"
-import { Colour, HEX, Scheme } from "../types/colours"
-import ColouredSquare from "../components/ColouredSquare"
+import { Colour, HEX, Palette, Scheme } from "../types/colours"
 import {useState, useEffect} from 'react'
 import SchemeGrid from "../components/SchemeGrid"
+import PaletteGrid from "../components/PaletteGrid"
 
 
 type Props = {
@@ -13,14 +12,15 @@ type Props = {
 
 export default function ColourScheme(props:Props) {
     const {rgb, generator} = props
-    const [verticies, setVerticies] = useState<Colour[][]>([])
     const [schemes, setSchemes] = useState<Scheme[]>([])
+    const [palettes, setPalettes] = useState<Palette[]>([])
     
     useEffect(()=>{
         let verticies:Colour[][] = generator.generateColourVerticies(rgb)
-        let schemes:Scheme[] = generator.generateRandomSchemes(verticies)
-        setSchemes(schemes)
-        setVerticies(verticies)
+        let palettes:Palette[] = generator.generatePalettes(rgb)
+        // let schemes:Scheme[] = generator.generateRandomSchemes(verticies)
+        // setSchemes(schemes)
+        setPalettes(palettes)
     }, [rgb])
 
 
@@ -31,13 +31,17 @@ export default function ColourScheme(props:Props) {
                     {generator.getName()} 
                 </h2>
             </div>
-            
-            <SchemeGrid 
-                schemes={schemes} 
-                generateScheme={(verticies:Colour[])=>generator.generateRandomScheme(verticies)} 
-                rgb2hsv={(rgb:HEX)=>generator.converter.rgb2hsv(rgb)}
+
+            <PaletteGrid
+                initPalettes={palettes}
+                generatePalette={(rgb:HEX, verticies:Colour[])=>generator.generatePalette(rgb, verticies)} 
                 generator={generator}
             />
+            {/* <SchemeGrid 
+                schemes={schemes} 
+                generateScheme={(verticies:Colour[])=>generator.generateRandomScheme(verticies)} 
+                generator={generator}
+            /> */}
 
         </div>
     )

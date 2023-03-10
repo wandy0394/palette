@@ -1,4 +1,4 @@
-import { Colour, Scheme } from "../types/colours"
+import { Colour, HEX, Palette, Scheme } from "../types/colours"
 import {useEffect, useState } from 'react'
 import ColourConverter from "../model/colourConverter"
 import PaletteSwatch from "./PaletteSwatch"
@@ -9,26 +9,26 @@ import { useNavigate } from "react-router-dom"
 
 const cc = new ColourConverter()
 type Props = {
-    schemes:Scheme[], 
-    generateScheme: (colour:Colour[]) => Scheme,
+    initPalettes:Palette[], 
+    generatePalette: (rgb:HEX, colour:Colour[]) => Palette,
     generator:PaletteGenerator
 }
 
 const errorString:string = 'An error has occurred.'
 
-export default function SchemeGrid(props:Props) {    
-    const {schemes, generateScheme, generator} = props
-    const [palettes, setPalettes] = useState<Scheme[]>([])
+export default function PaletteGrid(props:Props) {    
+    const {initPalettes, generatePalette, generator} = props
+    const [palettes, setPalettes] = useState<Palette[]>(initPalettes)
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [values, setValues] = useState<number[]>([])
     const navigate = useNavigate()
 
-    function generateNewScheme(colourList:(Colour[]|undefined), index:number) {
+    function generateNewScheme(mainColour:Colour, colourList:(Colour[]|undefined), index:number) {
         if (colourList === undefined) {
             setErrorMessage(errorMessage)   //redo this
             return
         }
-        let swatch:Scheme = generateScheme(colourList)
+        let palette:Palette = generatePalette(mainColour.rgb, colourList)
         
         let newPalettes = [...palettes]
         if (newPalettes[index] === undefined) {
@@ -36,7 +36,7 @@ export default function SchemeGrid(props:Props) {
             return
         }
         setErrorMessage('')
-        newPalettes[index] = swatch
+        newPalettes[index] = palette
         setPalettes(newPalettes)
         return
     }
@@ -47,20 +47,20 @@ export default function SchemeGrid(props:Props) {
         setValues(newValues)
     }
 
-    function editPalette(palette:Scheme) {
-        let vert = generator.generateColourVerticies('ff0000')
-        console.log(generator.generatePalette('ff0000', vert[0]))
-        //navigate('/editor', {state:palette})
+    function editPalette(palette:Palette) {
+        // let vert = generator.generateColourVerticies('ff0000')
+        // console.log(generator.generatePalette('ff0000', vert[0]))
+        navigate('/editor', {state:palette})
     }
 
     useEffect(()=>{
-        setPalettes(schemes)
+        setPalettes(initPalettes)
         let newValues:number[] = []
-        for (let i = 0; i < schemes.length; i++) {
+        for (let i = 0; i < initPalettes.length; i++) {
             newValues.push(100)
         }
         setValues(newValues)
-    }, [schemes])
+    }, [initPalettes])
 
 
     return (
@@ -71,13 +71,13 @@ export default function SchemeGrid(props:Props) {
                         return (
                             <div className='w-full flex flex-col border rounded  border-neutral-500'>
                                 <div className='w-full flex items-center justify-end gap-4 p-4'>
-                                    <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette?.colourVerticies, index)}>Randomize</button>
+                                    <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
                                     <button className='btn btn-sm btn-secondary' onClick={()=>editPalette(palette)}>Edit</button>
                                 </div>
                                 <div className='grid grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
                                     <PaletteSwatch palette={palette}/>
                                     <div className='h-full w-2/3 flex items-center justify-center gap-8'>
-                                        <ColourWheel scheme={palette} generator={generator} colourValue={values[index]}/>
+                                        <ColourWheel palette={palette} generator={generator} colourValue={values[index]}/>
                                         <ValueSlider value={values[index]} updateValue={(value)=>updateValue(value, index)}/>
                                     </div>
                                 </div>

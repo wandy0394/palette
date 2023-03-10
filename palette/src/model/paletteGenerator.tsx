@@ -1,6 +1,6 @@
 import { palette } from "@mui/system";
 import { Point } from "../types/cartesian";
-import { Colour, HEX, HSV, Scheme } from "../types/colours";
+import { Colour, HEX, HSV, Palette, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
 
 
@@ -127,6 +127,30 @@ abstract class PaletteGenerator {
             }
         })
         return output
+    }
+    generatePalettes(rgb:HEX):Palette[] {
+        let colours:Colour[][] = this.generateColourVerticies(rgb)
+        let schemes:Scheme[] = this.generateRandomSchemes(colours)
+
+  
+        let palettes:Palette[] = schemes.map(scheme=>this.generatePalette(rgb, scheme.colourVerticies))
+
+        return palettes
+    }
+    generatePalette(rgb:HEX, colourVerticies:Colour[]):Palette {
+        let scheme:Scheme = this.generateRandomScheme(colourVerticies)
+        let hsv:HSV = this.converter.rgb2hsv(rgb)
+        let palette:Palette = {
+            mainColour:{
+                rgb:rgb,
+                hsv:hsv
+            },
+            accentColours:scheme.colourVerticies.filter(colour=>colour.rgb !== rgb),
+            colourVerticies:scheme.colourVerticies,
+            supportColours:scheme.palette.filter(colour=>!scheme.colourVerticies.includes(colour))
+        }
+     
+        return palette
     }
     abstract generateColourVerticies(rgb:HEX):Colour[][]
     abstract generateRandomScheme(colours:Colour[]):Scheme

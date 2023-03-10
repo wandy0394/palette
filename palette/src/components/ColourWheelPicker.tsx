@@ -1,7 +1,7 @@
 import Interactive, { Interaction } from '@uiw/react-drag-event-interactive';
 import { useState, useEffect, useRef } from 'react'
 import { Point } from '../types/cartesian';
-import { Colour, HEX, HSV, Scheme } from '../types/colours';
+import { Colour, HEX, HSV, Palette, PaletteKey, Scheme } from '../types/colours';
 import ColourWheel from './ColourWheel';
 import ColourConverter from '../model/colourConverter';
 import PaletteGenerator from '../model/paletteGenerator';
@@ -9,9 +9,8 @@ import { cartesian2hsv, modulo } from '../model/common/utils';
 
 const cc = new ColourConverter()
 type Props = {
-    colourValue:number,
-    scheme?:Scheme
-
+    colourValue:number
+    palette:Palette
     generator?:PaletteGenerator
     wheelWidth?:number
     handleWidth?:number
@@ -28,8 +27,7 @@ export default function ColourWheelPicker(props:Props) {
         wheelWidth=400, 
         handleWidth=20, 
         handlePosition={x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2},
-        scheme=undefined,
-
+        palette,
         generator=undefined, 
         chosenColour, 
         position,
@@ -116,7 +114,7 @@ export default function ColourWheelPicker(props:Props) {
                         border:`2px solid  ${(colourValue < 50)?'white':'black'}`
                     }}
                 />
-                <ColourWheel scheme={scheme} colourValue={colourValue}  generator={generator}/>
+                <ColourWheel palette={palette} colourValue={colourValue}  generator={generator}/>
             </Interactive>
             <div className='w-10 text-2xl' style={{color:`#${testColour.rgb}`}}>
                 #{testColour.rgb}

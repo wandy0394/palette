@@ -6,8 +6,14 @@ export type HSV = {
 } | null
 
 
-
-
+export type Palette  = {
+    mainColour:Colour
+    accentColours:Colour[]
+    supportColours:Colour[]
+    colourVerticies:Colour[]
+} 
+export type PaletteKey = 'mainColour' | 'accentColours' | 'colourVerticies' | 'supportColours' | 'none'
+export type ColourRole = PaletteKey
 export type Colour = {
     rgb:HEX
     hsv:HSV
@@ -17,5 +23,4 @@ export type Colour = {
 export type Scheme = {
     palette:Colour[]
     colourVerticies:Colour[]
-    mainColour:Colour
-}  | undefined
+} 
