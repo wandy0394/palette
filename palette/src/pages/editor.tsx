@@ -204,10 +204,6 @@ export default function Editor() {
         if (generator) {
             let verticies:Colour[][] = generator.generateColourVerticies(colours[0])
             let palette:Palette = generator.generatePalette(colours[0], verticies[0])
-            //let newPalette:Scheme = generator.generateRandomScheme(verticies[0])
-            //setPalette(newPalette)
-            //let colour:Colour[] = verticies[0].filter((colour)=>colour.rgb ===colours[0])
-            //colour[0].index = newPalette?.palette.indexOf(colour[0])
             setPalette(palette)
             initChosenColour(palette.mainColour)
             console.log(palette)

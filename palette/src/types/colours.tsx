@@ -17,8 +17,12 @@ export type ColourRole = PaletteKey
 export type Colour = {
     rgb:HEX
     hsv:HSV
-    index?:number
+    index?:number   
 }
+
+export type ColourElement = {
+    index:number
+} & Colour
 
 export type Scheme = {
     palette:Colour[]
