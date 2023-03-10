@@ -10,12 +10,13 @@ type Props = {
     initPalette: Palette
     chosenColour:Colour
     chosenColourRole: ColourRole
+    chosenColourIndex: number
     showColourPicker: (colour:Colour, index:number, key:PaletteKey) => void
 }
 
 
 export default function PaletteSwatchEditor(props:Props) {
-    const{initPalette, chosenColour, chosenColourRole, showColourPicker} = props
+    const{initPalette, chosenColour, chosenColourIndex, chosenColourRole, showColourPicker} = props
     const [palette, setPalette] = useState<Palette>(initPalette)
 
 
@@ -31,14 +32,14 @@ export default function PaletteSwatchEditor(props:Props) {
             <div className='w-full flex items-center justify-center gap-4 h-full flex-wrap'>
                 Main
                 <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColourRole === 'mainColour')?'2px solid white':''}}>
-                    <ColouredSquare colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, palette.mainColour.index as number, 'mainColour')}/>
+                    <ColouredSquare colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, 0, 'mainColour')}/>
                     <div className='prose-xl'>#{palette.mainColour.rgb}</div>
                 </div>
                 Accent
                 {
                     palette?.accentColours.map((colour, index)=>{
                         return (
-                            <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColour.index===index && chosenColourRole === 'accentColours')?'2px solid white':''}}>
+                            <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColourIndex===index && chosenColourRole === 'accentColours')?'2px solid white':''}}>
                                 <ColouredSquare colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, 'accentColours')}/>
                                 <div className='prose-xl'>#{colour.rgb}</div>
                             </div>
@@ -49,7 +50,7 @@ export default function PaletteSwatchEditor(props:Props) {
                 {
                     palette?.supportColours.map((colour, index)=>{
                         return (
-                            <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColour.index===index && chosenColourRole === 'supportColours')?'2px solid white':''}}>
+                            <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColourIndex==index && chosenColourRole === 'supportColours')?'2px solid white':''}}>
                                 <ColouredSquare colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, 'supportColours')}/>
                                 <div className='prose-xl'>#{colour.rgb}</div>
                             </div>
@@ -60,7 +61,7 @@ export default function PaletteSwatchEditor(props:Props) {
                 {
                     palette?.colourVerticies.map((colour, index)=>{
                         return (
-                            <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColour.index===index && chosenColourRole === 'colourVerticies')?'2px solid white':''}}>
+                            <div className='flex flex-col p-1 gap-4 w-1/12 items-center' style={{border:(chosenColourIndex==index && chosenColourRole === 'colourVerticies')?'2px solid white':''}}>
                                 <ColouredSquare colour={colour.rgb} onSelect={()=>{return}}/>
                                 <div className='prose-xl'>#{colour.rgb}</div>
                             </div>

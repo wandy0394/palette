@@ -51,7 +51,7 @@ abstract class PaletteGenerator {
         if (hsv) {
             colours.push({
                 rgb:colourRGB,
-                hsv:hsv
+                hsv:hsv,
             })
         }
         else return []

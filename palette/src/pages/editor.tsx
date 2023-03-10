@@ -78,8 +78,9 @@ export default function Editor() {
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
-    const [chosenColour, setChosenColour] = useState<Colour>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}, index:-1})
+    const [chosenColour, setChosenColour] = useState<Colour>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}})
     const [chosenColourRole, setChosenColourRole] = useState<ColourRole>('none')
+    const [chosenColourIndex, setChosenColourIndex] = useState<number>(0)
     const [handlePosition, setHandlePostion] = useState<Point>({x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2})
     const [position, setPosition] = useState<Point>({x:0, y:0})
     const location = useLocation()
@@ -102,27 +103,28 @@ export default function Editor() {
         setHandlePostion(newPosition)
     }
 
-    function updateChosenColour(colour:Colour, key:PaletteKey) {
+    function updateChosenColour(colour:Colour, key:PaletteKey, index:number) {
          if (palette) {
             let newPalette:Palette = {...palette}
             switch(key) {
                 case 'mainColour':
-                    updateMainColour(colour)
+                    updateMainColour(colour, index)
                     break
                 case 'accentColours':
-                    updateAccentColour(colour)
+                    updateAccentColour(colour, index)
                     break
                 case 'supportColours':
-                    updateSupportColour(colour)
+                    updateSupportColour(colour, index)
                     break
                 case 'colourVerticies':
-                    updateColourVerticies(colour)
+                    updateColourVerticies(colour, index)
                     break
                 default:
             }
+            setChosenColourIndex(index)
         }
     }
-    function updateMainColour(colour:Colour) {
+    function updateMainColour(colour:Colour, index:number) {
         let newPalette:Palette = {...palette}
         newPalette.mainColour = colour
         for (let i = 0; i < newPalette.colourVerticies.length; i++) {
@@ -137,39 +139,39 @@ export default function Editor() {
         setColours([colour.rgb])
         setChosenColourRole('mainColour')
     }
-    function updateAccentColour(colour:Colour) {
+    function updateAccentColour(colour:Colour, index:number) {
         let newPalette:Palette = {...palette}
         for (let i = 0; i < newPalette.colourVerticies.length; i++) {
-            if (palette.accentColours[colour.index as number].rgb === newPalette.colourVerticies[i].rgb) {
+            if (palette.accentColours[index].rgb === newPalette.colourVerticies[i].rgb) {
                 newPalette.colourVerticies[i] = colour
                 break
             }
         }
-        if (colour.index !== undefined && 
-            colour.index >= 0 && 
-            colour.index < newPalette.accentColours.length) 
-                newPalette.accentColours[colour.index] = colour
+        if (index !== undefined && 
+            index >= 0 && 
+            index < newPalette.accentColours.length) 
+                newPalette.accentColours[index] = colour
         setPalette(newPalette)
         setChosenColour(colour)
         setChosenColourRole('accentColours')
 
     }
-    function updateSupportColour(colour:Colour) {
+    function updateSupportColour(colour:Colour, index:number) {
         let newPalette:Palette = {...palette}
-        if (colour.index !== undefined && 
-            colour.index >= 0 && 
-            colour.index < newPalette.supportColours.length) 
-                newPalette.supportColours[colour.index] = colour
+        if (index !== undefined && 
+            index >= 0 && 
+            index < newPalette.supportColours.length) 
+                newPalette.supportColours[index] = colour
         setPalette(newPalette)
         setChosenColour(colour)
         setChosenColourRole('supportColours')
     }
-    function updateColourVerticies(colour:Colour) {
+    function updateColourVerticies(colour:Colour, index:number) {
         let newPalette:Palette = {...palette}
-        if (colour.index !== undefined && 
-            colour.index >= 0 && 
-            colour.index < newPalette.colourVerticies.length) 
-                newPalette.colourVerticies[colour.index] = colour
+        if (index !== undefined && 
+            index >= 0 && 
+            index < newPalette.colourVerticies.length) 
+                newPalette.colourVerticies[index] = colour
         setPalette(newPalette)
         setChosenColour(colour)
         setChosenColourRole('colourVerticies')
@@ -191,8 +193,8 @@ export default function Editor() {
     }
 
     function showColourPicker(colour:Colour, index:number, key:PaletteKey) {
-        colour.index = index
-        updateChosenColour(colour, key)
+        // colour.index = index
+        updateChosenColour(colour, key, index)
         if (colour.hsv) {
             setValue(colour.hsv.value*100)
         }
@@ -223,9 +225,9 @@ export default function Editor() {
             let newTestColour={
                 rgb:newColour,
                 hsv:hsv,
-                index:chosenColour.index
+                // index:chosenColour.index
             }
-            updateChosenColour(newTestColour, chosenColourRole)
+            updateChosenColour(newTestColour, chosenColourRole, chosenColourIndex)
         }
     }
 
@@ -260,6 +262,7 @@ export default function Editor() {
                                 initPalette={palette} 
                                 chosenColour={chosenColour} 
                                 chosenColourRole={chosenColourRole} 
+                                chosenColourIndex={chosenColourIndex}
                                 showColourPicker={showColourPicker}
                             />
                     }
@@ -269,7 +272,7 @@ export default function Editor() {
                             palette = {palette}
                             generator={generator} 
                             chosenColour={chosenColour}
-                            setChosenColour={(colour:Colour)=>updateChosenColour(colour, chosenColourRole)}
+                            setChosenColour={(colour:Colour)=>updateChosenColour(colour, chosenColourRole, chosenColourIndex)}
                             wheelWidth={wheelWidth}
                             handleWidth={handleWidth}
                             handlePosition={handlePosition}

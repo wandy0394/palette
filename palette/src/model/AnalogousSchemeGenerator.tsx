@@ -20,14 +20,14 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
 
     generateRandomScheme(colourVerticies:Colour[]): Scheme {
         //generate 10 random colours within the triangle bounded by the square colours
-        let errorFound:boolean = false
+        // let errorFound:boolean = false
         const hsvPoints:HSV[] = [] 
         //add the origin as a fourth point
         let allColourVerticies:Colour[] = [...colourVerticies, {rgb:'000000', hsv:{hue:0, saturation:0, value:0}}]
         allColourVerticies.forEach((colour)=>{
             hsvPoints.push(colour.hsv)
         })
-        if (errorFound) return undefined
+        // if (errorFound) return undefined
 
         //sort hsvPoints by hue in increasing order
         hsvPoints.sort((a,b)=>this.#compare(a,b))
