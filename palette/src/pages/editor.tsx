@@ -225,7 +225,6 @@ export default function Editor() {
             let newTestColour={
                 rgb:newColour,
                 hsv:hsv,
-                // index:chosenColour.index
             }
             updateChosenColour(newTestColour, chosenColourRole, chosenColourIndex)
         }
@@ -238,9 +237,6 @@ export default function Editor() {
         }
     }
 
-    useEffect(()=>{
-        //get palette from sessionStorage if it exists
-    }, [])
     return (
         <ContentBox>
             <section className='bg-neutral-900 w-full py-16 px-24'>

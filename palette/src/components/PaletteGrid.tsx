@@ -66,17 +66,17 @@ export default function PaletteGrid(props:Props) {
     return (
         <div className='w-full flex flex-col items-center justify-center gap-8'>
             {
-                (palettes.length > 0) && (
+                (palettes) && (
                     palettes.map((palette, index)=>{
                         return (
                             <div className='w-full flex flex-col border rounded  border-neutral-500'>
                                 <div className='w-full flex items-center justify-end gap-4 p-4'>
-                                    <button className='btn btn-sm btn-primary' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
-                                    <button className='btn btn-sm btn-secondary' onClick={()=>editPalette(palette)}>Edit</button>
+                                    <button className='btn btn-xs btn-primary md:btn-sm' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
+                                    <button className='btn btn-xs btn-secondary md:btn-sm' onClick={()=>editPalette(palette)}>Edit</button>
                                 </div>
-                                <div className='grid grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
+                                <div className='w-full grid grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
                                     <PaletteSwatch palette={palette}/>
-                                    <div className='h-full w-2/3 flex items-center justify-center gap-8'>
+                                    <div className='h-full w-full flex items-center justify-center gap-8 border border-solid border-orange-500'>
                                         <ColourWheel palette={palette} generator={generator} colourValue={values[index]}/>
                                         <ValueSlider value={values[index]} updateValue={(value)=>updateValue(value, index)}/>
                                     </div>
