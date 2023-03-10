@@ -17,8 +17,6 @@ export default function ColourScheme(props:Props) {
     useEffect(()=>{
         let verticies:Colour[][] = generator.generateColourVerticies(rgb)
         let palettes:Palette[] = generator.generatePalettes(rgb)
-        // let schemes:Scheme[] = generator.generateRandomSchemes(verticies)
-        // setSchemes(schemes)
         setPalettes(palettes)
     }, [rgb])
 

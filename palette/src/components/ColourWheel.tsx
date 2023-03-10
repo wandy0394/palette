@@ -75,26 +75,13 @@ export default function ColourWheel(props:Props) {
                     )
                 })
             }
-            {
-                (palette.colourVerticies && generator) &&
-                palette.colourVerticies.map(vertex=>{
-                    if (vertex.hsv === null) return
-                    let angle:number = Math.floor(vertex.hsv.hue) 
-                    let radius:number = vertex.hsv.saturation * (1900/2) + 50 + (1900/2) //1900 scales with width of 5%
-                    return (
-                        <div className={`absolute w-full z-[60]`} style={{transform:`rotate(-${angle}deg)`}}>
-                            <div className='w-[5%] aspect-square rounded-full border border-solid border-black' style={{backgroundColor:`#${vertex.rgb}`, transform:`translate(${radius}%)`}}>
-                            </div>
-                        </div>
-                    )
-                })
-            }
-            {
-                <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                    <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${palette.mainColour.rgb}`, transform:`translate(${radius}%)`}}>
-                    </div>
+
+            
+            <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
+                <div className='w-[2%] aspect-square rounded-full border-2 border-solid border-black' style={{backgroundColor:`#${palette.mainColour.rgb}`, transform:`translate(${radius}%)`}}>
                 </div>
-            }
+            </div>
+        
             {
                 (palette.accentColours && generator) &&
                 palette.accentColours.map(vertex=>{
@@ -104,7 +91,7 @@ export default function ColourWheel(props:Props) {
                         let radius:number = vertex.hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%
                         return (
                             <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                                <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex.rgb}`, transform:`translate(${radius}%)`}}>
+                                <div className='w-[2%] aspect-square rounded-full border-2 border-solid border-black' style={{backgroundColor:`#${vertex.rgb}`, transform:`translate(${radius}%)`}}>
                                 </div>
                             </div>
                         )

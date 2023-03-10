@@ -88,12 +88,12 @@ export default function Editor() {
         console.log(location.state)
         if (location.state) {
             setPalette(location.state)
+            setColours([location.state.mainColour.rgb || '000000'])
         }
     }, [location])
 
 
-    function initChosenColour(colour:Colour, newPalette:Palette) {
-        setPalette(newPalette)
+    function initChosenColour(colour:Colour) {
         setChosenColour(colour)
         setChosenColourRole('mainColour')
         let newValue = cc.rgb2hsv(colour.rgb)?.value 
@@ -125,14 +125,26 @@ export default function Editor() {
     function updateMainColour(colour:Colour) {
         let newPalette:Palette = {...palette}
         newPalette.mainColour = colour
-        let oldColour:any = newPalette.colourVerticies.find(colour=>colour.rgb===palette.mainColour.rgb)
-        if (oldColour) oldColour = colour
+        for (let i = 0; i < newPalette.colourVerticies.length; i++) {
+            if (palette.mainColour.rgb === newPalette.colourVerticies[i].rgb) {
+                newPalette.colourVerticies[i] = colour
+                break
+            }
+        }
+
         setPalette(newPalette)
         setChosenColour(colour)
+        setColours([colour.rgb])
         setChosenColourRole('mainColour')
     }
     function updateAccentColour(colour:Colour) {
         let newPalette:Palette = {...palette}
+        for (let i = 0; i < newPalette.colourVerticies.length; i++) {
+            if (palette.accentColours[colour.index as number].rgb === newPalette.colourVerticies[i].rgb) {
+                newPalette.colourVerticies[i] = colour
+                break
+            }
+        }
         if (colour.index !== undefined && 
             colour.index >= 0 && 
             colour.index < newPalette.accentColours.length) 
@@ -140,10 +152,11 @@ export default function Editor() {
         setPalette(newPalette)
         setChosenColour(colour)
         setChosenColourRole('accentColours')
+
     }
     function updateSupportColour(colour:Colour) {
         let newPalette:Palette = {...palette}
-                if (colour.index !== undefined && 
+        if (colour.index !== undefined && 
             colour.index >= 0 && 
             colour.index < newPalette.supportColours.length) 
                 newPalette.supportColours[colour.index] = colour
@@ -153,7 +166,7 @@ export default function Editor() {
     }
     function updateColourVerticies(colour:Colour) {
         let newPalette:Palette = {...palette}
-                if (colour.index !== undefined && 
+        if (colour.index !== undefined && 
             colour.index >= 0 && 
             colour.index < newPalette.colourVerticies.length) 
                 newPalette.colourVerticies[colour.index] = colour
@@ -195,7 +208,9 @@ export default function Editor() {
             //setPalette(newPalette)
             //let colour:Colour[] = verticies[0].filter((colour)=>colour.rgb ===colours[0])
             //colour[0].index = newPalette?.palette.indexOf(colour[0])
-            initChosenColour(palette.mainColour, palette)
+            setPalette(palette)
+            initChosenColour(palette.mainColour)
+            console.log(palette)
         }
         
     }

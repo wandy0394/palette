@@ -13,12 +13,10 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
         //generate 10 random colours on a 'straight line' between the input colour and its complementary colour
         //moving along the straight line varies hue and saturation, value is randomised
 
-        let errorFound:boolean = false
         const coloursCartersian:Point[] = colourVerticies.map(colour=>{
             return this.hsv2cartesian(colour.hsv)
         })
 
-        if (errorFound) return undefined
 
         let p1:Point = coloursCartersian[0]
         let p2:Point = coloursCartersian[1]
