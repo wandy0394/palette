@@ -21,9 +21,9 @@ export default function PaletteSwatch(props:Props) {
                 <div className='w-full flex items-center justify-center'>
                     {
                         palette &&
-                        palette.accentColours.map(colour=>{
+                        palette.accentColours.map((colour, index)=>{
                             return (
-                                <div className='flex flex-col gap-0 w-full h-full items-center'>
+                                <div key={`accent-${index}`} className='flex flex-col gap-0 w-full h-full items-center'>
                                     <ColouredBar colour={colour.rgb}/>
                                     {/* <div className='prose-xl'>#{colour.rgb}</div> */}
                                 </div>
@@ -35,9 +35,9 @@ export default function PaletteSwatch(props:Props) {
             <div className='w-full flex items-center justify-center'>
                 {
                     palette &&
-                    palette.supportColours.map(colour=>{
+                    palette.supportColours.map((colour, index)=>{
                         return (
-                            <div className='flex flex-col gap-4 w-full h-full items-center'>
+                            <div key={`support-${index}`} className='flex flex-col gap-4 w-full h-full items-center'>
                                 <ColouredBar colour={colour.rgb}/>
                                 {/* <div className='prose-xl'>#{colour.rgb}</div> */}
                             </div>

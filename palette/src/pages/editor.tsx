@@ -1,5 +1,5 @@
 import ContentBox from "../components/common/ContentBox"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { Colour, ColourRole, HEX, HSV, Palette, PaletteKey, Scheme } from "../types/colours"
 import PaletteSwatch from "../components/PaletteSwatch"
 import ColourWheel from "../components/ColourWheel"
@@ -54,8 +54,8 @@ function SchemeSelector(props:{value:any, setValue:Function, harmonies:any}) {
     )
 }
 
-const wheelWidth = 400
-const handleWidth = 20
+const initWheelWidth = 400
+const initHandleWidth = 20
 const cc = new ColourConverter()
 const emptyPalette:Palette = {
     mainColour:{
@@ -78,18 +78,50 @@ export default function Editor() {
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
-    const [chosenColour, setChosenColour] = useState<Colour>({rgb:'ffffff', hsv:{hue:0, saturation:1, value:1}})
+    const [chosenColour, setChosenColour] = useState<Colour>({rgb:'000000', hsv:{hue:0, saturation:0, value:0}})
     const [chosenColourRole, setChosenColourRole] = useState<ColourRole>('none')
     const [chosenColourIndex, setChosenColourIndex] = useState<number>(0)
-    const [handlePosition, setHandlePostion] = useState<Point>({x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2})
+    const [handlePosition, setHandlePostion] = useState<Point>({x:initWheelWidth/2 - initHandleWidth/2, y:initWheelWidth/2 - initHandleWidth/2})
     const [position, setPosition] = useState<Point>({x:0, y:0})
     const location = useLocation()
 
+    const [wheelWidth, setWheelWidth] = useState<number>(initWheelWidth)
+    const [handleWidth, setHandleWidth] = useState<number>(initHandleWidth)
+    const wheelRef = useRef<HTMLDivElement>(null)
+
+    useLayoutEffect(()=>{
+        console.log('hello')
+        if (!wheelRef.current) return
+        console.log('current')
+        const resizeObserver = new ResizeObserver(()=>{
+            if (wheelRef.current) {
+                setWheelWidth(wheelRef.current.clientHeight)
+                setHandleWidth(wheelRef.current.clientHeight / 20)
+            }
+        })
+        // const resizeObserver = setResizeObserver()
+        resizeObserver.observe(wheelRef.current)
+        return ()=>resizeObserver.disconnect()
+    }, [])
+
+    function setResizeObserver():ResizeObserver {
+        const resizeObserver = new ResizeObserver(()=>{
+            if (wheelRef.current) {
+                setWheelWidth(wheelRef.current.clientHeight)
+                setHandleWidth(wheelRef.current.clientHeight / 20)
+            }
+        })
+        return resizeObserver
+    }
+
+
     useEffect(()=>{
-        console.log(location.state)
         if (location.state) {
             setPalette(location.state)
-            setColours([location.state.mainColour.rgb || '000000'])
+            setColours([location.state.mainColour.rgb || 'ff0000'])
+            setChosenColour(location.state.mainColour.rgb || 'ff0000')
+            setChosenColourRole('mainColour')
+            setChosenColourIndex(0)
         }
     }, [location])
 
@@ -193,7 +225,6 @@ export default function Editor() {
     }
 
     function showColourPicker(colour:Colour, index:number, key:PaletteKey) {
-        // colour.index = index
         updateChosenColour(colour, key, index)
         if (colour.hsv) {
             setValue(colour.hsv.value*100)
@@ -208,9 +239,7 @@ export default function Editor() {
             let palette:Palette = generator.generatePalette(colours[0], verticies[0])
             setPalette(palette)
             initChosenColour(palette.mainColour)
-            console.log(palette)
         }
-        
     }
 
     function updateValue(value:number) {
@@ -251,9 +280,9 @@ export default function Editor() {
                 </div>
             </section>
             <section className='bg-neutral-800 w-full py-16 px-24'>
-                <div className='grid grid-cols-[1fr_1fr] items-center justify-center gap-4 justify-items-center pb-8'>
-                    {
-                        palette && 
+                {
+                    <div className={`${(palette.colourVerticies.length>0)?'grid':'hidden'} grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8`}>
+                        {
                             <PaletteSwatchEditor 
                                 initPalette={palette} 
                                 chosenColour={chosenColour} 
@@ -261,23 +290,25 @@ export default function Editor() {
                                 chosenColourIndex={chosenColourIndex}
                                 showColourPicker={showColourPicker}
                             />
-                    }
-                    <div className='h-full w-full flex items-center justify-center gap-8'>
-                        <ColourWheelPicker 
-                            colourValue={value} 
-                            palette = {palette}
-                            generator={generator} 
-                            chosenColour={chosenColour}
-                            setChosenColour={(colour:Colour)=>updateChosenColour(colour, chosenColourRole, chosenColourIndex)}
-                            wheelWidth={wheelWidth}
-                            handleWidth={handleWidth}
-                            handlePosition={handlePosition}
-                            position={position}
-                            setPosition={setPosition}
-                        />
-                        <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
+                        }
+                        <div className='h-full w-full flex items-center justify-center gap-8'>
+                            <ColourWheelPicker 
+                                ref={wheelRef}
+                                colourValue={value} 
+                                palette = {palette}
+                                generator={generator} 
+                                chosenColour={chosenColour}
+                                setChosenColour={(colour:Colour)=>updateChosenColour(colour, chosenColourRole, chosenColourIndex)}
+                                wheelWidth={wheelWidth}
+                                handleWidth={handleWidth}
+                                handlePosition={handlePosition}
+                                position={position}
+                                setPosition={setPosition}
+                            />
+                            <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
+                        </div>
                     </div>
-                </div>
+                }
             </section>
 
         </ContentBox>

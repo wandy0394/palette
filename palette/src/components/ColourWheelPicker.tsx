@@ -1,5 +1,5 @@
 import Interactive, { Interaction } from '@uiw/react-drag-event-interactive';
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useLayoutEffect, forwardRef } from 'react'
 import { Point } from '../types/cartesian';
 import { Colour, HEX, HSV, Palette, PaletteKey, Scheme } from '../types/colours';
 import ColourWheel from './ColourWheel';
@@ -9,6 +9,7 @@ import { cartesian2hsv, modulo } from '../model/common/utils';
 
 const cc = new ColourConverter()
 type Props = {
+    // wheelRef:React.RefObject<HTMLDivElement>
     colourValue:number
     palette:Palette
     generator?:PaletteGenerator
@@ -21,8 +22,9 @@ type Props = {
     setChosenColour: (colour:Colour) => void
 }
 
-export default function ColourWheelPicker(props:Props) {
+export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
     const {
+        // wheelRef,
         colourValue=1, 
         wheelWidth=400, 
         handleWidth=20, 
@@ -34,8 +36,10 @@ export default function ColourWheelPicker(props:Props) {
         setPosition,
         setChosenColour
     } = props
-    const [width, setWidth] = useState<number>(wheelWidth)
+
+
     const [testColour, setTestColour] = useState<Colour>(chosenColour)
+
 
     function getCursorPosition(interaction: Interaction):Point {
         let x = (interaction.x < 0) ? 0 : interaction.x 
@@ -66,9 +70,9 @@ export default function ColourWheelPicker(props:Props) {
 
 
     const handleChange = (interaction: Interaction) => {
-        let newPosition = boundHandleInWheel(getCursorPosition(interaction), width)
+        let newPosition = boundHandleInWheel(getCursorPosition(interaction), wheelWidth)
         setPosition({x:newPosition.x, y:newPosition.y})
-        let radius:number = width / 2
+        let radius:number = wheelWidth / 2
         let xOffset:number = handleWidth / 2 - radius
         let yOffset:number = handleWidth / 2 - radius
 
@@ -84,7 +88,6 @@ export default function ColourWheelPicker(props:Props) {
     }
 
 
-    //move this such that it is only called on swatch click
     useEffect(()=>{
         setTestColour(chosenColour)
     }, [chosenColour])
@@ -94,31 +97,37 @@ export default function ColourWheelPicker(props:Props) {
     }, [handlePosition])
 
     return (
-        <div className='w-full flex flex-col items-center justify-center gap-4'>
-            <Interactive 
-                style={{
-                    position:'relative', 
-                    width:`${width}px`, 
-                    height:`${width}px`, 
-                    borderRadius:'100%'
-                }} 
-                onMove={handleChange} 
-                onDown={handleChange}>
-                <div 
-                    className='absolute rounded-full aspect-square z-[80]' 
+        <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
+            <div ref={ref} className='w-full h-full'>
+                <Interactive 
+                    
                     style={{
-                        width:`${handleWidth}px`,
-                        top:'0', 
-                        left:'0', 
-                        transform:`translate(${position.x}px, ${position.y}px)`,
-                        border:`2px solid  ${(colourValue < 50)?'white':'black'}`
-                    }}
-                />
-                <ColourWheel palette={palette} colourValue={colourValue}  generator={generator}/>
-            </Interactive>
+                        position:'relative', 
+                        // width:`${width}px`, 
+                        // height:`${width}px`, 
+                        width:'100%',
+                        height:'100%',
+                        borderRadius:'100%'
+                    }} 
+                    onMove={handleChange} 
+                    onDown={handleChange}>
+                    <div 
+                        className='absolute rounded-full aspect-square z-[80]' 
+                        style={{
+                            width:`${handleWidth}px`,
+                            top:'0', 
+                            left:'0', 
+                            transform:`translate(${position.x}px, ${position.y}px)`,
+                            border:`2px solid  ${(colourValue < 50)?'white':'black'}`
+                        }}
+                    />
+                    <ColourWheel palette={palette} colourValue={colourValue}  generator={generator}/>
+                </Interactive>
+
+            </div>
             <div className='w-10 text-2xl' style={{color:`#${testColour.rgb}`}}>
                 #{testColour.rgb}
             </div>
         </div>
     )
-}
+})

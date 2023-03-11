@@ -62,15 +62,18 @@ export default function ColourWheel(props:Props) {
                     let wheelHSVs:HSV[] = getWheelHSV(saturation, colourValue/100)
                     let colours = getRGBColourString(wheelHSVs)
                     return (
-                        <div style={{
-                            position:'absolute',
-                            width:`${width}%`, 
-                            aspectRatio:'1/1', 
-                            borderRadius:'100%', 
-                            background:`conic-gradient(${colours})`,
-                            transform:'rotate(90deg)',
-                            zIndex:`${wheelIndex}`
-                        }}> 
+                        <div 
+                            key={`wheel-${wheelIndex}`} 
+                            style={{
+                                position:'absolute',
+                                width:`${width}%`, 
+                                aspectRatio:'1/1', 
+                                borderRadius:'100%', 
+                                background:`conic-gradient(${colours})`,
+                                transform:'rotate(90deg)',
+                                zIndex:`${wheelIndex}`
+                            }}
+                        > 
                         </div>
                     )
                 })
@@ -78,20 +81,24 @@ export default function ColourWheel(props:Props) {
 
             
             <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                <div className='w-[2%] aspect-square rounded-full border-2 border-solid border-black' style={{backgroundColor:`#${palette.mainColour.rgb}`, transform:`translate(${radius}%)`}}>
+                <div className='w-[2%] aspect-square rounded-full' 
+                    style={{backgroundColor:`#${palette.mainColour.rgb}`, transform:`translate(${radius}%)`}}
+                >
                 </div>
             </div>
         
             {
                 (palette.accentColours && generator) &&
-                palette.accentColours.map(vertex=>{
-                    if (vertex) {
-                        if (vertex.hsv === null) return
-                        let angle:number = Math.floor(vertex.hsv.hue) 
-                        let radius:number = vertex.hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%
+                palette.accentColours.map((colour, index)=>{
+                    if (colour) {
+                        if (colour.hsv === null) return
+                        let angle:number = Math.floor(colour.hsv.hue) 
+                        let radius:number = colour.hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%
                         return (
-                            <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                                <div className='w-[2%] aspect-square rounded-full border-2 border-solid border-black' style={{backgroundColor:`#${vertex.rgb}`, transform:`translate(${radius}%)`}}>
+                            <div key={`accent-${index}`} className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
+                                <div className='w-[2%] aspect-square rounded-full' 
+                                    style={{backgroundColor:`#${colour.rgb}`, transform:`translate(${radius}%)`}}
+                                >
                                 </div>
                             </div>
                         )
@@ -100,14 +107,14 @@ export default function ColourWheel(props:Props) {
             }
             {
                 (palette.supportColours && generator) &&
-                palette.supportColours.map(vertex=>{
-                    if (vertex) {
-                        if (vertex.hsv === null) return
-                        let angle:number = Math.floor(vertex.hsv.hue) 
-                        let radius:number = vertex.hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%
+                palette.supportColours.map((colour, index)=>{
+                    if (colour) {
+                        if (colour.hsv === null) return
+                        let angle:number = Math.floor(colour.hsv.hue) 
+                        let radius:number = colour.hsv.saturation * (4900/2) + 50 + (4900/2) //4900 scales with width of 2%
                         return (
-                            <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                                <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${vertex.rgb}`, transform:`translate(${radius}%)`}}>
+                            <div key={`support-${index}`} className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
+                                <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${colour.rgb}`, transform:`translate(${radius}%)`}}>
                                 </div>
                             </div>
                         )

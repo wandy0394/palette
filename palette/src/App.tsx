@@ -50,7 +50,7 @@ function App() {
           </Link>
         </div>
       </div>
-      <div className='h-full md:px-24 lg:px-96 bg-neutral-700'>
+      <div className='h-full sm:px-24 lg:px-48 bg-neutral-700'>
         <Routes>
           <Route path="/" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>

@@ -48,8 +48,6 @@ export default function PaletteGrid(props:Props) {
     }
 
     function editPalette(palette:Palette) {
-        // let vert = generator.generateColourVerticies('ff0000')
-        // console.log(generator.generatePalette('ff0000', vert[0]))
         navigate('/editor', {state:palette})
     }
 
@@ -69,7 +67,7 @@ export default function PaletteGrid(props:Props) {
                 (palettes) && (
                     palettes.map((palette, index)=>{
                         return (
-                            <div className='w-full flex flex-col border rounded  border-neutral-500'>
+                            <div key={`palette=${index}`} className='w-full flex flex-col border rounded  border-neutral-500'>
                                 <div className='w-full flex items-center justify-end gap-4 p-4'>
                                     <button className='btn btn-xs btn-primary md:btn-sm' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
                                     <button className='btn btn-xs btn-secondary md:btn-sm' onClick={()=>editPalette(palette)}>Edit</button>
