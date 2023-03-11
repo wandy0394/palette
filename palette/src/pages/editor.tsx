@@ -273,7 +273,7 @@ export default function Editor() {
             </section>
             <section className='bg-neutral-800 w-full py-16 px-24'>
                 {
-                    <div className={`${(palette.colourVerticies.length>0)?'grid':'hidden'} grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8`}>
+                    <div className={`${(palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8`}>
                         {
                             <PaletteSwatchEditor 
                                 initPalette={palette} 

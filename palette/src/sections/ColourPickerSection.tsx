@@ -55,7 +55,7 @@ export default function ColourPickerSection(props:Props) {
                 <h2 className='text-neutral-400'>Choose a favourite colour</h2>
                 <p className='text-neutral-400'>We will generate swatches for you</p>
             </div>
-            <div className='w-1/2 gap-4 px-16'>
+            <div className='w-full md:w-1/2 lg:w-1/4 xl:w-1/6 gap-4 px-16'>
                 {
                     colours.map((colour, index)=>{
                         return <ColourPicker key={index} colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>

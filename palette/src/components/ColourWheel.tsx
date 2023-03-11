@@ -81,7 +81,7 @@ export default function ColourWheel(props:Props) {
 
             
             <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                <div className='w-[5%] aspect-square rounded-full border-2 border-solid border-black' 
+                <div className='w-[5%] aspect-square rounded-full md:border-2 md:border-solid md:border-black' 
                     style={{backgroundColor:`#${palette.mainColour.rgb}`, transform:`translate(${radius}%)`}}
                 >
                 </div>
@@ -96,7 +96,7 @@ export default function ColourWheel(props:Props) {
                         let radius:number = colour.hsv.saturation * (1000) + 950 //to scale with 5% width of circle
                         return (
                             <div key={`accent-${index}`} className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                                <div className='w-[5%] aspect-square rounded-full border-2 border-solid border-black' 
+                                <div className='w-[5%] aspect-square rounded-full md:border-2 md:border-solid md:border-black' 
                                     style={{backgroundColor:`#${colour.rgb}`, transform:`translate(${radius}%)`}}
                                 >
                                 </div>

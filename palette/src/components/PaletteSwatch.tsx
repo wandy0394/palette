@@ -9,7 +9,7 @@ type Props = {
 export default function PaletteSwatch(props:Props) {
     const{palette} = props
     return (
-        <div className='w-full grid grid-rows-2 gap-0 h-full flex-wrap'>
+        <div className='w-full grid grid-rows-2 h-full'>
             
             <div className='w-full grid grid-cols-2 border border-solid border-red-500'>
                 <div className='w-full items-center justify-center'>
