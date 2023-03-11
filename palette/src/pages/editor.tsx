@@ -19,6 +19,8 @@ import { Point } from "../types/cartesian"
 import { cartesian2hsv, modulo } from "../model/common/utils"
 import useSessionStorage from "../hooks/useSessionStorage"
 import { useLocation } from "react-router-dom"
+import CustomTriadicSchemeGenerator from "../model/CustomTriadicSchemeGenerator"
+import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerator"
 
 
 
@@ -33,6 +35,9 @@ const colourHarmonies:Harmonies = {
     analogous: {id:4, label:'Analogous', generator:new AnalogousSchemeGenerator(new ColourConverter())},
     tetratic: {id:5, label:'Tetratic', generator:new TetraticSchemeGenerator(new ColourConverter())},
     square: {id:6, label:'Square', generator:new SquareSchemeGenerator(new ColourConverter())},
+    custom3: {id:7, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter())},
+    custom4: {id:8, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter())},
+    
 }
 
 function SchemeSelector(props:{value:any, setValue:Function, harmonies:any}) {
@@ -90,30 +95,16 @@ export default function Editor() {
     const wheelRef = useRef<HTMLDivElement>(null)
 
     useLayoutEffect(()=>{
-        console.log('hello')
         if (!wheelRef.current) return
-        console.log('current')
         const resizeObserver = new ResizeObserver(()=>{
             if (wheelRef.current) {
                 setWheelWidth(wheelRef.current.clientHeight)
                 setHandleWidth(wheelRef.current.clientHeight / 20)
             }
         })
-        // const resizeObserver = setResizeObserver()
         resizeObserver.observe(wheelRef.current)
         return ()=>resizeObserver.disconnect()
     }, [])
-
-    function setResizeObserver():ResizeObserver {
-        const resizeObserver = new ResizeObserver(()=>{
-            if (wheelRef.current) {
-                setWheelWidth(wheelRef.current.clientHeight)
-                setHandleWidth(wheelRef.current.clientHeight / 20)
-            }
-        })
-        return resizeObserver
-    }
-
 
     useEffect(()=>{
         if (location.state) {
@@ -235,10 +226,11 @@ export default function Editor() {
 
     function generatePalettes() {
         if (generator) {
-            let verticies:Colour[][] = generator.generateColourVerticies(colours[0])
-            let palette:Palette = generator.generatePalette(colours[0], verticies[0])
-            setPalette(palette)
-            initChosenColour(palette.mainColour)
+            console.log(generator.getName())
+            let verticies:Colour[][] = generator.generateColourVerticies(colours[0], palette.colourVerticies)
+            let newPalette:Palette = generator.generatePalette(colours[0], verticies[0])
+            setPalette(newPalette)
+            initChosenColour(newPalette.mainColour)
         }
     }
 
