@@ -48,9 +48,9 @@ abstract class PaletteGenerator {
         
         const colours:Colour[] = []
         let hsv:HSV = this.converter.rgb2hsv(colourRGB)
-        if (hsv) {
+        if (hsv && colourRGB) {
             colours.push({
-                rgb:colourRGB,
+                rgb:colourRGB.toLowerCase(),
                 hsv:hsv,
             })
         }

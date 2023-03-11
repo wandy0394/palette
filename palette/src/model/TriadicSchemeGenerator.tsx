@@ -10,18 +10,10 @@ export default class TriadicSchemeGenerator extends PaletteGenerator {
     generateRandomScheme(colourVerticies:Colour[]): Scheme {
         //generate 10 random colours within the triangle bounded by the triadic colours
 
-        let errorFound:boolean = false
         const coloursCartersian:Point[] = colourVerticies.map(colour=>{
-            // let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-            // if (hsv === null) {
-            //     errorFound = true
-            //     return {x:NaN, y:NaN}
-            // }
-            let point:Point = this.hsv2cartesian(colour.hsv)
-            return point
+                         return this.hsv2cartesian(colour.hsv)
         })
 
-        if (errorFound) undefined
 
 
         let p1:Point = coloursCartersian[0]

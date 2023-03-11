@@ -19,12 +19,10 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
     generateRandomScheme(colourVerticies:Colour[]): Scheme {
 
         //generate 10 random colours within the triangle bounded by the square colours
-        let errorFound:boolean = false
         const hsvPoints:HSV[] = []
         colourVerticies.forEach((colour)=>{
             hsvPoints.push(colour.hsv)
         })
-        if (errorFound) return undefined
 
         //sort hsvPoints by hue in increasing order
         hsvPoints.sort((a,b)=>this.#compare(a,b))

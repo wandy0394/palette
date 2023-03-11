@@ -12,11 +12,9 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
         //generate 10 random colours within the triangle bounded by the split complementary colours
 
         //convert scheme colours from rgb to cartesian coords
-        let errorFound:boolean = false
         const coloursCartersian:Point[] = colourVerticies.map(colour=>{
             return this.hsv2cartesian(colour.hsv)
         })
-        if (errorFound) return undefined
 
         //generate random cartesian points within the triangle formed by the 3 colours
         
