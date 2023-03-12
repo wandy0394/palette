@@ -2,7 +2,7 @@ import { HEX, HSV } from "../types/colours"
 
 class ColourConverter {
     isValidRGB(rgb:HEX):boolean {
-        if (rgb === null) return false
+        if (rgb === null || rgb === undefined) return false
         if (rgb.length !== 6) return false
 
         const regex = /[0-9A-Fa-f]{6}/g

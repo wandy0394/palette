@@ -20,6 +20,7 @@ import CustomTriadicSchemeGenerator from "../model/CustomTriadicSchemeGenerator"
 import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerator"
 import { ACTION_TYPES, useChosenColour } from "../hooks/useChosenColour"
 import HarmonySelector from "../components/HarmonySelector"
+import { width } from "@mui/system"
 
 
 
@@ -97,29 +98,33 @@ export default function Editor() {
     }, [])
 
     useEffect(()=>{
-        if (location.state) {
-            setColours([location.state.mainColour.rgb] || 'ff0000')
+        if (state && state.colour) initHandlePosition(state.colour)
+    }, [wheelWidth, handleWidth])
+
+    useEffect(()=>{
+        if (location.state && location.state.mainColour.rgb) {
             let payload = {
                 palette:location.state,
-                colour:location.state.mainColour.rgb,
+                colour:location.state.mainColour,
                 role:ACTION_TYPES.UPDATE_MAINCOLOUR,
                 index:0
-                //TODO need to set handle position, and set initial RGB value
             }
             dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
         }
     }, [location])
 
     useEffect(()=>{
-        if (state.role === ACTION_TYPES.UPDATE_MAINCOLOUR) setColours([state.colour.rgb])
+        if (state.colour && state.role === ACTION_TYPES.UPDATE_MAINCOLOUR) setColours([state.colour.rgb])
     }, [state.colour])
 
     function initChosenColour(colour:Colour) {
         dispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:colour}})
+        initHandlePosition(colour)
+    }
+    function initHandlePosition(colour:Colour) {
         let newValue = cc.rgb2hsv(colour.rgb)?.value 
         if (newValue) setValue(newValue*100)
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
-        console.log(newPosition)
         setHandlePostion(newPosition)
     }
 

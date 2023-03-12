@@ -1,12 +1,7 @@
-import { Colour, ColourRole, HEX, Palette, PaletteKey, Scheme } from "../types/colours"
-import ColouredSquare from "./ColouredSquare"
+import { Colour, Palette } from "../types/colours"
 import { useState, useEffect, useRef } from 'react'
-import {Chrome, ColorResult} from '@uiw/react-color'
-import { GithubPlacement } from '@uiw/react-color-github';
-import Wheel from '@uiw/react-color-wheel'
-import ColourWheelPicker from "./ColourWheelPicker";
 import ColouredBar from "./ColouredBar";
-import {ACTION_TYPES, ColourAction, ColourState} from "../hooks/useChosenColour"
+import {ACTION_TYPES, ColourState} from "../hooks/useChosenColour"
 
 type Props = {
     state:ColourState
