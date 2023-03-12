@@ -85,14 +85,10 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
 
 
     useEffect(()=>{
-        // console.log('setting chosen')
-        // console.log(chosenColour)
         setSampleColour(chosenColour)
     }, [chosenColour])
 
     useEffect(()=>{
-        // console.log('setting')
-        // console.log(handlePosition)
         setPosition(handlePosition)
     }, [handlePosition])
 

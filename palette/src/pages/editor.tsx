@@ -70,9 +70,9 @@ const initialState = {
     role:ACTION_TYPES.UPDATE_MAINCOLOUR,
     index:0
 }
-
+const MAX_VALUE:number = 100
 export default function Editor() {
-    const [value, setValue] = useState<number>(100)
+    const [value, setValue] = useState<number>(MAX_VALUE)
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
@@ -119,11 +119,11 @@ export default function Editor() {
 
     function initChosenColour(colour:Colour) {
         dispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:colour}})
-        initHandlePosition(colour)
+
     }
     function initHandlePosition(colour:Colour) {
         let newValue = cc.rgb2hsv(colour.rgb)?.value 
-        if (newValue) setValue(newValue*100)
+        if (newValue) setValue(newValue*MAX_VALUE)
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
         setHandlePostion(newPosition)
     }
@@ -132,7 +132,7 @@ export default function Editor() {
     function showColourPicker(colour:Colour, index:number, type:ACTION_TYPES) {
         dispatch({type:type, payload:{colour, index:index}})
         if (colour.hsv) {
-            setValue(colour.hsv.value*100)
+            setValue(colour.hsv.value*MAX_VALUE)
         }
         
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
@@ -145,10 +145,8 @@ export default function Editor() {
             let verticies:Colour[][] = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
             let newPalette:Palette = generator.generatePalette(colours[0], verticies[0])
             dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
-            console.log(newPalette.mainColour)
             initChosenColour(newPalette.mainColour)
-                //TODO need to set handle position, and set initial RGB value
-
+            initHandlePosition(newPalette.mainColour)
         }
     }
 
@@ -159,7 +157,7 @@ export default function Editor() {
             const newHSV:HSV = {
                 hue:state.colour.hsv.hue,
                 saturation:state.colour.hsv.saturation,
-                value:value / 100
+                value:value / MAX_VALUE
             }
             const newColour:Colour = createColour(newHSV)
             console.log(state.role)
