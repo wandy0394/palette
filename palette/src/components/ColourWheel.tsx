@@ -2,10 +2,12 @@ import ColourConverter from "../model/colourConverter"
 import { range } from "../model/common/utils"
 import PaletteGenerator from "../model/paletteGenerator"
 import { HSV, Palette, Scheme } from "../types/colours"
+import ColourWheelPoint from "./common/ColourWheelPoint"
 
 
 const cc = new ColourConverter()
 //return an array of HSV that represents the 12 major axes of the colour wheel
+//would be more efficient to pre-compute this and just store it rather than calculate at run time
 function getWheelHSV(saturation:number, value:number): HSV[] {
     let output:HSV[] = []
     output.push({
@@ -37,16 +39,14 @@ function getRGBColourString(colours:HSV[]):string {
 }
 
 type Props = {
-    scheme?:Scheme
     palette:Palette
     colourValue?:number,
-    generator?:PaletteGenerator
 }
 
 const stepSize:number = 2
 const wheelWidths:number[] = range(100, 0, -stepSize)
 export default function ColourWheel(props:Props) {
-    const {scheme, palette, colourValue=100,  generator} = props
+    const {palette, colourValue=100} = props
     let angle:number = 0
     let radius:number = 0
     if (palette.mainColour.hsv) {
@@ -54,7 +54,7 @@ export default function ColourWheel(props:Props) {
         radius = palette.mainColour.hsv.saturation * 1000 + 950 //to scale with 5% width of circle
     }
     return (
-        <div className='relative w-full flex items-center justify-center aspect-square border-2 border-solid w-full'>
+        <div className='relative w-full flex items-center justify-center aspect-square border-2 border-solid'>
             {
                 wheelWidths.map((width, wheelIndex)=>{
                     
@@ -80,44 +80,27 @@ export default function ColourWheel(props:Props) {
             }
 
             
-            <div className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                <div className='w-[5%] aspect-square rounded-full md:border-2 md:border-solid md:border-black' 
-                    style={{backgroundColor:`#${palette.mainColour.rgb}`, transform:`translate(${radius}%)`}}
-                >
-                </div>
-            </div>
-        
+            <ColourWheelPoint colour={palette.mainColour.rgb} radius={radius} angle={angle} scale={5}/>
             {
-                (palette.accentColours && generator) &&
                 palette.accentColours.map((colour, index)=>{
                     if (colour) {
                         if (colour.hsv === null) return
                         let angle:number = Math.floor(colour.hsv.hue) 
                         let radius:number = colour.hsv.saturation * (1000) + 950 //to scale with 5% width of circle
                         return (
-                            <div key={`accent-${index}`} className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                                <div className='w-[5%] aspect-square rounded-full md:border-2 md:border-solid md:border-black' 
-                                    style={{backgroundColor:`#${colour.rgb}`, transform:`translate(${radius}%)`}}
-                                >
-                                </div>
-                            </div>
+                            <ColourWheelPoint key={`accent-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={5}/>
                         )
                     }
                 })
             }
             {
-                (palette.supportColours && generator) &&
                 palette.supportColours.map((colour, index)=>{
                     if (colour) {
                         if (colour.hsv === null) return
                         let angle:number = Math.floor(colour.hsv.hue) 
                         let radius:number = colour.hsv.saturation * 2500 + 2450 //scales with width of 2%
-
                         return (
-                            <div key={`support-${index}`} className={`absolute w-full z-50`} style={{transform:`rotate(-${angle}deg)`}}>
-                                <div className='w-[2%] aspect-square rounded-full' style={{backgroundColor:`#${colour.rgb}`, transform:`translate(${radius}%)`}}>
-                                </div>
-                            </div>
+                            <ColourWheelPoint key={`support-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={2}/>
                         )
                     }
                 })

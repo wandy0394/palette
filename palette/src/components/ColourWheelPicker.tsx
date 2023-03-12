@@ -1,15 +1,14 @@
 import Interactive, { Interaction } from '@uiw/react-drag-event-interactive';
-import { useState, useEffect, useRef, useLayoutEffect, forwardRef } from 'react'
+import { useState, useEffect, forwardRef } from 'react'
 import { Point } from '../types/cartesian';
-import { Colour, HEX, HSV, Palette, PaletteKey, Scheme } from '../types/colours';
+import { Colour, HSV, Palette } from '../types/colours';
 import ColourWheel from './ColourWheel';
 import ColourConverter from '../model/colourConverter';
 import PaletteGenerator from '../model/paletteGenerator';
-import { cartesian2hsv, modulo } from '../model/common/utils';
+import { cartesian2hsv } from '../model/common/utils';
 
 const cc = new ColourConverter()
 type Props = {
-    // wheelRef:React.RefObject<HTMLDivElement>
     colourValue:number
     palette:Palette
     generator?:PaletteGenerator
@@ -24,13 +23,11 @@ type Props = {
 
 export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
     const {
-        // wheelRef,
         colourValue=1, 
         wheelWidth=400, 
         handleWidth=20, 
         handlePosition={x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2},
         palette,
-        generator=undefined, 
         chosenColour, 
         position,
         setPosition,
@@ -38,7 +35,7 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
     } = props
 
 
-    const [testColour, setTestColour] = useState<Colour>(chosenColour)
+    const [sampleColour, setSampleColour] = useState<Colour>(chosenColour)
 
 
     function getCursorPosition(interaction: Interaction):Point {
@@ -78,18 +75,17 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
 
         let hsv:HSV = cartesian2hsv({x:newPosition.x, y:newPosition.y}, radius, xOffset, yOffset, colourValue)
         let newColour:string = cc.hsv2rgb(hsv) as string
-        let newTestColour = {
+        let newsampleColour = {
             rgb:newColour,
             hsv:hsv,
-            // index:testColour.index
         }
-        setTestColour(newTestColour)
-        setChosenColour(newTestColour)
+        setSampleColour(newsampleColour)
+        setChosenColour(newsampleColour)
     }
 
 
     useEffect(()=>{
-        setTestColour(chosenColour)
+        setSampleColour(chosenColour)
     }, [chosenColour])
 
     useEffect(()=>{
@@ -103,8 +99,6 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
                     
                     style={{
                         position:'relative', 
-                        // width:`${width}px`, 
-                        // height:`${width}px`, 
                         width:'100%',
                         height:'100%',
                         borderRadius:'100%'
@@ -121,12 +115,12 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
                             border:`2px solid  ${(colourValue < 50)?'white':'black'}`
                         }}
                     />
-                    <ColourWheel palette={palette} colourValue={colourValue}  generator={generator}/>
+                    <ColourWheel palette={palette} colourValue={colourValue}/>
                 </Interactive>
 
             </div>
-            <div className='w-10 text-2xl' style={{color:`#${testColour.rgb}`}}>
-                #{testColour.rgb}
+            <div className='w-full text-2xl text-center'>
+                #{sampleColour.rgb}
             </div>
         </div>
     )

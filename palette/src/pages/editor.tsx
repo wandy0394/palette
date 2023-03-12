@@ -1,8 +1,6 @@
 import ContentBox from "../components/common/ContentBox"
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
-import { Colour, ColourRole, HEX, HSV, Palette, PaletteKey, Scheme } from "../types/colours"
-import PaletteSwatch from "../components/PaletteSwatch"
-import ColourWheel from "../components/ColourWheel"
+import { Colour, ColourRole, HEX, HSV, Palette, PaletteKey } from "../types/colours"
 import ValueSlider from "../components/ValueSlider"
 import ComplementarySchemeGenerator from "../model/ComplementarySchemeGenerator"
 import ColourConverter from "../model/colourConverter"
@@ -16,11 +14,11 @@ import PaletteGenerator from "../model/paletteGenerator"
 import PaletteSwatchEditor from "../components/PaletteSwatchEditor"
 import ColourWheelPicker from "../components/ColourWheelPicker"
 import { Point } from "../types/cartesian"
-import { cartesian2hsv, modulo } from "../model/common/utils"
-import useSessionStorage from "../hooks/useSessionStorage"
+import {  createColour, rgb2cartesian } from "../model/common/utils"
 import { useLocation } from "react-router-dom"
 import CustomTriadicSchemeGenerator from "../model/CustomTriadicSchemeGenerator"
 import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerator"
+import { ACTION_TYPES, useChosenColour } from "../hooks/useChosenColour"
 
 
 
@@ -76,6 +74,18 @@ const emptyPalette:Palette = {
     supportColours:[]
 }
 
+const initialState = {
+    colour:{
+        rgb:'000000',
+        hsv:{
+            hue:0,
+            saturation:0,
+            value:0
+        }
+    },
+    role:ACTION_TYPES.MAINCOLOUR,
+    index:0
+}
 
 export default function Editor() {
     const [palette, setPalette] = useState<Palette>(emptyPalette)
@@ -93,6 +103,8 @@ export default function Editor() {
     const [wheelWidth, setWheelWidth] = useState<number>(initWheelWidth)
     const [handleWidth, setHandleWidth] = useState<number>(initHandleWidth)
     const wheelRef = useRef<HTMLDivElement>(null)
+
+    // const [test, dispatch] = useChosenColour(initialState)
 
     useLayoutEffect(()=>{
         if (!wheelRef.current) return
@@ -122,7 +134,7 @@ export default function Editor() {
         setChosenColourRole('mainColour')
         let newValue = cc.rgb2hsv(colour.rgb)?.value 
         if (newValue) setValue(newValue*100)
-        let newPosition = rgb2cartesian(colour.rgb)
+        let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
         setHandlePostion(newPosition)
     }
 
@@ -200,33 +212,18 @@ export default function Editor() {
         setChosenColourRole('colourVerticies')
     }
 
-    function rgb2cartesian(rgb:HEX):Point {
-        let output:Point = {x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2}   //center of circle
-        if (generator) {
-            let hsv:HSV|null= generator.converter.rgb2hsv(rgb)
-            if (hsv) {
-                const theta:number = -(modulo(Math.round(hsv.hue), 360)) * Math.PI / 180
-                const radius:number = Math.abs(hsv.saturation) * wheelWidth/2
-                output.x = radius * Math.cos(theta) + wheelWidth/2 - handleWidth/2
-                output.y = radius * Math.sin(theta) + wheelWidth/2 - handleWidth/2
-            }
-        }
-
-        return output
-    }
-
     function showColourPicker(colour:Colour, index:number, key:PaletteKey) {
         updateChosenColour(colour, key, index)
         if (colour.hsv) {
             setValue(colour.hsv.value*100)
         }
-        let newPosition = rgb2cartesian(colour.rgb)
+        
+        let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
         setHandlePostion(newPosition)
     }
 
     function generatePalettes() {
         if (generator) {
-            console.log(generator.getName())
             let verticies:Colour[][] = generator.generateColourVerticies(colours[0], palette.colourVerticies)
             let newPalette:Palette = generator.generatePalette(colours[0], verticies[0])
             setPalette(newPalette)
@@ -235,22 +232,18 @@ export default function Editor() {
     }
 
     function updateValue(value:number) {
-        setValue(value)
-        let radius:number = wheelWidth / 2
-        let xOffset:number = handleWidth / 2 - radius
-        let yOffset:number = handleWidth / 2 - radius
-
-        let hsv = cartesian2hsv({x:position.x, y:position.y}, radius, xOffset, yOffset, value)
-        if (hsv) {
-            let newColour:string = cc.hsv2rgb(hsv) as string
-            let newTestColour={
-                rgb:newColour,
-                hsv:hsv,
+        if (chosenColour.hsv) {
+            setValue(value)
+            const newHSV:HSV = {
+                hue:chosenColour.hsv.hue,
+                saturation:chosenColour.hsv.saturation,
+                value:value / 100
             }
-            updateChosenColour(newTestColour, chosenColourRole, chosenColourIndex)
+            const newColour:Colour = createColour(newHSV)
+            updateChosenColour(newColour, chosenColourRole, chosenColourIndex)
         }
     }
-
+    
     function makeSelection(value:string) {
         setSelectedHarmony(value)
         if (value in colourHarmonies) {
@@ -288,7 +281,6 @@ export default function Editor() {
                                 ref={wheelRef}
                                 colourValue={value} 
                                 palette = {palette}
-                                generator={generator} 
                                 chosenColour={chosenColour}
                                 setChosenColour={(colour:Colour)=>updateChosenColour(colour, chosenColourRole, chosenColourIndex)}
                                 wheelWidth={wheelWidth}

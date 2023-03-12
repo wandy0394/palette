@@ -11,11 +11,9 @@ type Props = {
 
 export default function ColourScheme(props:Props) {
     const {rgb, generator} = props
-    const [schemes, setSchemes] = useState<Scheme[]>([])
     const [palettes, setPalettes] = useState<Palette[]>([])
     
     useEffect(()=>{
-        let verticies:Colour[][] = generator.generateColourVerticies(rgb)
         let palettes:Palette[] = generator.generatePalettes(rgb)
         setPalettes(palettes)
     }, [rgb])

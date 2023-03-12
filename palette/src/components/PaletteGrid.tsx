@@ -76,7 +76,7 @@ export default function PaletteGrid(props:Props) {
                                 <div className='w-full grid grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
                                     <PaletteSwatch palette={palette}/>
                                     <div className='h-full w-full flex items-center justify-center gap-8 border border-solid border-orange-500'>
-                                        <ColourWheel palette={palette} generator={generator} colourValue={values[index]}/>
+                                        <ColourWheel palette={palette} colourValue={values[index]}/>
                                         <ValueSlider value={values[index]} updateValue={(value)=>updateValue(value, index)}/>
                                     </div>
                                 </div>
