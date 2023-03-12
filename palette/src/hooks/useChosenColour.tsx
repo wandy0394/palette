@@ -1,22 +1,30 @@
 import { Reducer, useReducer } from "react";
+import ColourConverter from "../model/colourConverter";
+import { rgb2cartesian } from "../model/common/utils";
 import { Colour, Palette } from "../types/colours";
 
 export enum ACTION_TYPES {
-    MAINCOLOUR ='MAINCOLOUR',
-    ACCENTCOLOUR = 'ACCENTCOLOUR',
-    SUPPORTCOLOUR='SUPPORTCOLOUR',
-    COLOURVERTICIES = 'COLOURVERTICIES'
+    UPDATE_MAINCOLOUR ='UPDATE_MAINCOLOUR',
+    UPDATE_ACCENTCOLOUR = 'UPDATE_ACCENTCOLOUR',
+    UPDATE_SUPPORTCOLOUR='UPDATE_SUPPORTCOLOUR',
+    UPDATE_COLOURVERTICIES = 'UPDATE_COLOURVERTICIES',
+    INITIALISE_MAINCOLOUR='INITIALISE_MAINCOLOUR',
+    UPDATE_COLOUR='UPDATE_COLOUR',
+    SET_PALETTE='SET_PALETTE',
+    INITIALISE='INITIALISE'
 }
 
 export type ColourAction = {
     type:ACTION_TYPES,
     payload: {
-        colour:Colour,
-        index:number
+        palette?:Palette,
+        colour?:Colour,
+        index?:number,
+        role?:ACTION_TYPES
     }
 }
 
-type ColourState = {
+export type ColourState = {
     palette:Palette
     colour:Colour
     role:ACTION_TYPES
@@ -24,37 +32,102 @@ type ColourState = {
 }
 
 export function useChosenColour(initialState:ColourState):[ColourState, React.Dispatch<ColourAction>] {
-    // const initialState:Colour = {
-    //     rgb:'',
-    //     hsv:{
-    //         hue:0,
-    //         saturation:0,
-    //         value:0,
-    //     }
-    // }
-    // const [chosenColour, dispatch] = useReducer<(state:ColourState, action:ColourAction)=>ColourState>(reducer, initialState)
     const [chosenColour, dispatch] = useReducer(reducer, initialState)
 
     function reducer(state:ColourState, action:ColourAction):ColourState {
         const {type, payload} = action
+        let newPalette:Palette, newState:ColourState
         switch(type) {
-            case ACTION_TYPES.MAINCOLOUR:
-                const newPalette:Palette = updateMainColour(state, payload.colour, payload.index)
-                const newState:ColourState = {
-                    palette:newPalette,
-                    colour:payload.colour,
-                    role:ACTION_TYPES.MAINCOLOUR,
-                    index:payload.index
+            case ACTION_TYPES.UPDATE_MAINCOLOUR:
+                if (payload.colour && payload.index !== undefined) {
+                    newPalette = updateMainColour(state, payload.colour, payload.index)
+                    newState = {
+                        palette:newPalette,
+                        colour:payload.colour,
+                        role:ACTION_TYPES.UPDATE_MAINCOLOUR,
+                        index:payload.index
+                    }
+                    return newState
                 }
-                return newState
-            case ACTION_TYPES.ACCENTCOLOUR:
-                console.log('accent')
                 return state
-            case ACTION_TYPES.SUPPORTCOLOUR:
-                console.log('support')
+                
+            case ACTION_TYPES.UPDATE_ACCENTCOLOUR:
+                if (payload.colour && payload.index !== undefined) {
+                    newPalette = updateAccentColour(state, payload.colour, payload.index)
+                    newState = {
+                        palette:newPalette,
+                        colour:payload.colour,
+                        role:ACTION_TYPES.UPDATE_ACCENTCOLOUR,
+                        index:payload.index
+                    }
+                    return newState
+                }
                 return state
-            case ACTION_TYPES.COLOURVERTICIES:
-                console.log('ColourVertices')
+            case ACTION_TYPES.UPDATE_SUPPORTCOLOUR:
+                if (payload.colour && payload.index !== undefined) {
+
+                    newPalette = updateSupportColour(state, payload.colour, payload.index)
+                    newState = {
+                        palette:newPalette,
+                        colour:payload.colour,
+                        role:ACTION_TYPES.UPDATE_SUPPORTCOLOUR,
+                        index:payload.index
+                    }
+                    return newState
+                }
+                return state
+            case ACTION_TYPES.UPDATE_COLOURVERTICIES:
+                if (payload.colour && payload.index !== undefined) {
+
+                    newPalette = updateSupportColour(state, payload.colour, payload.index)
+                    newState = {
+                        palette:newPalette,
+                        colour:payload.colour,
+                        role:ACTION_TYPES.UPDATE_SUPPORTCOLOUR,
+                        index:payload.index
+                    }
+                    return newState
+                }
+                return state
+            case ACTION_TYPES.INITIALISE_MAINCOLOUR: 
+                if (payload.colour) {
+
+                    newState = {
+                        ...state,
+                        colour:payload.colour,
+                        role:ACTION_TYPES.UPDATE_MAINCOLOUR
+                    }
+                    return newState
+                }
+                return state
+            case ACTION_TYPES.UPDATE_COLOUR:
+                if (payload.colour) {
+                    newState = {
+                        ...state,
+                        colour:payload.colour
+                    }
+                    return newState
+                }
+                return state
+            case ACTION_TYPES.SET_PALETTE:
+                if (payload.palette) {
+                    newState = {
+                        ...state,
+                        palette:payload.palette
+                    }
+                    return newState
+                }
+                return state
+            case ACTION_TYPES.INITIALISE:
+                if (payload.palette && payload.colour && payload.index !== undefined && payload.role) {
+                    newState = {
+                        palette:payload.palette,
+                        colour:payload.colour,
+                        role:payload.role,
+                        index:payload.index
+                    }
+                    return newState
+                }
                 return state
             default:
                 return state
@@ -72,49 +145,39 @@ export function useChosenColour(initialState:ColourState):[ColourState, React.Di
             }
         }
         return newPalette
-
-        // setPalette(newPalette)
-        // setChosenColour(colour)
-        // setColours([colour.rgb])
-        // setChosenColourRole('mainColour')
     }
-    // function updateAccentColour(colour:Colour, index:number) {
-    //     let newPalette:Palette = {...palette}
-    //     for (let i = 0; i < newPalette.colourVerticies.length; i++) {
-    //         if (palette.accentColours[index].rgb === newPalette.colourVerticies[i].rgb) {
-    //             newPalette.colourVerticies[i] = colour
-    //             break
-    //         }
-    //     }
-    //     if (index !== undefined && 
-    //         index >= 0 && 
-    //         index < newPalette.accentColours.length) 
-    //             newPalette.accentColours[index] = colour
-    //     setPalette(newPalette)
-    //     setChosenColour(colour)
-    //     setChosenColourRole('accentColours')
+    function updateAccentColour(state:ColourState, colour:Colour, index:number):Palette {
+        let newPalette:Palette = {...state.palette}
+        for (let i = 0; i < newPalette.colourVerticies.length; i++) {
+            if (state.palette.accentColours[index].rgb === newPalette.colourVerticies[i].rgb) {
+                newPalette.colourVerticies[i] = colour
+                break
+            }
+        }
+        if (index !== undefined && 
+            index >= 0 && 
+            index < newPalette.accentColours.length) 
+                newPalette.accentColours[index] = colour
 
-    // }
-    // function updateSupportColour(colour:Colour, index:number) {
-    //     let newPalette:Palette = {...palette}
-    //     if (index !== undefined && 
-    //         index >= 0 && 
-    //         index < newPalette.supportColours.length) 
-    //             newPalette.supportColours[index] = colour
-    //     setPalette(newPalette)
-    //     setChosenColour(colour)
-    //     setChosenColourRole('supportColours')
-    // }
-    // function updateColourVerticies(colour:Colour, index:number) {
-    //     let newPalette:Palette = {...palette}
-    //     if (index !== undefined && 
-    //         index >= 0 && 
-    //         index < newPalette.colourVerticies.length) 
-    //             newPalette.colourVerticies[index] = colour
-    //     setPalette(newPalette)
-    //     setChosenColour(colour)
-    //     setChosenColourRole('colourVerticies')
-    // }
+        return newPalette
+    }
+    function updateSupportColour(state:ColourState, colour:Colour, index:number) {
+        let newPalette:Palette = {...state.palette}
+        if (index !== undefined && 
+            index >= 0 && 
+            index < newPalette.supportColours.length) 
+                newPalette.supportColours[index] = colour
+        return newPalette
+    }
+    function updateColourVerticies(state:ColourState, colour:Colour, index:number):Palette {
+        let newPalette:Palette = {...state.palette}
+        if (index !== undefined && 
+            index >= 0 && 
+            index < newPalette.colourVerticies.length) 
+                newPalette.colourVerticies[index] = colour
+
+        return newPalette
+    }
 
     return [chosenColour, dispatch as React.Dispatch<ColourAction>]
 }

@@ -75,12 +75,12 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
 
         let hsv:HSV = cartesian2hsv({x:newPosition.x, y:newPosition.y}, radius, xOffset, yOffset, colourValue)
         let newColour:string = cc.hsv2rgb(hsv) as string
-        let newsampleColour = {
+        let newSampleColour = {
             rgb:newColour,
             hsv:hsv,
         }
-        setSampleColour(newsampleColour)
-        setChosenColour(newsampleColour)
+        setSampleColour(newSampleColour)
+        setChosenColour(newSampleColour)
     }
 
 

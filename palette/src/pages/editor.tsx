@@ -19,6 +19,7 @@ import { useLocation } from "react-router-dom"
 import CustomTriadicSchemeGenerator from "../model/CustomTriadicSchemeGenerator"
 import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerator"
 import { ACTION_TYPES, useChosenColour } from "../hooks/useChosenColour"
+import HarmonySelector from "../components/HarmonySelector"
 
 
 
@@ -36,25 +37,6 @@ const colourHarmonies:Harmonies = {
     custom3: {id:7, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter())},
     custom4: {id:8, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter())},
     
-}
-
-function SchemeSelector(props:{value:any, setValue:Function, harmonies:any}) {
-    const {harmonies, value, setValue} = props
-    return (
-        <select className='select select-primary w-full max-w-xs' value={value} onChange={(e)=>setValue(e.target.value)}>
-            <option disabled selected>Choose a colour harmony</option>
-            {
-                (harmonies !== undefined) &&
-                Object.keys(harmonies).map((key)=>{
-                    return (
-                        <option key={key} id={harmonies[key].id} value={key}>
-                            {harmonies[key].label}
-                        </option>
-                    )
-                })
-            }
-        </select>
-    )
 }
 
 const initWheelWidth = 400
@@ -75,27 +57,24 @@ const emptyPalette:Palette = {
 }
 
 const initialState = {
+    palette:emptyPalette,
     colour:{
-        rgb:'000000',
+        rgb:'ff0000',
         hsv:{
             hue:0,
-            saturation:0,
-            value:0
+            saturation:1,
+            value:1
         }
     },
-    role:ACTION_TYPES.MAINCOLOUR,
+    role:ACTION_TYPES.UPDATE_MAINCOLOUR,
     index:0
 }
 
 export default function Editor() {
-    const [palette, setPalette] = useState<Palette>(emptyPalette)
     const [value, setValue] = useState<number>(100)
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
-    const [chosenColour, setChosenColour] = useState<Colour>({rgb:'000000', hsv:{hue:0, saturation:0, value:0}})
-    const [chosenColourRole, setChosenColourRole] = useState<ColourRole>('none')
-    const [chosenColourIndex, setChosenColourIndex] = useState<number>(0)
     const [handlePosition, setHandlePostion] = useState<Point>({x:initWheelWidth/2 - initHandleWidth/2, y:initWheelWidth/2 - initHandleWidth/2})
     const [position, setPosition] = useState<Point>({x:0, y:0})
     const location = useLocation()
@@ -103,8 +82,7 @@ export default function Editor() {
     const [wheelWidth, setWheelWidth] = useState<number>(initWheelWidth)
     const [handleWidth, setHandleWidth] = useState<number>(initHandleWidth)
     const wheelRef = useRef<HTMLDivElement>(null)
-
-    // const [test, dispatch] = useChosenColour(initialState)
+    const [state, dispatch] = useChosenColour(initialState)
 
     useLayoutEffect(()=>{
         if (!wheelRef.current) return
@@ -120,100 +98,34 @@ export default function Editor() {
 
     useEffect(()=>{
         if (location.state) {
-            setPalette(location.state)
-            setColours([location.state.mainColour.rgb || 'ff0000'])
-            setChosenColour(location.state.mainColour.rgb || 'ff0000')
-            setChosenColourRole('mainColour')
-            setChosenColourIndex(0)
+            setColours([location.state.mainColour.rgb] || 'ff0000')
+            let payload = {
+                palette:location.state,
+                colour:location.state.mainColour.rgb,
+                role:ACTION_TYPES.UPDATE_MAINCOLOUR,
+                index:0
+                //TODO need to set handle position, and set initial RGB value
+            }
+            dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
         }
     }, [location])
 
+    useEffect(()=>{
+        if (state.role === ACTION_TYPES.UPDATE_MAINCOLOUR) setColours([state.colour.rgb])
+    }, [state.colour])
 
     function initChosenColour(colour:Colour) {
-        setChosenColour(colour)
-        setChosenColourRole('mainColour')
+        dispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:colour}})
         let newValue = cc.rgb2hsv(colour.rgb)?.value 
         if (newValue) setValue(newValue*100)
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
+        console.log(newPosition)
         setHandlePostion(newPosition)
     }
 
-    function updateChosenColour(colour:Colour, key:PaletteKey, index:number) {
-         if (palette) {
-            let newPalette:Palette = {...palette}
-            switch(key) {
-                case 'mainColour':
-                    updateMainColour(colour, index)
-                    break
-                case 'accentColours':
-                    updateAccentColour(colour, index)
-                    break
-                case 'supportColours':
-                    updateSupportColour(colour, index)
-                    break
-                case 'colourVerticies':
-                    updateColourVerticies(colour, index)
-                    break
-                default:
-            }
-            setChosenColourIndex(index)
-        }
-    }
-    function updateMainColour(colour:Colour, index:number) {
-        let newPalette:Palette = {...palette}
-        newPalette.mainColour = colour
-        for (let i = 0; i < newPalette.colourVerticies.length; i++) {
-            if (palette.mainColour.rgb === newPalette.colourVerticies[i].rgb) {
-                newPalette.colourVerticies[i] = colour
-                break
-            }
-        }
 
-        setPalette(newPalette)
-        setChosenColour(colour)
-        setColours([colour.rgb])
-        setChosenColourRole('mainColour')
-    }
-    function updateAccentColour(colour:Colour, index:number) {
-        let newPalette:Palette = {...palette}
-        for (let i = 0; i < newPalette.colourVerticies.length; i++) {
-            if (palette.accentColours[index].rgb === newPalette.colourVerticies[i].rgb) {
-                newPalette.colourVerticies[i] = colour
-                break
-            }
-        }
-        if (index !== undefined && 
-            index >= 0 && 
-            index < newPalette.accentColours.length) 
-                newPalette.accentColours[index] = colour
-        setPalette(newPalette)
-        setChosenColour(colour)
-        setChosenColourRole('accentColours')
-
-    }
-    function updateSupportColour(colour:Colour, index:number) {
-        let newPalette:Palette = {...palette}
-        if (index !== undefined && 
-            index >= 0 && 
-            index < newPalette.supportColours.length) 
-                newPalette.supportColours[index] = colour
-        setPalette(newPalette)
-        setChosenColour(colour)
-        setChosenColourRole('supportColours')
-    }
-    function updateColourVerticies(colour:Colour, index:number) {
-        let newPalette:Palette = {...palette}
-        if (index !== undefined && 
-            index >= 0 && 
-            index < newPalette.colourVerticies.length) 
-                newPalette.colourVerticies[index] = colour
-        setPalette(newPalette)
-        setChosenColour(colour)
-        setChosenColourRole('colourVerticies')
-    }
-
-    function showColourPicker(colour:Colour, index:number, key:PaletteKey) {
-        updateChosenColour(colour, key, index)
+    function showColourPicker(colour:Colour, index:number, type:ACTION_TYPES) {
+        dispatch({type:type, payload:{colour, index:index}})
         if (colour.hsv) {
             setValue(colour.hsv.value*100)
         }
@@ -222,28 +134,36 @@ export default function Editor() {
         setHandlePostion(newPosition)
     }
 
+
     function generatePalettes() {
         if (generator) {
-            let verticies:Colour[][] = generator.generateColourVerticies(colours[0], palette.colourVerticies)
+            let verticies:Colour[][] = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
             let newPalette:Palette = generator.generatePalette(colours[0], verticies[0])
-            setPalette(newPalette)
+            dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
+            console.log(newPalette.mainColour)
             initChosenColour(newPalette.mainColour)
+                //TODO need to set handle position, and set initial RGB value
+
         }
     }
 
+    
     function updateValue(value:number) {
-        if (chosenColour.hsv) {
+        if (state.colour.hsv) {
             setValue(value)
             const newHSV:HSV = {
-                hue:chosenColour.hsv.hue,
-                saturation:chosenColour.hsv.saturation,
+                hue:state.colour.hsv.hue,
+                saturation:state.colour.hsv.saturation,
                 value:value / 100
             }
             const newColour:Colour = createColour(newHSV)
-            updateChosenColour(newColour, chosenColourRole, chosenColourIndex)
+            console.log(state.role)
+            dispatch({type:state.role, payload:{colour:newColour, index:state.index}})
         }
     }
     
+
+
     function makeSelection(value:string) {
         setSelectedHarmony(value)
         if (value in colourHarmonies) {
@@ -259,20 +179,17 @@ export default function Editor() {
                         <ColourPickerSection colours={colours} setColours={setColours}/>
                     </div>
                     <div className='w-1/2 flex flex-col items-center justify-center gap-16'>
-                        <SchemeSelector value={selectedHarmony} setValue={makeSelection} harmonies={colourHarmonies}/>
+                        <HarmonySelector value={selectedHarmony} setValue={makeSelection} harmonies={colourHarmonies}/>
                         <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
                     </div>
                 </div>
             </section>
             <section className='bg-neutral-800 w-full py-16 px-24'>
                 {
-                    <div className={`${(palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8`}>
+                    <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8`}>
                         {
                             <PaletteSwatchEditor 
-                                initPalette={palette} 
-                                chosenColour={chosenColour} 
-                                chosenColourRole={chosenColourRole} 
-                                chosenColourIndex={chosenColourIndex}
+                                state={state}
                                 showColourPicker={showColourPicker}
                             />
                         }
@@ -280,9 +197,9 @@ export default function Editor() {
                             <ColourWheelPicker 
                                 ref={wheelRef}
                                 colourValue={value} 
-                                palette = {palette}
-                                chosenColour={chosenColour}
-                                setChosenColour={(colour:Colour)=>updateChosenColour(colour, chosenColourRole, chosenColourIndex)}
+                                palette = {state.palette}
+                                chosenColour={state.colour}
+                                setChosenColour = {(colour:Colour)=>dispatch({type:state.role, payload:{colour:colour, index:state.index}})}
                                 wheelWidth={wheelWidth}
                                 handleWidth={handleWidth}
                                 handlePosition={handlePosition}

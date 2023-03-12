@@ -6,24 +6,23 @@ import { GithubPlacement } from '@uiw/react-color-github';
 import Wheel from '@uiw/react-color-wheel'
 import ColourWheelPicker from "./ColourWheelPicker";
 import ColouredBar from "./ColouredBar";
+import {ACTION_TYPES, ColourAction, ColourState} from "../hooks/useChosenColour"
 
 type Props = {
-    initPalette: Palette
-    chosenColour:Colour
-    chosenColourRole: ColourRole
-    chosenColourIndex: number
-    showColourPicker: (colour:Colour, index:number, key:PaletteKey) => void
+    state:ColourState
+    showColourPicker: (colour:Colour, index:number, type:ACTION_TYPES) => void
+
 }
 
 
 export default function PaletteSwatchEditor(props:Props) {
-    const{initPalette, chosenColour, chosenColourIndex, chosenColourRole, showColourPicker} = props
-    const [palette, setPalette] = useState<Palette>(initPalette)
+    const {state, showColourPicker} = props
+    const [palette, setPalette] = useState<Palette>(state.palette)
 
 
     useEffect(()=>{
-        setPalette(initPalette)
-    }, [initPalette])
+        setPalette(state.palette)
+    }, [state.palette])
 
 
 
@@ -31,8 +30,8 @@ export default function PaletteSwatchEditor(props:Props) {
         <div className='w-full grid grid-rows-2 gap-0 h-full flex-wrap'>
             <div className='w-full grid grid-cols-2 border border-solid border-red-500'>
                 <div className='w-full items-center justify-center'>
-                    <div className='flex flex-col w-full h-full items-center' style={{border:(chosenColourRole === 'mainColour')?'2px solid white':''}}>
-                        <ColouredBar colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, 0, 'mainColour')}/>
+                    <div className='flex flex-col w-full h-full items-center' style={{border:(state.role === ACTION_TYPES.UPDATE_MAINCOLOUR)?'2px solid white':''}}>
+                        <ColouredBar colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, 0, ACTION_TYPES.UPDATE_MAINCOLOUR)}/>
                         {/* <div className='prose-xl'>#{palette.mainColour.rgb}</div> */}
                     </div>
                 </div>
@@ -40,8 +39,9 @@ export default function PaletteSwatchEditor(props:Props) {
                     {
                         palette?.accentColours.map((colour, index)=>{
                             return (
-                                <div key={`accent-${index}`} className='flex flex-col w-full h-full items-center' style={{border:(chosenColourIndex===index && chosenColourRole === 'accentColours')?'2px solid white':''}}>
-                                    <ColouredBar colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, 'accentColours')}/>
+                                <div key={`accent-${index}`} className='flex flex-col w-full h-full items-center' style={{border:(state.index===index && state.role === ACTION_TYPES.UPDATE_ACCENTCOLOUR)?'2px solid white':''}}>
+                                    <ColouredBar colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, ACTION_TYPES.UPDATE_ACCENTCOLOUR)}/>
+                                
                                     {/* <div className='prose-xl'>#{colour.rgb}</div> */}
                                 </div>
                             )
@@ -53,8 +53,8 @@ export default function PaletteSwatchEditor(props:Props) {
                 {
                     palette?.supportColours.map((colour, index)=>{
                         return (
-                            <div key={`support-${index}`} className='flex flex-col w-full h-full items-center' style={{border:(chosenColourIndex==index && chosenColourRole === 'supportColours')?'2px solid white':''}}>
-                                <ColouredBar colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, 'supportColours')}/>
+                            <div key={`accent-${index}`} className='flex flex-col w-full h-full items-center' style={{border:(state.index===index && state.role === ACTION_TYPES.UPDATE_SUPPORTCOLOUR)?'2px solid white':''}}>
+                                <ColouredBar colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, ACTION_TYPES.UPDATE_SUPPORTCOLOUR)}/>
                                 {/* <div className='prose-xl'>#{colour.rgb}</div> */}
                             </div>
                         )
