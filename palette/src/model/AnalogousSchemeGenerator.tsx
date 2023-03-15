@@ -23,8 +23,9 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
     generateRandomScheme(colourVerticies:Colour[]): Result<Scheme,string> {
         //generate 10 random colours within the triangle bounded by the square colours
 
-        if (colourVerticies === null) return fail('Input is null.')
-        if (colourVerticies.length !== 3) return fail('Invalid input. 3 verticies required')
+        const errorMessage:string = `Unable to generate random scheme ${colourVerticies}.\n`
+        if (colourVerticies === null) return fail(errorMessage + 'Input is null.\n')
+        if (colourVerticies.length !== 3) return fail(errorMessage + 'Invalid input. 3 verticies required.\n')
 
         const hsvPoints:HSV[] = [] 
         //add the origin as a fourth point
@@ -45,7 +46,7 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                 cartPoints.push(pointResult.value)
             }
             else {
-                return fail(`Unable to convert hsv to point. point:${points}. ` + pointResult.error)
+                return fail(errorMessage + pointResult.error)
             }
         })
         //divide the square into two triangles. The triangle contains the line (hsv[0], hsv[2]) === (cartPoints[0], cartPoints[2])
@@ -91,11 +92,11 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                     temp.push({rgb:rRGBResult.value, hsv:hsv})
                 }
                 else {
-                    return fail(`Unable to convert hsv to rgb hsv:${rHSVResult.value}. ` + rRGBResult.error)
+                    return fail(errorMessage + rRGBResult.error)
                 }
             }
             else {
-                return fail(`Unable to convert point to hsv. point:${randomPoint}. ` + rHSVResult.error)
+                return fail(errorMessage + rHSVResult.error)
             }
 
         }     
@@ -135,11 +136,11 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                     temp.push({rgb:rRGBResult.value, hsv:hsv})
                 }
                 else {
-                    return fail(`Unable to convert hsv to rgb hsv:${rHSVResult.value}. ` + rRGBResult.error)
+                    return fail(errorMessage + rRGBResult.error)
                 }
             }
             else {
-                return fail(`Unable to convert point to hsv. point:${randomPoint}. ` + rHSVResult.error)
+                return fail(errorMessage + rHSVResult.error)
             }
         }   
         let sortedColours:Result<Colour[],string> = this.sortColoursByHex(temp) 
@@ -151,7 +152,7 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
             return success(output)
         }
         else {
-            return fail(`Unable to sort colours. colours:${temp}. ` + sortedColours.error)
+            return fail(errorMessage + sortedColours.error)
         }
     }
 

@@ -12,32 +12,32 @@ abstract class PaletteGenerator {
         this.converter = converter
     }
     #modulo(n:number, m:number):Result<number,string> {
-        if (!Number.isInteger(n) || !Number.isInteger(m)) return fail('Input is not an integer.')
+        if (!Number.isInteger(n) || !Number.isInteger(m)) return fail(`Modulo failed. Inputs are not an integers: (${n}, ${m}).\n`)
         return success(n - (m*Math.floor(n/m)))
     }
 
-    protected sortColoursByHexcode(rgb:HEX[]):Result<HEX[],string> {
-        //convert hexcode to integer then sort largest to smallest
+    // protected sortColoursByHexcode(rgb:HEX[]):Result<HEX[],string> {
+    //     //convert hexcode to integer then sort largest to smallest
 
-        if (rgb === null || rgb === undefined) return fail('Input is null or undefined')
+    //     if (rgb === null || rgb === undefined) return fail('Input is null or undefined')
 
-        let colours:number[] = []
-        rgb.forEach(colour=>{
-            //check if colour is validRGB first
-            if (this.converter.isValidRGB(colour)) {
-                colours.push(parseInt(colour as string, 16))
-            }
-            else {
-                return fail('Input array contains invalid RGB value.')
-            }
-        })
-        colours.sort((a, b)=>(b - a))
-        return success(colours.map((colour)=>colour.toString(16).padStart(6, '0')))
-    }
+    //     let colours:number[] = []
+    //     rgb.forEach(colour=>{
+    //         //check if colour is validRGB first
+    //         if (this.converter.isValidRGB(colour)) {
+    //             colours.push(parseInt(colour as string, 16))
+    //         }
+    //         else {
+    //             return fail('Input array contains invalid RGB value.')
+    //         }
+    //     })
+    //     colours.sort((a, b)=>(b - a))
+    //     return success(colours.map((colour)=>colour.toString(16).padStart(6, '0')))
+    // }
 
     protected sortColoursByHex(colours:Colour[]):Result<Colour[],string> {
         //convert hexcode to integer then sort largest to smallest
-        if (colours === null || colours === undefined) return fail('Input is null or undefined')
+        if (colours === null || colours === undefined) return fail('Unable to sort colours. Input is null or undefined.\n')
 
         let sortedColours:Colour[] = []
         colours.forEach(colour=>{
@@ -50,7 +50,6 @@ abstract class PaletteGenerator {
             return (parseInt(b.rgb as string, 16) - parseInt(a.rgb as string, 16))
         })
 
-        //return colours.map((colour)=>colour.toString(16).padStart(6, '0'))
         return success(sortedColours)
     }
 
@@ -59,6 +58,7 @@ abstract class PaletteGenerator {
         //take the original rgb hex and generated hsv colours and output a sorted list of rgb hexcode
         
         const colours:Colour[] = []
+        const errorMessage:string = `Unable to format output. rgb:${colourRGB}, hsv:${coloursHSV}\n`
         let hsvResult:Result<HSV,string> = this.converter.rgb2hsv(colourRGB)
         if (hsvResult.isSuccess()) {
             let hsv:HSV = hsvResult.value
@@ -76,7 +76,7 @@ abstract class PaletteGenerator {
                     colours.push(newColour)
                 }
                 else {
-                    return fail(`Unable to convert hsv to rgb. hsv:${colour}`+ result.error)
+                    return fail(errorMessage + result.error)
                 }
             })
             
@@ -84,16 +84,16 @@ abstract class PaletteGenerator {
             if (isSuccess(result)) {
                 return success(result.value)
             }
-            return fail(`Unable to sort colours. colours:${colours}` + result.error)
+            return fail(errorMessage + result.error)
         }
-        return fail(`Unable to convert rgb to hsv. rgb${colourRGB}`+ hsvResult.error)
+        return fail(errorMessage + hsvResult.error)
     }
     protected hsv2cartesian(hsv:HSV): Result<Point,string> {
         const point:Point = {
             x:0,
             y:0
         }
-        if (hsv === null || hsv === undefined) return fail('Input is null or undefined')
+        if (hsv === null || hsv === undefined) return fail('Unable to convert hsv to point. Input is null or undefined.\n')
 
         let angleResult:Result<number,string> = this.#modulo(Math.round(hsv.hue), 360)
         if (angleResult.isSuccess()) {
@@ -103,13 +103,13 @@ abstract class PaletteGenerator {
             point.y = radius * Math.sin(theta)
         }
         else {
-            return fail(angleResult.error)
+            return fail(`Unable to convert hsv to point. hsv:${hsv}\n` + angleResult.error)
         }
         return success(point)
     }
 
     protected cartesian2hsv(point:Point):Result<HSV,string> {
-        if (point === null || point === undefined) return fail('Input is null or undefined')
+        if (point === null || point === undefined) return fail('Unable to convert point to hsv. Input is null or undefined.\n')
         //should also check if point is valid 
         const hsv = {
             hue:0,
@@ -127,13 +127,13 @@ abstract class PaletteGenerator {
     }
 
     protected getColoursByHueAngle(rgb:HEX, hsv:HSV, angleArray:number[][]):Result<Colour[][],string> {
-        if (rgb === null || rgb === undefined) return fail('rgb input is null or undefined')
-        if (hsv === null || hsv === undefined) return fail('hsv is null or undefined')
-        if (angleArray === null || angleArray === undefined) return fail('angleArray input is null or undefined')
+        if (rgb === null || rgb === undefined) return fail('Unable to get colours by hue angle. rgb input is null or undefined.\n')
+        if (hsv === null || hsv === undefined) return fail('Unable to get colours by hue angle. hsv is null or undefined.\n')
+        if (angleArray === null || angleArray === undefined) return fail('Unable to get colours by hue angle. angleArray input is null or undefined.\n')
         
 
         let output:Colour[][] = []
-        
+        const errorMessage:string = `Unable to get colours by hue angle. rgb:${rgb}, hsv:${hsv}, angleArray:${angleArray}.\n` 
         angleArray.forEach((angles)=>{
 
             let colours:HSV[] = []
@@ -148,7 +148,7 @@ abstract class PaletteGenerator {
                     colours.push(colour)
                 }
                 else {
-                    return fail(hueResult.error)
+                    return fail(errorMessage + hueResult.error)
                 }
 
             })
@@ -157,17 +157,16 @@ abstract class PaletteGenerator {
                 output.push(result.value)
             }
             else {
-                return fail(`Unable to format output. rgb:${rgb}, colours:${colours}` + result.error)
+                return fail(errorMessage + result.error)
             }
         })        
         return success(output)
     }
 
     generateRandomSchemes(colourVerticies:Colour[][]):Result<Scheme[],string> {
-        if (colourVerticies === null) return fail('Input is null.')
+        if (colourVerticies === null || colourVerticies === undefined) return fail('Unable to generate random scheme. Input is null or undefined.\n')
         let output:Scheme[] = []
         colourVerticies.forEach(colourList=>{
-           
             let schemeResult:Result<Scheme, string> = this.generateRandomScheme(colourList)
             if (isSuccess(schemeResult)) {
                 let scheme:Scheme = schemeResult.value
@@ -177,7 +176,7 @@ abstract class PaletteGenerator {
                 }
             }
             else {
-                return fail(`Unable to generate random scheme. colourVerticies:${colourList}. ` + schemeResult.error)
+                return fail(schemeResult.error)
             }
         })
         return success(output)
@@ -185,7 +184,7 @@ abstract class PaletteGenerator {
     generatePalettes(rgb:HEX):Result<Palette[],string> {
         
         let result:Result<Colour[][], string> = this.generateColourVerticies(rgb)
-
+        const errorMessage:string = `Unable to generate palettes. rgb${rgb}.\n`
         if (isSuccess(result)) {
             let colours:Colour[][] = result.value
             let schemeResult:Result<Scheme[],string>= this.generateRandomSchemes(colours)
@@ -199,18 +198,18 @@ abstract class PaletteGenerator {
                         palettes.push(result.value)
                     }
                     else {
-                        return fail(`Unable to generate palette. rgb: ${rgb}, colourVerticies: ${scheme.colourVerticies}. ` + result.error)
+                        return fail(errorMessage + result.error)
                     }
      
                 })
                 return success(palettes)
             }
             else {
-                return fail(`Unable to generate random scheme. colourVerticies:${colours}. ` + schemeResult.error)
+                return fail(errorMessage + schemeResult.error)
             }
         }
         // console.error(result.error)
-        return fail(`Unable to generate scheme. rgb:${rgb}` + result.error)
+        return fail(errorMessage + result.error)
     }
     generatePalette(rgb:HEX, colourVerticies:Colour[]):Result<Palette, string> {
         if (rgb === null || rgb === undefined) return fail('rgb input is null or undefined')
@@ -218,6 +217,7 @@ abstract class PaletteGenerator {
         
        
         let result:Result<Scheme, string> = this.generateRandomScheme(colourVerticies)
+        const errorMessage:string = `Unable to generate palette. rgb:${rgb}, colourVerticies:${colourVerticies}.\n`
         if (isSuccess(result)) {
             let scheme:Scheme = result.value
             let hsvResult:Result<HSV,string> = this.converter.rgb2hsv(rgb)
@@ -235,10 +235,10 @@ abstract class PaletteGenerator {
                 return success(palette)
             }
             else {
-                return fail(`Unable to convert rgb to hsv. rgb:${rgb}` + hsvResult.error)
+                return fail(errorMessage + hsvResult.error)
             }
         }
-        return fail(`Unable to generate scheme. colourVerticies:${colourVerticies}` + result.error)
+        return fail(errorMessage + result.error)
     }
     // abstract generateColourVerticies(rgb:HEX):Colour[][]
     // abstract generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]):Colour[][]

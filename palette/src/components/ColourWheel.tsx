@@ -1,7 +1,8 @@
 import ColourConverter from "../model/colourConverter"
+import { Result } from "../model/common/error"
 import { range } from "../model/common/utils"
 import PaletteGenerator from "../model/paletteGenerator"
-import { HSV, Palette, Scheme } from "../types/colours"
+import { HEX, HSV, Palette, Scheme } from "../types/colours"
 import ColourWheelPoint from "./common/ColourWheelPoint"
 import ErrorBoundary from "./ErrorBoundary"
 
@@ -32,7 +33,14 @@ function getRGBColourString(colours:HSV[]):string {
     let output:string = ''
 
     colours.forEach(colour=>{
-        output += (`#${cc.hsv2rgb(colour)}, `)
+        let result:Result<HEX,string> = cc.hsv2rgb(colour)
+        if (result.isSuccess()) {
+            output += (`#${result.value}, `)
+        }
+        else {
+            //handle error somehow throw exception?
+            console.error(result.error)
+        }
     })
     //remove trailing white space
     output = output.slice(0, -2)

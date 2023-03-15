@@ -18,7 +18,6 @@ export default function ColourScheme(props:Props) {
     useEffect(()=>{
         let result:Result<Palette[], string> = generator.generatePalettes(rgb)
         if (result.isSuccess()) {
-            console.log(result.value)
             setPalettes(result.value)
         }
         else {

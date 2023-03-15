@@ -1,12 +1,13 @@
 import Interactive, { Interaction } from '@uiw/react-drag-event-interactive';
 import { useState, useEffect, forwardRef } from 'react'
 import { Point } from '../types/cartesian';
-import { Colour, HSV, Palette } from '../types/colours';
+import { Colour, HEX, HSV, Palette } from '../types/colours';
 import ColourWheel from './ColourWheel';
 import ColourConverter from '../model/colourConverter';
 import PaletteGenerator from '../model/paletteGenerator';
 import { cartesian2hsv } from '../model/common/utils';
 import ErrorBoundary from './ErrorBoundary';
+import { Result } from '../model/common/error';
 
 const cc = new ColourConverter()
 type Props = {
@@ -75,13 +76,18 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
         let yOffset:number = handleWidth / 2 - radius
 
         let hsv:HSV = cartesian2hsv({x:newPosition.x, y:newPosition.y}, radius, xOffset, yOffset, colourValue)
-        let newColour:string = cc.hsv2rgb(hsv) as string
-        let newSampleColour = {
-            rgb:newColour,
-            hsv:hsv,
+        let result:Result<HEX,string> = cc.hsv2rgb(hsv)
+        if (result.isSuccess()) {
+            let newSampleColour = {
+                rgb:result.value,
+                hsv:hsv,
+            }
+            setSampleColour(newSampleColour)
+            setChosenColour(newSampleColour)
         }
-        setSampleColour(newSampleColour)
-        setChosenColour(newSampleColour)
+        else {
+            console.error(result.error)
+        }
     }
 
 
