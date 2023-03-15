@@ -84,27 +84,6 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
             else {
                 return fail(errorMessage + tempColour.error)
             }
-            // let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
-            // let hsv:HSV = {
-            //     hue:0,
-            //     saturation:0,
-            //     value:0
-            // }
-            // if (rHSVResult.isSuccess()) {
-            //     hsv.hue = Math.floor(rHSVResult.value.hue)
-            //     hsv.saturation = rHSVResult.value.saturation
-            //     hsv.value = Math.random()
-            //     let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
-            //     if (rRGBResult.isSuccess()) {
-            //         temp.push({rgb:rRGBResult.value, hsv:hsv})
-            //     }
-            //     else {
-            //         return fail(errorMessage + rRGBResult.error)
-            //     }
-            // }
-            // else {
-            //     return fail(errorMessage + rHSVResult.error)
-            // }
 
         }     
         
@@ -118,28 +97,14 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                 x:(1-r1sq)*triangles[1][0].x + r1sq*(1-r2)*triangles[1][1].x+ r2*r1sq*triangles[1][2].x,
                 y:(1-r1sq)*triangles[1][0].y + r1sq*(1-r2)*triangles[1][1].y+ r2*r1sq*triangles[1][2].y
             } 
-
-            let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
-            let hsv:HSV = {
-                hue:0,
-                saturation:0,
-                value:0
-            }
-            if (rHSVResult.isSuccess()) {
-                hsv.hue = Math.floor(rHSVResult.value.hue)
-                hsv.saturation=rHSVResult.value.saturation
-                hsv.value = Math.random()
-                let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
-                if (rRGBResult.isSuccess()) {
-                    temp.push({rgb:rRGBResult.value, hsv:hsv})
-                }
-                else {
-                    return fail(errorMessage + rRGBResult.error)
-                }
+            let tempColour:Result<Colour,string> = this.cartesian2Colour(randomPoint)
+            if (tempColour.isSuccess()) {
+                temp.push(tempColour.value)
             }
             else {
-                return fail(errorMessage + rHSVResult.error)
+                return fail(errorMessage + tempColour.error)
             }
+
         }   
         let sortedColours:Result<Colour[],string> = this.sortColoursByHex(temp) 
         if (sortedColours.isSuccess()) {
@@ -155,29 +120,13 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
     }
 
     generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
-        
-        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
-        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
-
-        if (hsvResult.isSuccess()) {
-            let angleArray:number[][] = [
-                [15, -15],
-                [30, 15],
-                [-15, -30]
-            ]
-            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
-            if (output.isSuccess()) {
-
-                return success(output.value)
-            }
-            else {
-                return fail(errorMessage + output.error)
-
-            }
-        }
-        else {
-            return fail(errorMessage +  hsvResult.error)
-        }
+        let angleArray:number[][] = [
+            [15, -15],
+            [30, 15],
+            [-15, -30]
+        ]
+        const result:Result<Colour[][], string> = this.generateColourVerticiesByHueAngles(rgb, angleArray)
+        return (result.isSuccess()) ? success(result.value) : fail(result.error)      
     } 
     getName():string {
         return "Analogous Colour Scheme"

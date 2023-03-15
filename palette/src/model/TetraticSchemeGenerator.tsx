@@ -111,25 +111,12 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
     }
 
     generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
-        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
-        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
-        if (hsvResult.isSuccess()) {
-            const angleArray:number[][] = [
-                [30, 180, 210],
-                [-30, 180, -210]
-            ]
-            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
-            if (output.isSuccess()) {
-
-                return success(output.value)
-            }
-            else {
-                return fail(errorMessage + output.error)
-            }
-        }
-        else {
-            return fail(errorMessage +  hsvResult.error)
-        }  
+        const angleArray:number[][] = [
+            [30, 180, 210],
+            [-30, 180, -210]
+        ]
+        const result:Result<Colour[][], string> = this.generateColourVerticiesByHueAngles(rgb, angleArray)
+        return (result.isSuccess()) ? success(result.value) : fail(result.error)      
     } 
     getName():string {
         return "Tetratic Colour Scheme"

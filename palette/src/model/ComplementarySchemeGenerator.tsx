@@ -47,28 +47,6 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
             else {
                 return fail(errorMessage + tempColour.error)
             }
-            // let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
-            // let hsv:HSV = {
-            //     hue:0,
-            //     saturation:0,
-            //     value:0
-            // }
-            // if (rHSVResult.isSuccess()) {
-            //     hsv.hue = Math.floor(rHSVResult.value.hue)
-            //     hsv.saturation = rHSVResult.value.saturation
-            //     hsv.value = Math.random()
-            //     let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
-            //     if (rRGBResult.isSuccess()) {
-            //         temp.push({rgb:rRGBResult.value, hsv:hsv})
-            //     }
-            //     else {
-            //         return fail(errorMessage + rRGBResult.error)
-            //     }
-            // }
-            // else {
-            //     return fail(errorMessage + rHSVResult.error)
-            // }
-
         }        
         let sortedColours:Result<Colour[],string> = this.sortColoursByHex(temp) 
         if (sortedColours.isSuccess()) {
@@ -84,25 +62,11 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
     }
 
     generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
-
-        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
-        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
-        if (hsvResult.isSuccess()) {
-            const angleArray:number[][] = [
-                [180]
-            ]
-            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
-            if (output.isSuccess()) {
-
-                return success(output.value)
-            }
-            else {
-                return fail(errorMessage + output.error)
-            }
-        }
-        else {
-            return fail(errorMessage +  hsvResult.error)
-        }
+        const angleArray:number[][] = [
+            [180]
+        ]
+        const result:Result<Colour[][], string> = this.generateColourVerticiesByHueAngles(rgb, angleArray)
+        return (result.isSuccess()) ? success(result.value) : fail(result.error)
     }
     
     getName():string {

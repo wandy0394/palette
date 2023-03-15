@@ -265,14 +265,24 @@ abstract class PaletteGenerator {
         }
         return fail(errorMessage + result.error)
     }
-    // abstract generateColourVerticies(rgb:HEX):Colour[][]
-    // abstract generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]):Colour[][]
+    protected generateColourVerticiesByHueAngles(rgb:HEX, angleArray:number[][]):Result<Colour[][], string> {
+        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
+        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
+        if (hsvResult.isSuccess()) {
+            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
+            if (output.isSuccess()) {
+                return success(output.value)
+            }
+            else {
+                return fail(errorMessage + output.error)
+            }
+        }
+        else {
+            return fail(errorMessage +  hsvResult.error)
+        }
+    }
     abstract generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]):Result<Colour[][], string>
     abstract generateRandomScheme(colours:Colour[]):Result<Scheme,string>
-
-    // abstract generateRandomScheme(colours:Colour[]):Scheme
-    // abstract generateColourVerticies(rgb:HEX):HEX[][]
-    // abstract generateRandomScheme(colours:HEX[]):Scheme
     abstract getName():string 
 
 }

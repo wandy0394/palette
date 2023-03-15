@@ -66,25 +66,13 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
     }
 
     generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
-        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
-        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
-        if (hsvResult.isSuccess()) {
-            let angleArray:number[][] = [
-                [165, -165],
-                [30, -165],
-                [-30, 165]
-            ]
-            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
-            if (output.isSuccess()) {
-                return success(output.value)
-            }
-            else {
-                return fail(errorMessage + output.error)
-            }
-        }
-        else {
-            return fail(errorMessage +  hsvResult.error)
-        }
+        let angleArray:number[][] = [
+            [165, -165],
+            [30, -165],
+            [-30, 165]
+        ]
+        const result:Result<Colour[][], string> = this.generateColourVerticiesByHueAngles(rgb, angleArray)
+        return (result.isSuccess()) ? success(result.value) : fail(result.error)
     } 
     getName():string {
         return "Split Complementary Colour Scheme"
