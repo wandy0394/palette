@@ -44,27 +44,12 @@ export default class SplitComplementarySchemeGenerator extends PaletteGenerator 
                 x:(1-r1sq)*p1.x + r1sq*(1-r2)*p2.x + r2*r1sq*p3.x,
                 y:(1-r1sq)*p1.y + r1sq*(1-r2)*p2.y + r2*r1sq*p3.y
             } 
-
-            let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
-            let hsv:HSV = {
-                hue:0,
-                saturation:0,
-                value:0
-            }
-            if (rHSVResult.isSuccess()) {
-                hsv.hue = Math.floor(rHSVResult.value.hue)
-                hsv.saturation = rHSVResult.value.saturation
-                hsv.value = Math.random()
-                let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
-                if (rRGBResult.isSuccess()) {
-                    tempArray.push({rgb:rRGBResult.value, hsv:hsv})
-                }
-                else {
-                    return fail(errorMessage + rRGBResult.error)
-                }
+            let tempColour:Result<Colour,string> = this.cartesian2Colour(randomPoint)
+            if (tempColour.isSuccess()) {
+                tempArray.push(tempColour.value)
             }
             else {
-                return fail(errorMessage + rHSVResult.error)
+                return fail(errorMessage + tempColour.error)
             }
         }       
         let sortedColours:Result<Colour[],string> = this.sortColoursByHex(tempArray) 

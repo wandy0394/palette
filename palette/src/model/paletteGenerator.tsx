@@ -16,6 +16,46 @@ abstract class PaletteGenerator {
         return success(n - (m*Math.floor(n/m)))
     }
 
+
+    protected cartesian2Colour(point:Point):Result<Colour, string> {
+        const errorMessage:string = `Unable to convert point to Colour. point:${point}\n.`
+        if (point === null || point === undefined) return fail(errorMessage + 'Input is null or undefined.')
+        let rHSVResult:Result<HSV,string> = this.cartesian2hsv(point)
+        let temp:Colour = {
+            rgb:'000000',
+            hsv:{
+                hue:0,
+                saturation:0,
+                value:0
+            }
+        }
+        let hsv:HSV = {
+            hue:0,
+            saturation:0,
+            value:0
+        }
+        if (rHSVResult.isSuccess()) {
+            hsv.hue = Math.floor(rHSVResult.value.hue)
+            hsv.saturation = rHSVResult.value.saturation
+            hsv.value = Math.random()
+            let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
+            if (rRGBResult.isSuccess()) {
+                temp = {
+                    rgb:rRGBResult.value, 
+                    hsv:hsv
+                }
+                return success(temp)
+            }
+            else {
+                return fail(errorMessage + rRGBResult.error)
+            }
+        }
+        else {
+            return fail(errorMessage + rHSVResult.error)
+        }
+
+    }
+
     protected sortColoursByHex(colours:Colour[]):Result<Colour[],string> {
         //convert hexcode to integer then sort largest to smallest
         if (colours === null || colours === undefined) return fail('Unable to sort colours. Input is null or undefined.\n')
