@@ -21,6 +21,7 @@ import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerato
 import { ACTION_TYPES, useChosenColour } from "../hooks/useChosenColour"
 import HarmonySelector from "../components/HarmonySelector"
 import { width } from "@mui/system"
+import { Result } from "../model/common/error"
 
 
 
@@ -122,8 +123,15 @@ export default function Editor() {
 
     }
     function initHandlePosition(colour:Colour) {
-        let newValue = cc.rgb2hsv(colour.rgb)?.value 
-        if (newValue) setValue(newValue*MAX_VALUE)
+        let result:Result<HSV, string> = cc.rgb2hsv(colour.rgb)
+        let newValue:number = 0 
+        if (result.isSuccess()){
+            newValue = result.value.value 
+        }
+        else {
+            //throw exception/error
+        } 
+        setValue(newValue*MAX_VALUE)
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
         setHandlePostion(newPosition)
     }
@@ -134,19 +142,33 @@ export default function Editor() {
         if (colour.hsv) {
             setValue(colour.hsv.value*MAX_VALUE)
         }
-        
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
+        console.log(colour.rgb)
         setHandlePostion(newPosition)
     }
 
 
     function generatePalettes() {
         if (generator) {
-            let verticies:Colour[][] = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
-            let newPalette:Palette = generator.generatePalette(colours[0], verticies[0])
-            dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
-            initChosenColour(newPalette.mainColour)
-            initHandlePosition(newPalette.mainColour)
+            let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
+            if (result.isSuccess()) {
+                let verticies:Colour[][] = result.value
+                let paletteResult:Result<Palette,string> = generator.generatePalette(colours[0], verticies[0])
+                if (paletteResult.isSuccess()) {
+                    let newPalette:Palette = paletteResult.value
+                    dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
+                    initChosenColour(newPalette.mainColour)
+                    initHandlePosition(newPalette.mainColour)
+                }
+                else {
+                    //handle error
+                    return
+                }
+            }
+            else {
+                //handle error
+                return
+            }
         }
     }
 

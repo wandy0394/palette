@@ -1,28 +1,32 @@
 import { Point } from "../types/cartesian";
 import { Colour, HEX, HSV, Palette, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
+import { fail, Result, success } from "./common/error";
 import PaletteGenerator from "./paletteGenerator";
 
 export default class CustomTriadicSchemeGenerator extends PaletteGenerator {
     constructor(converter:ColourConverter) {
         super(converter)
     }
-    generateRandomScheme(colourVerticies:Colour[]): Scheme {
+    generateRandomScheme(colourVerticies:Colour[]):Result<Scheme,string>  {
+
         //generate 10 random colours within the triangle bounded by the triadic colours
 
-        let errorFound:boolean = false
-        const coloursCartersian:Point[] = colourVerticies.map(colour=>{
-            // let hsv:HSV|null = this.converter.rgb2hsv(colour) 
-            // if (hsv === null) {
-            //     errorFound = true
-            //     return {x:NaN, y:NaN}
-            // }
-            let point:Point = this.hsv2cartesian(colour.hsv)
-            return point
-        })
+        const errorMessage:string = `Unable to generate random scheme ${JSON.stringify(colourVerticies)}.\n`
+        if (colourVerticies === null) return fail(errorMessage + 'Input is null.\n')
+        if (colourVerticies.length !== 3) return fail(errorMessage + 'Invalid input. 3 verticies required.\n')
 
-        if (errorFound) undefined
-
+        
+        let coloursCartersian:Point[] = []
+        for (const colour of colourVerticies) {
+            let result:Result<Point, string> = this.hsv2cartesian(colour.hsv)
+            if (result.isSuccess()) {
+                coloursCartersian.push(result.value)
+            }
+            else {
+                return fail(errorMessage + result.error)
+            }
+        }
 
         let p1:Point = coloursCartersian[0]
         let p2:Point = coloursCartersian[1]
@@ -38,43 +42,51 @@ export default class CustomTriadicSchemeGenerator extends PaletteGenerator {
                 x:(1-r1sq)*p1.x + r1sq*(1-r2)*p2.x + r2*r1sq*p3.x,
                 y:(1-r1sq)*p1.y + r1sq*(1-r2)*p2.y + r2*r1sq*p3.y
             } 
-
-            let rHSV = this.cartesian2hsv(randomPoint)
-            if (rHSV) {
-                rHSV.hue = Math.floor(rHSV.hue)
-                rHSV.value = Math.random()
-                let rRGB = this.converter.hsv2rgb(rHSV)
-                temp.push({
-                    rgb:rRGB,
-                    hsv:rHSV
-                })
-
+            let tempColour:Result<Colour,string> = this.cartesian2Colour(randomPoint)
+            if (tempColour.isSuccess()) {
+                temp.push(tempColour.value)
+            }
+            else {
+                return fail(errorMessage + tempColour.error)
             }
         }        
 
-        let sortedColours:Colour[] = this.sortColoursByHex(temp) 
-        let output:Scheme = {
-            palette:[...sortedColours, ...colourVerticies],
-            colourVerticies:colourVerticies
+        let sortedColours:Result<Colour[],string> = this.sortColoursByHex(temp) 
+        if (sortedColours.isSuccess()) {
+            let output:Scheme = {
+                palette:[...sortedColours.value, ...colourVerticies],
+                colourVerticies:colourVerticies
+            }
+            return success(output)
         }
-        
-        return output
+        else {
+            return fail(errorMessage + sortedColours.error)
+        }
     }
 
-    generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]):Colour[][] {
-        if (colourVerticies?.length === 3) return [colourVerticies]
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:Colour[][]=[[]]
+    // generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]):Colour[][] {
+    //     if (colourVerticies?.length === 3) return [colourVerticies]
+    //     const hsv:HSV | null = this.converter.rgb2hsv(rgb)
+    //     const output:Colour[][]=[[]]
 
-        if (hsv === null) return output
+    //     if (hsv === null) return output
 
+    //     const angleArray:number[][] = [
+    //         [120, -120]
+    //     ]
+        
+    //     return this.getColoursByHueAngle(rgb, hsv, angleArray)
+    // }
+    generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]): Result<Colour[][], string> {
+        if (colourVerticies?.length === 3) return success([colourVerticies])
+    
         const angleArray:number[][] = [
             [120, -120]
         ]
+        const result:Result<Colour[][], string> = this.generateColourVerticiesByHueAngles(rgb, angleArray)
+        return (result.isSuccess()) ? success(result.value) : fail(result.error)
         
-        return this.getColoursByHueAngle(rgb, hsv, angleArray)
-    }
-
+    } 
     getName():string {
         return "Custom Triadic Colour Scheme"
     }

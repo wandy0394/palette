@@ -1,6 +1,7 @@
 import { Point } from "../../types/cartesian"
 import { Colour, HEX, HSV } from "../../types/colours"
 import ColourConverter from "../colourConverter"
+import { Result } from "./error"
 
 export function modulo(n:number, m:number):number {
     if (!Number.isInteger(n) || !Number.isInteger(m)) return NaN
@@ -11,8 +12,9 @@ export function modulo(n:number, m:number):number {
 export function rgb2cartesian(rgb:HEX, radiusScaler:number, offset:number):Point {
     let output:Point = {x:radiusScaler - offset, y:radiusScaler - offset}   //center of circle
     const cc = new ColourConverter()
-        let hsv:HSV|null= cc.rgb2hsv(rgb)
-        if (hsv) {
+        let hsvResult:Result<HSV,string>= cc.rgb2hsv(rgb)
+        if (hsvResult.isSuccess()) {
+            let hsv = hsvResult.value
             const theta:number = -(modulo(Math.round(hsv.hue), 360)) * Math.PI / 180
             const radius:number = Math.abs(hsv.saturation) * radiusScaler
             output.x = radius * Math.cos(theta) + radiusScaler - offset
@@ -85,10 +87,16 @@ export function createColour(input:HSV|HEX):Colour {
     }
     if (isHEX(input)) {
         colour.rgb = input as HEX
-        colour.hsv = cc.rgb2hsv(input as HEX)
+        let result:Result<HSV, string> = cc.rgb2hsv(input as HEX)
+        if (result.isSuccess()) {
+            colour.hsv = result.value
+        }
     }
     else if (isHSV(input)) {
-        colour.rgb = cc.hsv2rgb(input as HSV)
+        let result:Result<HEX,string> = cc.hsv2rgb(input as HSV)
+        if (result.isSuccess()) {
+            colour.rgb = result.value
+        }
         colour.hsv = input as HSV
     }
     return colour
