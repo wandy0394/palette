@@ -1,6 +1,7 @@
 import { Point } from "../types/cartesian";
 import { Colour, HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
+import { Result, success, fail } from "./common/error";
 import PaletteGenerator from "./paletteGenerator";
 
 export default class TetraticSchemeGenerator extends PaletteGenerator {
@@ -16,21 +17,33 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
         //typescript complains without this last line
         return 0
     }
-    generateRandomScheme(colourVerticies:Colour[]): Scheme {
-
+    generateRandomScheme(colourVerticies:Colour[]):Result<Scheme,string>  {
         //generate 10 random colours within the triangle bounded by the square colours
+        
+        const errorMessage:string = `Unable to generate random scheme ${JSON.stringify(colourVerticies)}.\n`
+        if (colourVerticies === null) return fail(errorMessage + 'Input is null.\n')
+        if (colourVerticies.length !== 4) return fail(errorMessage + 'Invalid input. 4 verticies required.\n')
+
         const hsvPoints:HSV[] = []
-        colourVerticies.forEach((colour)=>{
-            hsvPoints.push(colour.hsv)
+        colourVerticies.forEach(colour=>{
+                hsvPoints.push(colour.hsv)
         })
+
 
         //sort hsvPoints by hue in increasing order
         hsvPoints.sort((a,b)=>this.#compare(a,b))
-        
-        //convert points to cartesian coords
-        const cartPoints:Point[] = hsvPoints.map(points=>{
-            return this.hsv2cartesian(points)
-        })
+
+        let cartPoints:Point[] = []
+        for (const colour of colourVerticies) {
+            let result:Result<Point, string> = this.hsv2cartesian(colour.hsv)
+            if (result.isSuccess()) {
+                cartPoints.push(result.value)
+            }
+            else {
+                return fail(errorMessage + result.error)
+            }
+        }
+
         //divide the square into two triangles. The triangle contains the line (hsv[0], hsv[2]) === (cartPoints[0], cartPoints[2])
         const triangles:Point[][] = []
         triangles[0] = [
@@ -58,13 +71,26 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
                 y:(1-r1sq)*triangles[0][0].y + r1sq*(1-r2)*triangles[0][1].y+ r2*r1sq*triangles[0][2].y
             } 
 
-            let rHSV = this.cartesian2hsv(randomPoint)
-            if (rHSV) {
-                rHSV.hue = Math.floor(rHSV.hue)
-                rHSV.value = Math.random()
-                let rRGB = this.converter.hsv2rgb(rHSV)
-                temp.push({rgb:rRGB, hsv:rHSV})
-
+            let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
+            let hsv:HSV = {
+                hue:0,
+                saturation:0,
+                value:0
+            }
+            if (rHSVResult.isSuccess()) {
+                hsv.hue = Math.floor(rHSVResult.value.hue)
+                hsv.saturation = rHSVResult.value.saturation
+                hsv.value = Math.random()
+                let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
+                if (rRGBResult.isSuccess()) {
+                    temp.push({rgb:rRGBResult.value, hsv:hsv})
+                }
+                else {
+                    return fail(errorMessage + rRGBResult.error)
+                }
+            }
+            else {
+                return fail(errorMessage + rHSVResult.error)
             }
         }     
         
@@ -79,35 +105,61 @@ export default class TetraticSchemeGenerator extends PaletteGenerator {
                 y:(1-r1sq)*triangles[1][0].y + r1sq*(1-r2)*triangles[1][1].y+ r2*r1sq*triangles[1][2].y
             } 
 
-            let rHSV = this.cartesian2hsv(randomPoint)
-            if (rHSV) {
-                rHSV.hue = Math.floor(rHSV.hue)
-                rHSV.value = Math.random()
-                let rRGB = this.converter.hsv2rgb(rHSV)
-                temp.push({rgb:rRGB, hsv:rHSV})
-
+            let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
+            let hsv:HSV = {
+                hue:0,
+                saturation:0,
+                value:0
+            }
+            if (rHSVResult.isSuccess()) {
+                hsv.hue = Math.floor(rHSVResult.value.hue)
+                hsv.saturation = rHSVResult.value.saturation
+                hsv.value = Math.random()
+                let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
+                if (rRGBResult.isSuccess()) {
+                    temp.push({rgb:rRGBResult.value, hsv:hsv})
+                }
+                else {
+                    return fail(errorMessage + rRGBResult.error)
+                }
+            }
+            else {
+                return fail(errorMessage + rHSVResult.error)
             }
         }   
-        let sortedColours:Colour[] = this.sortColoursByHex(temp) 
-        let output:Scheme = {
-            palette:[...sortedColours, ...colourVerticies],
-            colourVerticies:colourVerticies
+        let sortedColours:Result<Colour[],string> = this.sortColoursByHex(temp) 
+        if (sortedColours.isSuccess()) {
+            let output:Scheme = {
+                palette:[...sortedColours.value, ...colourVerticies],
+                colourVerticies:colourVerticies
+            }
+            return success(output)
         }
-        
-        return output
+        else {
+            return fail(errorMessage + sortedColours.error)
+        }
     }
 
-    generateColourVerticies(rgb:HEX):Colour[][] {
+    generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
+        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
+        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
+        if (hsvResult.isSuccess()) {
+            const angleArray:number[][] = [
+                [30, 180, 210],
+                [-30, 180, -210]
+            ]
+            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
+            if (output.isSuccess()) {
 
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:Colour[][]=[[]]
-        if (hsv === null) return output
-
-        let angleArray:number[][] = [
-            [30, 180, 210],
-            [-30, 180, -210]
-        ]
-        return this.getColoursByHueAngle(rgb, hsv, angleArray)
+                return success(output.value)
+            }
+            else {
+                return fail(errorMessage + output.error)
+            }
+        }
+        else {
+            return fail(errorMessage +  hsvResult.error)
+        }  
     } 
     getName():string {
         return "Tetratic Colour Scheme"
