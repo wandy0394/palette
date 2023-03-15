@@ -16,25 +16,6 @@ abstract class PaletteGenerator {
         return success(n - (m*Math.floor(n/m)))
     }
 
-    // protected sortColoursByHexcode(rgb:HEX[]):Result<HEX[],string> {
-    //     //convert hexcode to integer then sort largest to smallest
-
-    //     if (rgb === null || rgb === undefined) return fail('Input is null or undefined')
-
-    //     let colours:number[] = []
-    //     rgb.forEach(colour=>{
-    //         //check if colour is validRGB first
-    //         if (this.converter.isValidRGB(colour)) {
-    //             colours.push(parseInt(colour as string, 16))
-    //         }
-    //         else {
-    //             return fail('Input array contains invalid RGB value.')
-    //         }
-    //     })
-    //     colours.sort((a, b)=>(b - a))
-    //     return success(colours.map((colour)=>colour.toString(16).padStart(6, '0')))
-    // }
-
     protected sortColoursByHex(colours:Colour[]):Result<Colour[],string> {
         //convert hexcode to integer then sort largest to smallest
         if (colours === null || colours === undefined) return fail('Unable to sort colours. Input is null or undefined.\n')
@@ -58,7 +39,7 @@ abstract class PaletteGenerator {
         //take the original rgb hex and generated hsv colours and output a sorted list of rgb hexcode
         
         const colours:Colour[] = []
-        const errorMessage:string = `Unable to format output. rgb:${colourRGB}, hsv:${coloursHSV}\n`
+        const errorMessage:string = `Unable to format output. rgb:${colourRGB}, hsv:${JSON.stringify(coloursHSV)}\n`
         let hsvResult:Result<HSV,string> = this.converter.rgb2hsv(colourRGB)
         if (hsvResult.isSuccess()) {
             let hsv:HSV = hsvResult.value
@@ -66,7 +47,8 @@ abstract class PaletteGenerator {
                 rgb:colourRGB.toLowerCase(),
                 hsv:hsv,
             })
-            coloursHSV.forEach(colour=>{
+            
+            for (let colour of coloursHSV) {
                 let result:Result<HEX,string> =this.converter.hsv2rgb(colour)
                 if (result.isSuccess()) {
                     let newColour:Colour = {
@@ -78,7 +60,7 @@ abstract class PaletteGenerator {
                 else {
                     return fail(errorMessage + result.error)
                 }
-            })
+            }
             
             let result:Result<Colour[], string> = this.sortColoursByHex(colours)
             if (isSuccess(result)) {
@@ -133,11 +115,12 @@ abstract class PaletteGenerator {
         
 
         let output:Colour[][] = []
-        const errorMessage:string = `Unable to get colours by hue angle. rgb:${rgb}, hsv:${hsv}, angleArray:${angleArray}.\n` 
-        angleArray.forEach((angles)=>{
-
+        const errorMessage:string = `Unable to get colours by hue angle. rgb:${rgb}, hsv:${hsv}, angleArray:${JSON.stringify(angleArray)}.\n` 
+        
+        for (let angles of angleArray) {
             let colours:HSV[] = []
-            angles.forEach(angle=>{
+            
+            for (let angle of angles) {
                 let hueResult:Result<number, string> = this.#modulo((Math.round(hsv.hue) + angle), 360)
                 if (hueResult.isSuccess()) {
                     let colour:HSV = {
@@ -151,7 +134,7 @@ abstract class PaletteGenerator {
                     return fail(errorMessage + hueResult.error)
                 }
 
-            })
+            }
             let result:Result<Colour[], string> = this.#formatRGBOutput(rgb, ...colours) 
             if (result.isSuccess()) {
                 output.push(result.value)
@@ -159,14 +142,15 @@ abstract class PaletteGenerator {
             else {
                 return fail(errorMessage + result.error)
             }
-        })        
+        }
         return success(output)
     }
 
     generateRandomSchemes(colourVerticies:Colour[][]):Result<Scheme[],string> {
         if (colourVerticies === null || colourVerticies === undefined) return fail('Unable to generate random scheme. Input is null or undefined.\n')
         let output:Scheme[] = []
-        colourVerticies.forEach(colourList=>{
+
+        for (const colourList of colourVerticies) {
             let schemeResult:Result<Scheme, string> = this.generateRandomScheme(colourList)
             if (isSuccess(schemeResult)) {
                 let scheme:Scheme = schemeResult.value
@@ -178,7 +162,8 @@ abstract class PaletteGenerator {
             else {
                 return fail(schemeResult.error)
             }
-        })
+        }
+        // if (errorFound) return fail(errorMessage)
         return success(output)
     }
     generatePalettes(rgb:HEX):Result<Palette[],string> {
@@ -191,17 +176,17 @@ abstract class PaletteGenerator {
             if (schemeResult.isSuccess()) {
                 let schemes = schemeResult.value
                 let palettes:Palette[] = []
-                schemes.forEach(scheme=>{
-                    
+                
+                for (let scheme of schemes) {
                     let result:Result<Palette, string> = this.generatePalette(rgb, scheme.colourVerticies)
-                    if (isSuccess(result)) {
+                    if (result.isSuccess()) {
                         palettes.push(result.value)
                     }
                     else {
                         return fail(errorMessage + result.error)
                     }
      
-                })
+                }
                 return success(palettes)
             }
             else {
@@ -217,7 +202,7 @@ abstract class PaletteGenerator {
         
        
         let result:Result<Scheme, string> = this.generateRandomScheme(colourVerticies)
-        const errorMessage:string = `Unable to generate palette. rgb:${rgb}, colourVerticies:${colourVerticies}.\n`
+        const errorMessage:string = `Unable to generate palette. rgb:${rgb}, colourVerticies:${JSON.stringify(colourVerticies)}.\n`
         if (isSuccess(result)) {
             let scheme:Scheme = result.value
             let hsvResult:Result<HSV,string> = this.converter.rgb2hsv(rgb)

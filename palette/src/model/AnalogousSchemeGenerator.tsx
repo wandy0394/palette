@@ -40,7 +40,8 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
     
         //convert points to cartesian coords
         const cartPoints:Point[] = []
-        hsvPoints.forEach(points=>{
+        // hsvPoints.forEach(points=>{
+        for (let points of hsvPoints) {
             let pointResult:Result<Point, string> = this.hsv2cartesian(points)
             if (pointResult.isSuccess()) {
                 cartPoints.push(pointResult.value)
@@ -48,7 +49,7 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
             else {
                 return fail(errorMessage + pointResult.error)
             }
-        })
+        }
         //divide the square into two triangles. The triangle contains the line (hsv[0], hsv[2]) === (cartPoints[0], cartPoints[2])
         const triangles:Point[][] = []
         triangles[0] = [
@@ -112,15 +113,6 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                 y:(1-r1sq)*triangles[1][0].y + r1sq*(1-r2)*triangles[1][1].y+ r2*r1sq*triangles[1][2].y
             } 
 
-            // let rHSV = this.cartesian2hsv(randomPoint)
-            // if (rHSV) {
-            //     rHSV.hue = Math.round(rHSV.hue)
-            //     rHSV.value = Math.random()
-            //     let rRGB = this.converter.hsv2rgb(rHSV)
-            //     temp.push({rgb:rRGB, hsv:rHSV})
-
-            // }
-
             let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
             let hsv:HSV = {
                 hue:0,
@@ -159,6 +151,8 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
     generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
         
         const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
+        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
+
         if (hsvResult.isSuccess()) {
             let angleArray:number[][] = [
                 [15, -15],
@@ -171,11 +165,12 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                 return success(output.value)
             }
             else {
-                return fail(`Unable to get colours by angle. rgb:${rgb} hsv:${hsvResult.value} angleArray:${angleArray}`)
+                return fail(errorMessage + output.error)
+
             }
         }
         else {
-            return fail(`Unable to convert rgb to hsv. rgb${rgb}. ` + hsvResult.error)
+            return fail(errorMessage +  hsvResult.error)
         }
     } 
     getName():string {
