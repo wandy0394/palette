@@ -1,4 +1,6 @@
+import { InvalidInputError } from "../exceptions/exceptions"
 import { HEX, HSV } from "../types/colours"
+import { Result, success } from "./common/error"
 
 class ColourConverter {
     isValidRGB(rgb:HEX):boolean {
@@ -10,9 +12,9 @@ class ColourConverter {
         return false
     }
 
-    rgb2hsv(rgb:HEX): HSV | null {
-        if (rgb === null) return null
-        if (!this.isValidRGB(rgb)) return null
+    rgb2hsv(rgb:HEX): Result<HSV,string>  {
+        if (rgb === null) return fail('rgb input is null.')
+        if (!this.isValidRGB(rgb)) return fail('rgb input is in invalid format.')
         let output:HSV = {
             hue: 0,
             saturation:0,
@@ -69,14 +71,14 @@ class ColourConverter {
         output.saturation = saturation
         output.value = value
 
-        return output
+        return success(output)
     }
 
-    hsv2rgb(hsv:HSV):HEX | null  {
+    hsv2rgb(hsv:HSV):Result<HEX,string>  {
         let output:string = '000000'
-        if (hsv === null) return null
-        if (hsv.hue < 0 || hsv.hue >= 360 || hsv.saturation < 0 || hsv.saturation > 1 || hsv.value < 0 || hsv.value > 1) return null
-        if (Number.isNaN(hsv.hue)|| Number.isNaN(hsv.saturation) || Number.isNaN(hsv.value)) return null
+        if (hsv === null) return fail('Input is null.')
+        if (hsv.hue < 0 || hsv.hue >= 360 || hsv.saturation < 0 || hsv.saturation > 1 || hsv.value < 0 || hsv.value > 1) return fail('Input properties out of range.')
+        if (Number.isNaN(hsv.hue)|| Number.isNaN(hsv.saturation) || Number.isNaN(hsv.value)) return fail('Input properties are NaN.')
         
         let chroma:number = hsv.value * hsv.saturation
 
@@ -118,9 +120,10 @@ class ColourConverter {
         let red:number = Math.round((redPrime + m) * 255)
         let green:number = Math.round((greenPrime + m) * 255)
         let blue:number = Math.round((bluePrime + m) * 255)
+        
         output = red.toString(16).padStart(2, '0') + green.toString(16).padStart(2, '0') + blue.toString(16).padStart(2, '0')
 
-        return output
+        return success(output)
     }
     
 }

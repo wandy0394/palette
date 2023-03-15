@@ -1,6 +1,8 @@
+import { IncorrectVertexCountError, NullInputError } from "../exceptions/exceptions";
 import { Point } from "../types/cartesian";
 import { Colour, HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
+import { Result, success } from "./common/error";
 import PaletteGenerator from "./paletteGenerator";
 
 export default class AnalogousSchemeGenerator extends PaletteGenerator {
@@ -18,24 +20,33 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
         return 0
     }
 
-    generateRandomScheme(colourVerticies:Colour[]): Scheme {
+    generateRandomScheme(colourVerticies:Colour[]): Result<Scheme,string> {
         //generate 10 random colours within the triangle bounded by the square colours
-        // let errorFound:boolean = false
+
+        if (colourVerticies === null) return fail('Input is null.')
+        if (colourVerticies.length !== 3) return fail('Invalid input. 3 verticies required')
+
         const hsvPoints:HSV[] = [] 
         //add the origin as a fourth point
         let allColourVerticies:Colour[] = [...colourVerticies, {rgb:'000000', hsv:{hue:0, saturation:0, value:0}}]
         allColourVerticies.forEach((colour)=>{
             hsvPoints.push(colour.hsv)
         })
-        // if (errorFound) return undefined
 
         //sort hsvPoints by hue in increasing order
         hsvPoints.sort((a,b)=>this.#compare(a,b))
 
     
         //convert points to cartesian coords
-        const cartPoints:Point[] = hsvPoints.map(points=>{
-            return this.hsv2cartesian(points)
+        const cartPoints:Point[] = []
+        hsvPoints.forEach(points=>{
+            let pointResult:Result<Point, string> = this.hsv2cartesian(points)
+            if (pointResult.isSuccess()) {
+                cartPoints.push(pointResult.value)
+            }
+            else {
+                return fail(`Unable to convert hsv to point. point:${points}. ` + pointResult.error)
+            }
         })
         //divide the square into two triangles. The triangle contains the line (hsv[0], hsv[2]) === (cartPoints[0], cartPoints[2])
         const triangles:Point[][] = []
@@ -65,14 +76,28 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                 y:(1-r1sq)*triangles[0][0].y + r1sq*(1-r2)*triangles[0][1].y+ r2*r1sq*triangles[0][2].y
             } 
 
-            let rHSV = this.cartesian2hsv(randomPoint)
-            if (rHSV) {
-                rHSV.hue = Math.floor(rHSV.hue)
-                rHSV.value = Math.random()
-                let rRGB = this.converter.hsv2rgb(rHSV)
-                temp.push({rgb:rRGB, hsv:rHSV})
-
+            let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
+            let hsv:HSV = {
+                hue:0,
+                saturation:0,
+                value:0
             }
+            if (rHSVResult.isSuccess()) {
+                hsv.hue = Math.floor(rHSVResult.value.hue)
+                hsv.saturation = rHSVResult.value.saturation
+                hsv.value = Math.random()
+                let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
+                if (rRGBResult.isSuccess()) {
+                    temp.push({rgb:rRGBResult.value, hsv:hsv})
+                }
+                else {
+                    return fail(`Unable to convert hsv to rgb hsv:${rHSVResult.value}. ` + rRGBResult.error)
+                }
+            }
+            else {
+                return fail(`Unable to convert point to hsv. point:${randomPoint}. ` + rHSVResult.error)
+            }
+
         }     
         
         //generate random points in each triangle
@@ -86,37 +111,71 @@ export default class AnalogousSchemeGenerator extends PaletteGenerator {
                 y:(1-r1sq)*triangles[1][0].y + r1sq*(1-r2)*triangles[1][1].y+ r2*r1sq*triangles[1][2].y
             } 
 
-            let rHSV = this.cartesian2hsv(randomPoint)
-            if (rHSV) {
-                rHSV.hue = Math.round(rHSV.hue)
-                rHSV.value = Math.random()
-                let rRGB = this.converter.hsv2rgb(rHSV)
-                temp.push({rgb:rRGB, hsv:rHSV})
+            // let rHSV = this.cartesian2hsv(randomPoint)
+            // if (rHSV) {
+            //     rHSV.hue = Math.round(rHSV.hue)
+            //     rHSV.value = Math.random()
+            //     let rRGB = this.converter.hsv2rgb(rHSV)
+            //     temp.push({rgb:rRGB, hsv:rHSV})
 
+            // }
+
+            let rHSVResult:Result<HSV,string> = this.cartesian2hsv(randomPoint)
+            let hsv:HSV = {
+                hue:0,
+                saturation:0,
+                value:0
+            }
+            if (rHSVResult.isSuccess()) {
+                hsv.hue = Math.floor(rHSVResult.value.hue)
+                hsv.saturation=rHSVResult.value.saturation
+                hsv.value = Math.random()
+                let rRGBResult:Result<HEX,string> = this.converter.hsv2rgb(hsv)
+                if (rRGBResult.isSuccess()) {
+                    temp.push({rgb:rRGBResult.value, hsv:hsv})
+                }
+                else {
+                    return fail(`Unable to convert hsv to rgb hsv:${rHSVResult.value}. ` + rRGBResult.error)
+                }
+            }
+            else {
+                return fail(`Unable to convert point to hsv. point:${randomPoint}. ` + rHSVResult.error)
             }
         }   
-        let sortedColours:Colour[] = this.sortColoursByHex(temp) 
-        let output:Scheme = {
-            palette:[...sortedColours, ...colourVerticies],
-            colourVerticies:colourVerticies
+        let sortedColours:Result<Colour[],string> = this.sortColoursByHex(temp) 
+        if (sortedColours.isSuccess()) {
+            let output:Scheme = {
+                palette:[...sortedColours.value, ...colourVerticies],
+                colourVerticies:colourVerticies
+            }
+            return success(output)
         }
-        
-        return output
+        else {
+            return fail(`Unable to sort colours. colours:${temp}. ` + sortedColours.error)
+        }
     }
 
-    generateColourVerticies(rgb:HEX):Colour[][] {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:Colour[][]=[[]]
+    generateColourVerticies(rgb:HEX): Result<Colour[][], string> {
+        
+        const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
+        if (hsvResult.isSuccess()) {
+            let angleArray:number[][] = [
+                [15, -15],
+                [30, 15],
+                [-15, -30]
+            ]
+            let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
+            if (output.isSuccess()) {
 
-        if (hsv === null) return output
-
-
-        let angleArray:number[][] = [
-            [15, -15],
-            [30, 15],
-            [-15, -30]
-        ]
-        return this.getColoursByHueAngle(rgb, hsv, angleArray)
+                return success(output.value)
+            }
+            else {
+                return fail(`Unable to get colours by angle. rgb:${rgb} hsv:${hsvResult.value} angleArray:${angleArray}`)
+            }
+        }
+        else {
+            return fail(`Unable to convert rgb to hsv. rgb${rgb}. ` + hsvResult.error)
+        }
     } 
     getName():string {
         return "Analogous Colour Scheme"

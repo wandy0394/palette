@@ -3,6 +3,7 @@ import { range } from "../model/common/utils"
 import PaletteGenerator from "../model/paletteGenerator"
 import { HSV, Palette, Scheme } from "../types/colours"
 import ColourWheelPoint from "./common/ColourWheelPoint"
+import ErrorBoundary from "./ErrorBoundary"
 
 
 const cc = new ColourConverter()
@@ -54,57 +55,59 @@ export default function ColourWheel(props:Props) {
         radius = palette.mainColour.hsv.saturation * 1000 + 950 //to scale with 5% width of circle
     }
     return (
-        <div className='relative w-full flex items-center justify-center aspect-square border-2 border-solid'>
-            {
-                wheelWidths.map((width, wheelIndex)=>{
-                    
-                    let saturation:number = (100-((wheelIndex+1)*stepSize)) / 100
-                    let wheelHSVs:HSV[] = getWheelHSV(saturation, colourValue/100)
-                    let colours = getRGBColourString(wheelHSVs)
-                    return (
-                        <div 
+        <ErrorBoundary>
+            <div className='relative w-full flex items-center justify-center aspect-square border-2 border-solid'>
+                {
+                    wheelWidths.map((width, wheelIndex)=>{
+                        
+                        let saturation:number = (100-((wheelIndex+1)*stepSize)) / 100
+                        let wheelHSVs:HSV[] = getWheelHSV(saturation, colourValue/100)
+                        let colours = getRGBColourString(wheelHSVs)
+                        return (
+                            <div 
                             key={`wheel-${wheelIndex}`} 
                             style={{
                                 position:'absolute',
                                 width:`${width}%`, 
                                 aspectRatio:'1/1', 
                                 borderRadius:'100%', 
-                                background:`conic-gradient(${colours})`,
-                                transform:'rotate(90deg)',
-                                zIndex:`${wheelIndex}`
-                            }}
-                        > 
-                        </div>
-                    )
-                })
-            }
+                                    background:`conic-gradient(${colours})`,
+                                    transform:'rotate(90deg)',
+                                    zIndex:`${wheelIndex}`
+                                }}
+                                > 
+                            </div>
+                        )
+                    })
+                }
 
-            
-            <ColourWheelPoint colour={palette.mainColour.rgb} radius={radius} angle={angle} scale={5}/>
-            {
-                palette.accentColours.map((colour, index)=>{
-                    if (colour) {
-                        if (colour.hsv === null) return
-                        let angle:number = Math.floor(colour.hsv.hue) 
-                        let radius:number = colour.hsv.saturation * (1000) + 950 //to scale with 5% width of circle
-                        return (
-                            <ColourWheelPoint key={`accent-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={5}/>
-                        )
+                
+                <ColourWheelPoint colour={palette.mainColour.rgb} radius={radius} angle={angle} scale={5}/>
+                {
+                    palette.accentColours.map((colour, index)=>{
+                        if (colour) {
+                            if (colour.hsv === null) return
+                            let angle:number = Math.floor(colour.hsv.hue) 
+                            let radius:number = colour.hsv.saturation * (1000) + 950 //to scale with 5% width of circle
+                            return (
+                                <ColourWheelPoint key={`accent-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={5}/>
+                                )
+                            }
+                        })
                     }
-                })
-            }
-            {
-                palette.supportColours.map((colour, index)=>{
-                    if (colour) {
-                        if (colour.hsv === null) return
-                        let angle:number = Math.floor(colour.hsv.hue) 
-                        let radius:number = colour.hsv.saturation * 2500 + 2450 //scales with width of 2%
-                        return (
-                            <ColourWheelPoint key={`support-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={2}/>
-                        )
+                {
+                    palette.supportColours.map((colour, index)=>{
+                        if (colour) {
+                            if (colour.hsv === null) return
+                            let angle:number = Math.floor(colour.hsv.hue) 
+                            let radius:number = colour.hsv.saturation * 2500 + 2450 //scales with width of 2%
+                            return (
+                                <ColourWheelPoint key={`support-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={2}/>
+                                )
+                            }
+                        })
                     }
-                })
-            }
-        </div>
+            </div>
+        </ErrorBoundary>
     )
 }

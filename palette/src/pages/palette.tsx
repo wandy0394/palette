@@ -27,7 +27,7 @@ export default function Palette() {
                 <ColourPickerSection colours={colours} setColours={setColours}/>
                 <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
             </section>
-           <section className='bg-neutral-900 w-full py-8 px-8 md:py-16 md:px-24'>
+           {/* <section className='bg-neutral-900 w-full py-8 px-8 md:py-16 md:px-24'>
                 <ColourScheme rgb={dominantColour} generator={new ComplementarySchemeGenerator(converter)}/>
             </section>
             <section className='bg-neutral-800 w-full py-8 px-8 md:py-16 md:px-24'>
@@ -35,17 +35,17 @@ export default function Palette() {
             </section>
             
             <section className='bg-neutral-900 w-full py-8 px-8 md:py-16 md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new TriadicSchemeGenerator(converter)}/>
-            </section>
+                <ColourScheme rgb={dominantColour} generator={new TriadicSchemeGenerator(converter)}/> 
+            </section>*/}
             <section className='bg-neutral-800 w-full py-8 px-8 md:py-16 md:px-24'>
                 <ColourScheme rgb={dominantColour} generator={new AnalogousSchemeGenerator(converter)}/>
             </section>
-            <section className='bg-neutral-900 w-full py-8 px-8 md:py-16 md:px-24'>
+            {/* <section className='bg-neutral-900 w-full py-8 px-8 md:py-16 md:px-24'>
                 <ColourScheme rgb={dominantColour} generator={new SquareSchemeGenerator(converter)}/>
             </section>
             <section className='bg-neutral-800 w-full py-8 px-8 md:py-16 md:px-24'>
                 <ColourScheme rgb={dominantColour} generator={new TetraticSchemeGenerator(converter)}/>
-            </section>
+            </section> */}
         </ContentBox>
     )
 }

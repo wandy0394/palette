@@ -51,15 +51,18 @@ export default class ComplementarySchemeGenerator extends PaletteGenerator {
     }
 
     generateColourVerticies(rgb:HEX):Colour[][] {
-        const hsv:HSV | null = this.converter.rgb2hsv(rgb)
-        const output:Colour[][] = [[]]
+        try {
+            const hsv:HSV = this.converter.rgb2hsv(rgb)
+            const angleArray:number[][] = [
+                [180]
+            ]
+            return this.getColoursByHueAngle(rgb, hsv, angleArray)
 
-        if (hsv === null) return output
-
-        const angleArray:number[][] = [
-            [180]
-        ]
-        return this.getColoursByHueAngle(rgb, hsv, angleArray)
+        }
+        catch(e:unknown) {
+            console.error(e)
+            throw e
+        }
     } 
     getName():string {
         return "Complementary Colour Scheme"

@@ -6,6 +6,7 @@ import ColourWheel from './ColourWheel';
 import ColourConverter from '../model/colourConverter';
 import PaletteGenerator from '../model/paletteGenerator';
 import { cartesian2hsv } from '../model/common/utils';
+import ErrorBoundary from './ErrorBoundary';
 
 const cc = new ColourConverter()
 type Props = {
@@ -93,35 +94,38 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
     }, [handlePosition])
 
     return (
-        <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
-            <div ref={ref} className='w-full h-full'>
-                <Interactive 
-                    
-                    style={{
-                        position:'relative', 
-                        width:'100%',
-                        height:'100%',
-                        borderRadius:'100%'
-                    }} 
-                    onMove={handleChange} 
-                    onDown={handleChange}>
-                    <div 
-                        className='absolute rounded-full aspect-square z-[80]' 
-                        style={{
-                            width:`${handleWidth}px`,
-                            top:'0', 
-                            left:'0', 
-                            transform:`translate(${position.x}px, ${position.y}px)`,
-                            border:`2px solid  ${(colourValue < 50)?'white':'black'}`
-                        }}
-                    />
-                    <ColourWheel palette={palette} colourValue={colourValue}/>
-                </Interactive>
+        <ErrorBoundary>
 
+            <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
+                <div ref={ref} className='w-full h-full'>
+                    <Interactive 
+                        
+                        style={{
+                            position:'relative', 
+                            width:'100%',
+                            height:'100%',
+                            borderRadius:'100%'
+                        }} 
+                        onMove={handleChange} 
+                        onDown={handleChange}>
+                        <div 
+                            className='absolute rounded-full aspect-square z-[80]' 
+                            style={{
+                                width:`${handleWidth}px`,
+                                top:'0', 
+                                left:'0', 
+                                transform:`translate(${position.x}px, ${position.y}px)`,
+                                border:`2px solid  ${(colourValue < 50)?'white':'black'}`
+                            }}
+                            />
+                        <ColourWheel palette={palette} colourValue={colourValue}/>
+                    </Interactive>
+
+                </div>
+                <div className='w-full text-2xl text-center'>
+                    #{sampleColour.rgb}
+                </div>
             </div>
-            <div className='w-full text-2xl text-center'>
-                #{sampleColour.rgb}
-            </div>
-        </div>
+        </ErrorBoundary>
     )
 })

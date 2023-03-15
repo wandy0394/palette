@@ -1,6 +1,6 @@
 import ContentBox from "../components/common/ContentBox"
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
-import { Colour, ColourRole, HEX, HSV, Palette, PaletteKey } from "../types/colours"
+import { Colour, HEX, HSV, Palette } from "../types/colours"
 import ValueSlider from "../components/ValueSlider"
 import ComplementarySchemeGenerator from "../model/ComplementarySchemeGenerator"
 import ColourConverter from "../model/colourConverter"

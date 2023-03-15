@@ -2,6 +2,7 @@ import { HEX } from "../types/colours"
 import {useState, ChangeEvent} from "react"
 import ColourConverter from "../model/colourConverter"
 import ColouredSquare from "../components/ColouredSquare"
+import ErrorBoundary from "../components/ErrorBoundary"
 
 type Props = {
     colours: HEX[],
@@ -50,19 +51,21 @@ export default function ColourPickerSection(props:Props) {
         setColours(newColours)
     }
     return (
-        <div className='flex flex-col items-center justify-center w-full gap-4'>
-            <div className='prose flex flex-col items-center '>
-                <h2 className='text-neutral-400'>Choose a favourite colour</h2>
-                <p className='text-neutral-400'>We will generate swatches for you</p>
-            </div>
-            <div className='w-full md:w-1/2 lg:w-1/4 gap-4 px-16'>
-                {
-                    colours.map((colour, index)=>{
-                        return <ColourPicker key={index} colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>
-                    })
-                }
-            </div>
+        <ErrorBoundary>
+            <div className='flex flex-col items-center justify-center w-full gap-4'>
+                <div className='prose flex flex-col items-center '>
+                    <h2 className='text-neutral-400'>Choose a favourite colour</h2>
+                    <p className='text-neutral-400'>We will generate swatches for you</p>
+                </div>
+                <div className='w-full md:w-1/2 lg:w-1/4 gap-4 px-16'>
+                    {
+                        colours.map((colour, index)=>{
+                            return <ColourPicker key={index} colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>
+                        })
+                    }
+                </div>
 
-        </div>
+            </div>
+        </ErrorBoundary>
     )
 }
