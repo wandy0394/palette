@@ -233,7 +233,6 @@ abstract class PaletteGenerator {
                 return fail(errorMessage + schemeResult.error)
             }
         }
-        // console.error(result.error)
         return fail(errorMessage + result.error)
     }
     generatePalette(rgb:HEX, colourVerticies:Colour[]):Result<Palette, string> {
