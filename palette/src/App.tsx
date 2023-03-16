@@ -5,6 +5,7 @@ import Editor from './pages/editor'
 import Login from './pages/login'
 import Palette from './pages/palette'
 import Signup from './pages/signup'
+import Library from './pages/library'
 
 
 type Props = {
@@ -37,6 +38,7 @@ function App() {
           <div className='tabs flex gap-16'>
             <NavLink isActive={isActive} targetPath='/' title='Generator'/>
             <NavLink isActive={isActive} targetPath='/editor' title='Editor'/>
+            <NavLink isActive={isActive} targetPath='/library' title='Library'/>
           </div>
         </div>
         <div className="navbar-end flex items-center justify-end gap-4 py-1">
@@ -54,6 +56,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>
+          <Route path="/library" element={<Library/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/signup" element={<Signup/>}/>
         </Routes>
