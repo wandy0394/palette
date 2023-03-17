@@ -23,7 +23,8 @@ class LibraryController {
     }
 
     static deletePalette(req:Request, res:Response, next:NextFunction) {
-        const result = LibraryService.deletePalette(DUMMY_EMAIL)
+        const body = req.body as {id:string}
+        const result = LibraryService.deletePalette(DUMMY_EMAIL, body.id)
         res.status(200).json({response:'delete'})
 
     }
