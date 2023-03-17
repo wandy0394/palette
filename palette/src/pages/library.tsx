@@ -12,16 +12,18 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     const navigate = useNavigate()
 
     function handleEditClick() {
-        navigate('/editor', {state:{...savedPalette.palette, id:savedPalette.id}})
+        navigate('/editor/'+savedPalette.id, {state:{...savedPalette.palette}})
     }
 
     
     return (
         <div className='flex flex-col gap-4 items-center justify-center w-full h-full'>
-            <div className='w-full flex items-center justify-between'>
+            <div className='w-full flex items-center justify-between py-4'>
                 <h2>{savedPalette.name}</h2>
-                <button className='btn btn-xs btn-primary' onClick={handleEditClick}>Edit</button>
-                <button className='btn btn-xs btn-primary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                <div className='flex gap-4'>
+                    <button className='btn btn-xs lg:btn-md btn-primary' onClick={handleEditClick}>Edit</button>
+                    <button className='btn btn-xs lg:btn-md btn-secondary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                </div>
             </div>
             <PaletteSwatch palette={savedPalette.palette}/>
         </div>

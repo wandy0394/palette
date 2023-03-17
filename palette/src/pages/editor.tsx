@@ -15,16 +15,17 @@ import PaletteSwatchEditor from "../components/PaletteSwatchEditor"
 import ColourWheelPicker from "../components/ColourWheelPicker"
 import { Point } from "../types/cartesian"
 import {  createColour, rgb2cartesian } from "../model/common/utils"
-import { useLocation } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import CustomTriadicSchemeGenerator from "../model/CustomTriadicSchemeGenerator"
 import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerator"
 import { ACTION_TYPES, useChosenColour } from "../hooks/useChosenColour"
 import HarmonySelector from "../components/HarmonySelector"
 import { width } from "@mui/system"
 import { Result } from "../model/common/error"
+import LibraryService from "../service/library-service"
 
 
-
+const DUMMY_EMAIL = "dev@dev.com"
 type Harmonies = {
     [key:string]:{id:number, label:string, generator:PaletteGenerator},
 }
@@ -72,7 +73,11 @@ const initialState = {
     index:0
 }
 const MAX_VALUE:number = 100
-export default function Editor() {
+type Props = {
+    updatePalette?:Function
+}
+export default function Editor(props:Props) {
+    const params = useParams()
     const [value, setValue] = useState<number>(MAX_VALUE)
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
@@ -98,6 +103,14 @@ export default function Editor() {
         return ()=>resizeObserver.disconnect()
     }, [])
 
+    useEffect(()=>{
+        if (params.id) {
+            //get palette by id
+            //check that logged in user has access to this id
+            //if not, throw error
+            console.log(params)
+        }
+    },[params])
     useEffect(()=>{
         if (state && state.colour) initHandlePosition(state.colour)
     }, [wheelWidth, handleWidth])
@@ -196,6 +209,23 @@ export default function Editor() {
         }
     }
 
+
+    function savePalette() {
+        //check if user logged in, otherwise, prompt them to sign up
+        if (state.palette) {
+            async function save() {
+                const result:Result<string,string> = await LibraryService.savePalette(DUMMY_EMAIL, state.palette)
+                if (result.isSuccess()) {
+                    console.log('yay')
+                }
+                else {
+                    console.log('no')
+                }
+            }
+            save()
+        }
+    }
+
     return (
         <ContentBox>
             <section className='bg-neutral-900 w-full py-16 px-24'>
@@ -209,9 +239,10 @@ export default function Editor() {
                     </div>
                 </div>
             </section>
-            <section className='bg-neutral-800 w-full py-16 px-24'>
+            <section className='bg-neutral-800 w-full py-8 px-24'>
+                <button className='btn btn-primary w-full mb-8' onClick={savePalette}>Save</button>
                 {
-                    <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8`}>
+                    <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center pb-8`}>
                         {
                             <PaletteSwatchEditor 
                                 state={state}
