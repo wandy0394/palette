@@ -11,8 +11,9 @@ class LibraryService {
 
     }
 
-    static deletePalette(userEmail:string) {
-
+    static deletePalette(userEmail:string, id:string) {
+        const result = LibraryDAO.deletePalette(userEmail, id)
+        return result
     }
 
     static addPalette(userEmail:string, palette:Palette) {

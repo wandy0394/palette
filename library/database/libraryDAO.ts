@@ -18,11 +18,15 @@ class LibraryDAO {
         }
         data.palettes.push(savedPalette)
         let hasError:boolean = false
-        fs.writeFile('./database/dummyData.json', JSON.stringify(data, null, 2), function writeJSON(err) {
+        fs.writeFile('./dist/database/dummyData.json', JSON.stringify(data, null, 2), function writeJSON(err) {
             if (err) hasError = true
         })
         
         return !hasError
+    }
+
+    static deletePalette(userEmail:string, id:string) {
+        
     }
 }
 
