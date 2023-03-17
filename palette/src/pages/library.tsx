@@ -12,16 +12,18 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     const navigate = useNavigate()
 
     function handleEditClick() {
-        navigate('/editor', {state:{...savedPalette.palette, id:savedPalette.id}})
+        navigate('/editor/'+savedPalette.id, {state:{...savedPalette.palette}})
     }
 
     
     return (
-        <div className='flex flex-col gap-4 items-center justify-center w-full'>
-            <div className='w-full flex items-center justify-between'>
+        <div className='flex flex-col gap-4 items-center justify-center w-full h-full'>
+            <div className='w-full flex items-center justify-between py-4'>
                 <h2>{savedPalette.name}</h2>
-                <button className='btn btn-xs btn-primary' onClick={handleEditClick}>Edit</button>
-                <button className='btn btn-xs btn-primary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                <div className='flex gap-4'>
+                    <button className='btn btn-xs lg:btn-md btn-primary' onClick={handleEditClick}>Edit</button>
+                    <button className='btn btn-xs lg:btn-md btn-secondary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                </div>
             </div>
             <PaletteSwatch palette={savedPalette.palette}/>
         </div>
@@ -31,9 +33,12 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 export default function Library() {
     const [library, setLibrary] = useLibrary({userEmail: DUMMY_EMAIL})
 
+    
+
+
     function handleDeleteClick(id:number) {
         //call api service to delete
-
+        
         const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== id)
         setLibrary(newLibrary)
     }
@@ -50,7 +55,7 @@ export default function Library() {
                 (library.length <= 0) &&
                     (<section className='text-2xl'>You have no palettes saved.</section>)
             }
-            <div className='w-full grid lg:grid-cols-2 gap-8 auto-rows-fr'>
+            <div className='w-full h-screen grid lg:grid-cols-2 gap-8'>
             {
                 
                 (library.length > 0) &&

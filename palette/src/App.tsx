@@ -6,6 +6,7 @@ import Login from './pages/login'
 import Palette from './pages/palette'
 import Signup from './pages/signup'
 import Library from './pages/library'
+import Updater from './pages/updater'
 
 
 type Props = {
@@ -56,9 +57,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>
+          <Route path="/editor/:id/" element={<Editor/>}/>
           <Route path="/library" element={<Library/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/signup" element={<Signup/>}/>
+          <Route path="*" element={<h1>Error 404: Page not found</h1>}/>
         </Routes>
       </div>
     </div>
