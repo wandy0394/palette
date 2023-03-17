@@ -31,9 +31,12 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 export default function Library() {
     const [library, setLibrary] = useLibrary({userEmail: DUMMY_EMAIL})
 
+    
+
+
     function handleDeleteClick(id:number) {
         //call api service to delete
-
+        
         const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== id)
         setLibrary(newLibrary)
     }
