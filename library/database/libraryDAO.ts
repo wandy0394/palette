@@ -9,7 +9,7 @@ class LibraryDAO {
     }
 
     static addPalette(userEmail:string, palette:Palette, name:string) {
-        const id:number = data.palettes.length
+        const id:number = data.palettes.length + 1
         const savedPalette = {
             id:id,
             email:userEmail,
@@ -17,9 +17,12 @@ class LibraryDAO {
             palette:palette
         }
         data.palettes.push(savedPalette)
-        fs.writeFile('./dummyData.json', JSON.stringify(data), function writeJSON(err) {
-            if (err) console.error('error')
+        let hasError:boolean = false
+        fs.writeFile('./database/dummyData.json', JSON.stringify(data, null, 2), function writeJSON(err) {
+            if (err) hasError = true
         })
+        
+        return !hasError
     }
 }
 
