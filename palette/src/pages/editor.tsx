@@ -104,6 +104,7 @@ export default function Editor() {
 
     useEffect(()=>{
         if (location.state && location.state.mainColour.rgb) {
+            console.log(JSON.stringify(location.state))
             let payload = {
                 palette:location.state,
                 colour:location.state.mainColour,
