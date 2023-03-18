@@ -110,8 +110,20 @@ export default function Editor(props:Props) {
             //get palette by id
             async function get() {
                 try {
-                    const savedPalette:SavedPalette|null = await LibraryService.getPaletteById(DUMMY_EMAIL, DUMMY_ID, params.id as string)
+                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(DUMMY_EMAIL, DUMMY_ID, params.id as string)
                     console.log(savedPalette)
+                    if (savedPalette && savedPalette.length > 0) {
+                        let payload = {
+                            palette:savedPalette[0].palette,
+                            colour:savedPalette[0].palette.mainColour,
+                            role:ACTION_TYPES.UPDATE_MAINCOLOUR,
+                            index:0
+                        }
+                        dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+                    }
+                    else {
+                        //no 
+                    }
                 }
                 catch (e) {
                     console.error(e)

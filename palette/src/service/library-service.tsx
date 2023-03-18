@@ -34,10 +34,10 @@ class LibraryService {
         }
     }
 
-    static async getPaletteById(userEmail:string, userId:number, paletteId:string):Promise<SavedPalette|null> {
-        
+    static async getPaletteById(userEmail:string, userId:number, paletteId:string):Promise<SavedPalette[]|null> {
+        //need to either pass userEmail
         try {
-            const response = await this.#request<{data:SavedPalette|null}>(URL+`${userId}/${paletteId}`)
+            const response = await this.#request<{data:SavedPalette[]|null}>(URL+`${userId}/${paletteId}`)
             return response.data
         }
         catch (e) {
