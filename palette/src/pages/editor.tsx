@@ -23,9 +23,11 @@ import HarmonySelector from "../components/HarmonySelector"
 import { width } from "@mui/system"
 import { Result } from "../model/common/error"
 import LibraryService from "../service/library-service"
+import { SavedPalette } from "../types/library"
 
 
 const DUMMY_EMAIL = "dev@dev.com"
+const DUMMY_ID = 1
 type Harmonies = {
     [key:string]:{id:number, label:string, generator:PaletteGenerator},
 }
@@ -106,6 +108,16 @@ export default function Editor(props:Props) {
     useEffect(()=>{
         if (params.id) {
             //get palette by id
+            async function get() {
+                try {
+                    const savedPalette:SavedPalette|null = await LibraryService.getPaletteById(DUMMY_EMAIL, DUMMY_ID, params.id as string)
+                    console.log(savedPalette)
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            }
+            get()
             //check that logged in user has access to this id
             //if not, throw error
             console.log(params)

@@ -23,9 +23,9 @@ class LibraryService {
         }
     }
 
-    static async getPalettes(userEmail:string):Promise<SavedPalette[]> {
+    static async getPalettes(userEmail:string, userId:number):Promise<SavedPalette[]> {
         try {
-            let palettes = await this.#request<{data:SavedPalette[]}>(URL+`${1}`)
+            let palettes = await this.#request<{data:SavedPalette[]}>(URL+`${userId}`)
             return palettes.data
         }
         catch (e:unknown) {
@@ -34,15 +34,21 @@ class LibraryService {
         }
     }
 
-    static async getPaletteById(userEmail:string, id:number):Promise<SavedPalette|null> {
-        let palette:SavedPalette|null = null
+    static async getPaletteById(userEmail:string, userId:number, id:string):Promise<SavedPalette|null> {
+        
         try {
-            // const respone:Response = await fetch()
+            const params = {
+                paletteId:id.toString(),
+                userEmail:userEmail,
+                userId:"1"
+            }
+            const response = await this.#request<{data:SavedPalette|null}>(URL+`${id}/${userId}`)
+            return response.data
         }
-        catch (e:unknown) {
+        catch (e) {
             console.log(e)
+            throw(e)
         }
-        return palette
     }
 
     static async savePalette(userEmail:string, palette:Palette) {
