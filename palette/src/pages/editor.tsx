@@ -215,12 +215,11 @@ export default function Editor(props:Props) {
         //check if user logged in, otherwise, prompt them to sign up
         if (state.palette) {
             async function save() {
-                const result:Result<string,string> = await LibraryService.savePalette(DUMMY_EMAIL, state.palette)
-                if (result.isSuccess()) {
-                    console.log('yay')
+                try {
+                    const result =  await LibraryService.savePalette(DUMMY_EMAIL, state.palette)
                 }
-                else {
-                    console.log('no')
+                catch (e) {
+                    console.log('Could not add palette')
                 }
             }
             save()

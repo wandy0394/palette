@@ -27,9 +27,16 @@ class LibraryService {
         return result
     }
 
-    static addPalette(userEmail:string, palette:Palette) {
-        const result = LibraryDAO.addPalette(1, userEmail, palette, "DUMMY")
-        return result        
+    static async addPalette(userEmail:string, palette:Palette):Promise<string> {
+        try {
+
+            const result = LibraryDAO.addPalette(1, userEmail, palette, "DUMMY")
+            return result        
+        }
+        catch (e) {
+            console.log('throwing')
+            throw e
+        }
     }
 }
 

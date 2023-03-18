@@ -9,22 +9,36 @@ class LibraryController {
     static async getPalette(req:Request, res:Response, next:NextFunction) {
         LibraryService.getPalette(DUMMY_EMAIL, 1)
             .then(response=>{
-                console.log(response)
-                res.status(200).json({data:response})
+                res.status(200).send({data:response})
             })
             .catch(response=>{
-                res.status(500).json({error:'Internal server error'})
+                res.status(500).send({error:'Internal server error'})
             })
     }
-    static addPalette(req:Request, res:Response, next:NextFunction) {
+    static async addPalette(req:Request, res:Response, next:NextFunction) {
         // console.log(req.body.userEmail)
+        
         const body = (req.body)
-        if (req.body.userId === undefined) res.status(400).json({response:'Missing userId', status:'error'})
-        if (req.body.userEmail === undefined) res.status(400).json({response:'Missing userEmail', status:'error'})
-        if (req.body.palette === undefined) res.status(400).json({response:'Missing Palette', status:'error'})
+        if (req.body.userId === undefined) {
+            res.status(400).send({response:'Missing userId', status:'error'}) 
+            return
+        }
+        if (req.body.userEmail === undefined) {
+            res.status(400).send({response:'Missing userEmail', status:'error'}) 
+            return
+        }
+        if (req.body.palette === undefined) {
+            res.status(400).send({response:'Missing Palette', status:'error'})
+            return
+        }
         // console.log(body.palette)
-        //const result = LibraryService.addPalette(req.body.userEmail, req.body.palette)
-        res.status(200).json({response:'success', status:'ok'})
+        LibraryService.addPalette(req.body.userEmail, req.body.palette)
+            .then(response=>{
+                res.status(200).send({response:response, status:'ok'})
+            })
+            .catch(response=>{
+                res.status(500).send({response:response, status:'error'})
+            })
     }
 
     static updatePalette(req:Request, res:Response, next:NextFunction) {

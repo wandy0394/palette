@@ -68,43 +68,45 @@ class LibraryDAO {
             return promise
     }
 
-    static addPalette(userId:number, userEmail:string, palette:Palette, name:string) {
-        if (db) {
-            const mainColour = JSON.stringify(palette.mainColour)
-            const accentColours = JSON.stringify(palette.accentColours)
-            const supportColours = JSON.stringify(palette.supportColours)
-            const colourVerticies = JSON.stringify(palette.colourVerticies)
-            console.log(mainColour)
-
-            const sqlQuery:string = `INSERT INTO Palettes 
-                                        (
-                                            name,
-                                            MainColour,
-                                            AccentColours,
-                                            SupportColours,
-                                            ColourVerticies,
-                                            UserId
-                                        )
-                                        VALUES
-                                        (
-                                            '${name}',
-                                            '${mainColour}',
-                                            '${accentColours}',
-                                            '${supportColours}',
-                                            '${colourVerticies}',
-                                            ${userId}
-                                        )`
-            db.query(sqlQuery, (err, results, fields)=>{
-                if (err) {
-                    console.error(err)
-                }
-                console.log(results)
-                return results
-            })
-        }
-        else {
-
-        }
+    static async addPalette(userId:number, userEmail:string, palette:Palette, name:string):Promise<string> {
+        const promise = new Promise<string>((resolve, reject)=>{
+            try {
+                const mainColour = JSON.stringify(palette.mainColour)
+                const accentColours = JSON.stringify(palette.accentColours)
+                const supportColours = JSON.stringify(palette.supportColours)
+                const colourVerticies = JSON.stringify(palette.colourVerticies)
+                
+                const sqlQuery:string = `INSERT INTO Palettes 
+                                            (
+                                                name,
+                                                MainColour,
+                                                AccentColours,
+                                                SupportColours,
+                                                ColourVerticies,
+                                                UserId
+                                            )
+                                            VALUES
+                                            (
+                                                '${name}',
+                                                '${mainColour}',
+                                                '${accentColours}',
+                                                '${supportColours}',
+                                                '${colourVerticies}',
+                                                ${userId}
+                                                )`
+                db.query(sqlQuery, (err, results, fields)=>{
+                    if (err) {
+                        // console.error(err)
+                        reject('Invalid query')
+                    }
+                    resolve('ok')
+                })
+            }
+            catch (e) {
+                reject('error')
+            }
+        })
+        return promise
     }
 
 
