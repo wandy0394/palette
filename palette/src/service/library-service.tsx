@@ -67,6 +67,29 @@ class LibraryService {
         }
     }
 
+    static async updatePalette(userEmail:string, palette:Palette, paletteId:number) {
+        let config:RequestInit = {
+            method:'PUT',
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
+                userId:1,
+                userEmail:userEmail,
+                palette:palette,
+                paletteId:paletteId
+            })
+        }
+        try {
+            const response = await this.#request<{response:string, status:string}>(URL, config)
+            console.log(response)
+        }
+        catch (e) {
+            console.error(e)
+            throw (e)
+        }
+    }
+
     static async deletePalette(userEmail:string, paletteId:number) {
         let config:RequestInit = {
             method:'DELETE',

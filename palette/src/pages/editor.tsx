@@ -130,9 +130,12 @@ export default function Editor(props:Props) {
                 }
             }
             get()
-            //check that logged in user has access to this id
+            ////TODO:check that logged in user has access to this id
             //if not, throw error
             console.log(params)
+        }
+        else {
+            console.log('no params')
         }
     },[params])
     useEffect(()=>{
@@ -167,7 +170,7 @@ export default function Editor(props:Props) {
             newValue = result.value.value 
         }
         else {
-            //throw exception/error
+            ////TODO:throw exception/error
         } 
         setValue(newValue*MAX_VALUE)
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
@@ -199,12 +202,12 @@ export default function Editor(props:Props) {
                     initHandlePosition(newPalette.mainColour)
                 }
                 else {
-                    //handle error
+                    ////TODO:handle error
                     return
                 }
             }
             else {
-                //handle error
+                ////TODO:handle error
                 return
             }
         }
@@ -236,17 +239,32 @@ export default function Editor(props:Props) {
 
 
     function savePalette() {
-        //check if user logged in, otherwise, prompt them to sign up
+        //TODO:check if user logged in, otherwise, prompt them to sign up
         if (state.palette) {
             async function save() {
                 try {
-                    const result =  await LibraryService.savePalette(DUMMY_EMAIL, state.palette)
+                    const result = await LibraryService.savePalette(DUMMY_EMAIL, state.palette)
                 }
                 catch (e) {
                     console.log('Could not add palette')
                 }
             }
-            save()
+
+            async function update() {
+                try {
+                    const result = await LibraryService.updatePalette(DUMMY_EMAIL, state.palette, parseInt(params.id as string)) //TODO: validate params.id
+                }
+                catch (e) {
+                    console.log('Could not add palette')
+                }
+            }
+            if (params.id) {
+                console.log('update')
+                update()
+            }
+            else {
+                save()
+            }
         }
     }
 

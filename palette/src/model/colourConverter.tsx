@@ -1,6 +1,6 @@
 import { InvalidInputError } from "../exceptions/exceptions"
 import { HEX, HSV } from "../types/colours"
-import { Result, success } from "./common/error"
+import { Result, success, fail } from "./common/error"
 
 class ColourConverter {
     isValidRGB(rgb:HEX):boolean {
