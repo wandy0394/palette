@@ -11,4 +11,6 @@ router.route("/paletteLibrary")
 router.route("/paletteLibrary/:id")
     .get(LibraryController.getPalette)
 
+router.route("/paletteLibrary/:userId/:paletteId")
+    .get(LibraryController.getPaletteById)    
 export default router
