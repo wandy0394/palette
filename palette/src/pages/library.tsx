@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import ContentBox from "../components/common/ContentBox";
 import PaletteSwatch from "../components/PaletteSwatch";
 import useLibrary from "../hooks/useLibrary";
+import LibraryService from "../service/library-service";
 import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
 
@@ -19,7 +20,8 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     return (
         <div className='flex flex-col gap-4 items-center justify-center w-full h-full'>
             <div className='w-full flex items-center justify-between py-4'>
-                <h2>{savedPalette.name}</h2>
+                <h2>{savedPalette.name}, ID:{savedPalette.id}</h2>
+                
                 <div className='flex gap-4'>
                     <button className='btn btn-xs lg:btn-md btn-primary' onClick={handleEditClick}>Edit</button>
                     <button className='btn btn-xs lg:btn-md btn-secondary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
@@ -38,9 +40,17 @@ export default function Library() {
 
     function handleDeleteClick(id:number) {
         //call api service to delete
-        
-        const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== id)
-        setLibrary(newLibrary)
+        async function deletePalette() {
+            try {
+                await LibraryService.deletePalette(DUMMY_EMAIL, id)
+                const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== id)
+                setLibrary(newLibrary)
+            }
+            catch (e) {
+                console.log('Could not delete')
+            }
+        }
+        deletePalette();
     }
 
     /*
@@ -60,7 +70,7 @@ export default function Library() {
                 
                 (library.length > 0) &&
                 library.map((savedPalette, index)=>{
-                    return <SavedPaletteEntry savedPalette={savedPalette} handleDeleteClick={handleDeleteClick}/>
+                    return <SavedPaletteEntry savedPalette={savedPalette} handleDeleteClick={()=>handleDeleteClick(savedPalette.id)}/>
                 })
             }
             </div>
