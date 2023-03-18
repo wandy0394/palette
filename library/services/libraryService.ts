@@ -1,6 +1,7 @@
 import LibraryDAO from "../database/libraryDAO";
-import { Palette } from "../types/types";
+import { Palette, SavedPalette } from "../types/types";
 import {Connection} from "mysql2"
+import { fail, Result, success } from "../types/error";
 
 class LibraryService {
     static injectConn(connection:Connection) {
@@ -11,8 +12,9 @@ class LibraryService {
         LibraryDAO.checkConnection()
     }
 
-    static getPalette(userEmail:string) {
-        const data = LibraryDAO.getPalette(userEmail)
+    static async getPalette(userEmail:string, userId:number):Promise<SavedPalette[]> {
+        
+        const data = LibraryDAO.getPalette(userEmail, userId)
         return data
     }
 

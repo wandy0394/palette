@@ -2,7 +2,7 @@ import { fail, Result } from "../model/common/error";
 import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
 
-const URL = 'http://192.168.0.128:8080/api/v1/paletteLibrary/paletteLibrary'
+const URL = 'http://192.168.0.128:8080/api/v1/paletteLibrary/paletteLibrary/'
 
 
 
@@ -15,9 +15,10 @@ class LibraryService {
 
     static async getPalettes(userEmail:string):Promise<SavedPalette[]> {
         let palettes:SavedPalette[] = []
-
+        
         try {
-            palettes = await this.#request<SavedPalette[]>(URL)
+            palettes = await this.#request<SavedPalette[]>(URL+`${1}`)
+            console.log(palettes)
         }
         catch (e:unknown) {
             console.log(e)
