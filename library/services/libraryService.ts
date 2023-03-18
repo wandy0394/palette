@@ -1,25 +1,14 @@
 import LibraryDAO from "../database/libraryDAO";
 import { Palette } from "../types/types";
 import {Connection} from "mysql2"
-let db:Connection
+
 class LibraryService {
     static injectConn(connection:Connection) {
-        if (db === undefined) {
-            db = connection
-        }
+        LibraryDAO.initDb(connection)
     }
     
     static connectionCheck() {
-        if (db) {
-            let sqlQuery:string = 'SELECT * from Users;'
-            db.query(sqlQuery, (err, results, fields)=>{
-                if (err) {
-                    return console.error(err)
-                }
-                console.log(results)
-                return results
-            })
-        }
+        LibraryDAO.checkConnection()
     }
 
     static getPalette(userEmail:string) {
@@ -37,7 +26,7 @@ class LibraryService {
     }
 
     static addPalette(userEmail:string, palette:Palette) {
-        const result = LibraryDAO.addPalette(userEmail, palette, "DUMMY")
+        const result = LibraryDAO.addPalette(1, userEmail, palette, "DUMMY")
         return result        
     }
 }

@@ -12,8 +12,6 @@ let connection:Connection = mysql2.createConnection({
     password: process.env.DB_PASS,
     database: process.env.DB_DB,
     multipleStatements:true,
-    // debug:true,
-    // flags:'--protocl=TCP'
 })
 connection.connect((err)=>{
     if (err) {
