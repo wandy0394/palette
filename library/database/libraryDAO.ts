@@ -142,7 +142,38 @@ class LibraryDAO {
         return promise
     }
 
+    static async updatePalette(userId:number, paletteId:number, palette:Palette):Promise<string> {
+        const promise = new Promise<string>((resolve, reject)=>{
+            try {
+                const mainColour = JSON.stringify(palette.mainColour)
+                const accentColours = JSON.stringify(palette.accentColours)
+                const supportColours = JSON.stringify(palette.supportColours)
+                const colourVerticies = JSON.stringify(palette.colourVerticies)
+                
+                const sqlQuery:string = `UPDATE Palettes 
+                                            SET
+                                                MainColour = '${mainColour}',
+                                                AccentColours = '${accentColours}',
+                                                SupportColours = '${supportColours}',
+                                                ColourVerticies = '${colourVerticies}',
+                                                UserId
+                                            WHERE
+                                                UserId=${userId} and Id=${paletteId}`
 
+                db.query(sqlQuery, (err, results, fields)=>{
+                    if (err) {
+                        // console.error(err)
+                        reject('Invalid query')
+                    }
+                    resolve('ok')
+                })
+            }
+            catch (e) {
+                reject('DB error')
+            }
+        })
+        return promise
+    }
     static deletePalette(userId:number, id:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{
             try {

@@ -22,8 +22,14 @@ class LibraryService {
         const data = LibraryDAO.getPaletteById(userEmail, userId, paletteId)
         return data
     }
-    static updatePalette(userEmail:string) {
-
+    static async updatePalette(userId:number, paletteId:number, palette:Palette):Promise<string> {
+        try {
+            const result = LibraryDAO.updatePalette(userId, paletteId, palette)
+            return result
+        }
+        catch (e) {
+            throw (e)
+        }
     }
 
     static async deletePalette(userId:number, id:string):Promise<string> {

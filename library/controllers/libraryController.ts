@@ -55,8 +55,32 @@ class LibraryController {
 
     static updatePalette(req:Request, res:Response, next:NextFunction) {
         
-        const result = LibraryService.updatePalette(DUMMY_EMAIL)
-        res.status(200).json({response:'update'})
+        const paletteId = req.body.paletteId
+        const userId = req.body.userId
+        const palette = req.body.palette
+        if (req.body.userId === undefined) {
+            res.status(400).send({response:'Missing userId', status:'error'}) 
+            return
+        }
+        if (req.body.userEmail === undefined) {
+            res.status(400).send({response:'Missing userEmail', status:'error'}) 
+            return
+        }
+        if (req.body.palette === undefined) {
+            res.status(400).send({response:'Missing Palette', status:'error'})
+            return
+        }
+        if (req.body.paletteId === undefined) {
+            res.status(400).send({response:'Missing PaletteId', status:'error'})
+            return
+        }
+        LibraryService.updatePalette(userId, paletteId, palette)
+            .then(response=>{
+                res.status(200).send({response:response, status:'ok'})
+            })
+            .catch(response=>{
+                res.status(500).send({response:response, status:'error'})
+            })
     }
 
     static deletePalette(req:Request, res:Response, next:NextFunction) {
