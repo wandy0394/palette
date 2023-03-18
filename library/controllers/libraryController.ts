@@ -11,8 +11,10 @@ class LibraryController {
     }
 
     static addPalette(req:Request, res:Response, next:NextFunction) {
-        const body:Palette = req.body as Palette
-        const result = LibraryService.addPalette(DUMMY_EMAIL, req.body)
+        console.log(req.body.userEmail)
+        const body = (req.body)
+        console.log(body.palette)
+        const result = LibraryService.addPalette(req.body.userEmail, req.body.palette)
         res.status(200).json({response:'success'})
     }
 
