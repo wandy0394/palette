@@ -11,11 +11,14 @@ class LibraryController {
     }
 
     static addPalette(req:Request, res:Response, next:NextFunction) {
-        console.log(req.body.userEmail)
+        // console.log(req.body.userEmail)
         const body = (req.body)
-        console.log(body.palette)
-        const result = LibraryService.addPalette(req.body.userEmail, req.body.palette)
-        res.status(200).json({response:'success'})
+        if (req.body.userId === undefined) res.status(400).json({response:'Missing userId', status:'error'})
+        if (req.body.userEmail === undefined) res.status(400).json({response:'Missing userEmail', status:'error'})
+        if (req.body.palette === undefined) res.status(400).json({response:'Missing Palette', status:'error'})
+        // console.log(body.palette)
+        //const result = LibraryService.addPalette(req.body.userEmail, req.body.palette)
+        res.status(200).json({response:'success', status:'ok'})
     }
 
     static updatePalette(req:Request, res:Response, next:NextFunction) {

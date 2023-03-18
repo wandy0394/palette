@@ -24,6 +24,11 @@ class LibraryDAO {
             console.error('No db')
         }
     }
+    // static getPalette(userEmail:string) {
+    //     const palettes = data.palettes.filter(p=>p.email === userEmail)
+    //     return palettes
+    // }
+
     static getPalette(userEmail:string) {
         const palettes = data.palettes.filter(p=>p.email === userEmail)
         return palettes
