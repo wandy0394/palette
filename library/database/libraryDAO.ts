@@ -28,11 +28,6 @@ class LibraryDAO {
             console.error('No db')
         }
     }
-    // static getPalette(userEmail:string) {
-    //     const palettes = data.palettes.filter(p=>p.email === userEmail)
-    //     return palettes
-    // }
-
     static getPalette(userEmail:string, userId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
                 try {
@@ -67,6 +62,44 @@ class LibraryDAO {
             })
             return promise
     }
+    static getPaletteById(userEmail:string, userId:number, paletteId:number):Promise<SavedPalette[]> {
+        const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
+                try {
+                    const sqlQuery:string = `SELECT * from Palettes where UserId=${userId} and Id=${paletteId};`
+                    db.query(sqlQuery, (err, result, fields)=>{
+                        if (err) {
+                            reject(err)
+                        }
+                        if ((result as RowDataPacket[]).length > 0) {
+
+                            const row = (result as RowDataPacket[])[0]
+                         
+                            let palette:SavedPalette[] = [{
+                                id:row.Id,
+                                name:row.name,
+                                email:userEmail,
+                                palette: {
+                                    mainColour:row.MainColour,
+                                    accentColours:row.AccentColours,
+                                    supportColours:row.SupportColours,
+                                    colourVerticies: row.ColourVerticies
+                                }
+                            }]
+                            resolve(palette)
+                        }
+                        else {
+                            resolve([])
+                        }
+                    })
+                }
+                catch (e) {
+                    console.log('error')
+                    reject(e)
+                }
+            })
+            return promise
+    }
+
 
     static async addPalette(userId:number, userEmail:string, palette:Palette, name:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{

@@ -15,6 +15,19 @@ class LibraryController {
                 res.status(500).send({error:'Internal server error'})
             })
     }
+    static async getPaletteById(req:Request, res:Response, next:NextFunction) {
+        const paletteId = parseInt(req.params.paletteId) //need to check that param is actually integer
+        const userId = parseInt(req.params.userId) //need to check that param is actually integer
+        const userEmail = req.params.userEmail
+
+        LibraryService.getPaletteById(DUMMY_EMAIL, userId, paletteId)
+            .then(response=>{
+                res.status(200).send({data:response})
+            })
+            .catch(response=>{
+                res.status(500).send({error:'Internal server error'})
+            })
+    }
     static async addPalette(req:Request, res:Response, next:NextFunction) {
         // console.log(req.body.userEmail)
         
