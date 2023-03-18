@@ -42,6 +42,9 @@ class LibraryService {
         let result:Result<string, string> = fail('Unable to save palette')
         let config:RequestInit = {
             method:'POST',
+            headers: {
+                "Content-Type":"application/json"
+            },
             body: JSON.stringify({
                 userEmail:userEmail,
                 palette:palette
