@@ -255,7 +255,7 @@ export default function Editor(props:Props) {
                     const result = await LibraryService.updatePalette(DUMMY_EMAIL, state.palette, parseInt(params.id as string)) //TODO: validate params.id
                 }
                 catch (e) {
-                    console.log('Could not add palette')
+                    console.log('Could not update palette')
                 }
             }
             if (params.id) {

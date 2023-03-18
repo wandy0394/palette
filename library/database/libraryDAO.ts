@@ -149,14 +149,12 @@ class LibraryDAO {
                 const accentColours = JSON.stringify(palette.accentColours)
                 const supportColours = JSON.stringify(palette.supportColours)
                 const colourVerticies = JSON.stringify(palette.colourVerticies)
-                
                 const sqlQuery:string = `UPDATE Palettes 
                                             SET
                                                 MainColour = '${mainColour}',
                                                 AccentColours = '${accentColours}',
                                                 SupportColours = '${supportColours}',
-                                                ColourVerticies = '${colourVerticies}',
-                                                UserId
+                                                ColourVerticies = '${colourVerticies}'
                                             WHERE
                                                 UserId=${userId} and Id=${paletteId}`
 
