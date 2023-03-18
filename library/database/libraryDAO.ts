@@ -103,15 +103,31 @@ class LibraryDAO {
                 })
             }
             catch (e) {
-                reject('error')
+                reject('DB error')
             }
         })
         return promise
     }
 
 
-    static deletePalette(userEmail:string, id:string) {
-        
+    static deletePalette(userId:number, id:string):Promise<string> {
+        const promise = new Promise<string>((resolve, reject)=>{
+            try {
+                const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=${userId} and Id=${id}` 
+                       
+                db.query(sqlQuery, (err, results, fields)=>{
+                    if (err) {
+                        // console.error(err)
+                        reject('Invalid query')
+                    }
+                    resolve('ok')
+                })
+            }
+            catch (e) {
+                reject('DB error')
+            }
+        })
+        return promise        
     }
 }
 

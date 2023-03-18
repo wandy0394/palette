@@ -22,9 +22,14 @@ class LibraryService {
 
     }
 
-    static deletePalette(userEmail:string, id:string) {
-        const result = LibraryDAO.deletePalette(userEmail, id)
-        return result
+    static async deletePalette(userId:number, id:string):Promise<string> {
+        try {
+            const result = LibraryDAO.deletePalette(userId, id)
+            return result
+        }
+        catch (e) {
+            throw e
+        }
     }
 
     static async addPalette(userEmail:string, palette:Palette):Promise<string> {
@@ -34,7 +39,6 @@ class LibraryService {
             return result        
         }
         catch (e) {
-            console.log('throwing')
             throw e
         }
     }
