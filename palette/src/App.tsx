@@ -7,6 +7,8 @@ import Palette from './pages/palette'
 import Signup from './pages/signup'
 import Library from './pages/library'
 import Updater from './pages/updater'
+import { useAuthContext } from './hooks/useAuthContext'
+import { useLogout } from './hooks/useLogout'
 
 
 type Props = {
@@ -25,7 +27,8 @@ function NavLink(props:Props) {
 
 function App() {
   const location = useLocation()
-
+  const {user} = useAuthContext()
+  const {logout} = useLogout()
   function isActive(target:string):boolean {
     return (target === location.pathname)
   }
@@ -42,16 +45,25 @@ function App() {
             <NavLink isActive={isActive} targetPath='/library' title='Library'/>
           </div>
         </div>
-        <div className="navbar-end flex items-center justify-end gap-4 py-1">
-          <Link to='/signup'>
-            <div className="btn btn-secondary">
-              Signup
-            </div>
-          </Link>
-          <Link to='/login'>
-            <div className="btn btn-primary">Login</div>
-          </Link>
-        </div>
+        
+          {
+            user?
+              (<div className="navbar-end flex items-center justify-end gap-4 py-1" >
+                Hello {user.user.email}
+                <button onClick={logout} className='btn btn-primary'>Sign out</button>
+              </div>):
+              (<div className="navbar-end flex items-center justify-end gap-4 py-1">
+                <Link to='/signup'>
+                  <div className="btn btn-secondary">
+                    Signup
+                  </div>
+                </Link>
+                <Link to='/login'>
+                  <div className="btn btn-primary">Login</div>
+                </Link>
+              </div>)
+          }
+
       </div>
       <div className='h-full sm:px-24 lg:px-48 bg-neutral-700'>
         <Routes>
