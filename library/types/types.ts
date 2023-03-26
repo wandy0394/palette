@@ -33,5 +33,6 @@ export type SavedPalette = {
 
 export type User = {
     name:string,
-    email:string
+    email:string,
+    passwordHash?:string
 }

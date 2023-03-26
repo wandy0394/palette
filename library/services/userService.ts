@@ -1,6 +1,7 @@
 import {Connection} from "mysql2"
 import UsersDAO from "../database/usersDAO"
 import { User } from "../types/types"
+import bcrypt from "bcrypt"
 class UserService {
 
     static injectConn(connection:Connection) {
@@ -23,11 +24,9 @@ class UserService {
         try {
             const userExists = await UsersDAO.userExists(email)
             if (userExists) {
-                console.log('exist')
                 throw new Error('User already exists')
             }
             else {
-                console.log('not exist')
                 const result = await UsersDAO.signup(email, password, name)
                 return result
                 // throw new Error('asdf')
@@ -38,8 +37,22 @@ class UserService {
         }
     }
 
-    static async login() {
-
+    static async login(email:string, password:string) {
+        
+        try {
+            const user = await UsersDAO.login(email)
+            if (user && user.passwordHash) {
+                const passwordMatched = await bcrypt.compare(password, user.passwordHash)
+                if (!passwordMatched) throw Error('Invalid credentials.')
+                return user
+            }
+            else {
+                throw new Error(`User with email ${email} not found`)
+            }
+        }
+        catch(e) {
+            throw (e)
+        }
     }
 
     static async getUser(email:string):Promise<User> {

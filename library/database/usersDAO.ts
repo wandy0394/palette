@@ -33,7 +33,7 @@ class UsersDAO {
         if (!validator.isEmail(email)) throw Error('Email is not valid.')
         //if (!validator.isStrongPassword(password)) throw Error ('Password not strong enough.')    
         const salt = await bcrypt.genSalt(10)
-        const hash = await bcrypt.hash(password, salt)
+        const hash = await bcrypt.hash(password, salt)  //move this to service layer
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
                 const sqlQuery = `INSERT INTO Users
@@ -70,18 +70,39 @@ class UsersDAO {
         return promise
     }
 
-    static async login(email:string, password:string):Promise<User> {
-        if (!email || !password) throw Error('Email, password must be filled.')
+    static async login(email:string):Promise<User> {
+        if (!email) throw Error('Email must be filled.')
+        if (!validator.isEmail(email)) throw Error('Email is not valid.')
+
         let user:User = {
             name:'',
             email:''
         }
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
-
+                const sqlQuery = `SELECT name, email, passwordHash from Users where email='${email}' LIMIT 1`
+                db.query(sqlQuery, (err, result, fields)=>{
+                    if (err) {
+                        console.log(err)
+                        reject('Error querying database')
+                    }
+                    else {
+                        const rows = (result as RowDataPacket[])
+                        console.log(rows.length)
+                        if (rows.length <= 0) {
+                            reject(`User with email ${email} does not exist.`)
+                        }
+                        else {
+                            user.name = rows[0].name
+                            user.email = rows[0].email
+                            user.passwordHash = rows[0].passwordHash
+                            resolve(user)
+                        }
+                    }
+                })
             }
             catch(e) {
-
+                reject(e)
             }
         })
 

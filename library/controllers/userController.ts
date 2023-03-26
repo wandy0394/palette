@@ -37,7 +37,13 @@ class UserController {
             res.status(400).send({status:'error', response:'Bad request: Missing password field'})
             return
         }
-        
+        try {
+            const user = await UserService.login(email, password)
+            res.status(200).send({user:user})
+        }
+        catch(e) {
+            res.status(500).send({error:'Internal server error: ' + e})
+        }
     }
     static async getUser(req:Request, res:Response, next:NextFunction) {
         const {email} = req.body
