@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import app from './server'
 import mysql2, {Connection} from 'mysql2'
 import LibraryService from './services/libraryService'
+import UserService from './services/userService'
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ connection.connect((err)=>{
         console.error(err)
     }
     LibraryService.injectConn(connection)
+    UserService.injectConn(connection)
     LibraryService.connectionCheck()
 })
 

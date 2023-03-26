@@ -30,37 +30,37 @@ class LibraryDAO {
     }
     static getPalette(userEmail:string, userId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
-                try {
-                    const sqlQuery:string = `SELECT * from Palettes where UserId=${userId};`
-                    db.query(sqlQuery, (err, result, fields)=>{
-                        if (err) {
-                            reject(err)
-                        }
-                        const rows = (result as RowDataPacket[])
-                        const output:SavedPalette[] = []
-                        rows.forEach(row=>{
-                            let palette:SavedPalette = {
-                                id:row.Id,
-                                name:row.name,
-                                email:userEmail,
-                                palette: {
-                                    mainColour:row.MainColour,
-                                    accentColours:row.AccentColours,
-                                    supportColours:row.SupportColours,
-                                    colourVerticies: row.ColourVerticies
-                                }
+            try {
+                const sqlQuery:string = `SELECT * from Palettes where UserId=${userId};`
+                db.query(sqlQuery, (err, result, fields)=>{
+                    if (err) {
+                        reject(err)
+                    }
+                    const rows = (result as RowDataPacket[])
+                    const output:SavedPalette[] = []
+                    rows.forEach(row=>{
+                        let palette:SavedPalette = {
+                            id:row.Id,
+                            name:row.name,
+                            email:userEmail,
+                            palette: {
+                                mainColour:row.MainColour,
+                                accentColours:row.AccentColours,
+                                supportColours:row.SupportColours,
+                                colourVerticies: row.ColourVerticies
                             }
-                            output.push(palette)
-                        })
-                        resolve(output)
+                        }
+                        output.push(palette)
                     })
-                }
-                catch (e) {
-                    console.log('error')
-                    reject(e)
-                }
-            })
-            return promise
+                    resolve(output)
+                })
+            }
+            catch (e) {
+                console.log('error')
+                reject(e)
+            }
+        })
+        return promise
     }
     static getPaletteById(userEmail:string, userId:number, paletteId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{

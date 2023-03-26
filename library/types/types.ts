@@ -30,3 +30,8 @@ export type SavedPalette = {
     date?: Date,
     palette:Palette
 }
+
+export type User = {
+    name:string,
+    email:string
+}
