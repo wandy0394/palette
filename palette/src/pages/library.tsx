@@ -35,7 +35,7 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 
 export default function Library() {
     const {user} = useAuthContext()
-    const [library, setLibrary] = useLibrary({userId: user.user.id})
+    const [library, setLibrary] = useLibrary({userId: user?.user.id})
 
     
 
