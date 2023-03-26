@@ -13,14 +13,6 @@ class UserService {
     }
 
     static async signup(email:string, password:string, name:string):Promise<User> {
-        
-        // return UsersDAO.userExists(email)
-        //     .then(response=>{
-        //         return UsersDAO.signup(email, password, name)
-        //     })
-        //     .catch(response=>{
-        //         throw new Error(response)
-        //     })
         try {
             const userExists = await UsersDAO.userExists(email)
             if (userExists) {
@@ -29,7 +21,6 @@ class UserService {
             else {
                 const result = await UsersDAO.signup(email, password, name)
                 return result
-                // throw new Error('asdf')
             }
         }
         catch(e) {
@@ -41,6 +32,7 @@ class UserService {
         
         try {
             const user = await UsersDAO.getOneUser(email)
+            console.log(user)
             if (user && user.passwordHash) {
                 const passwordMatched = await bcrypt.compare(password, user.passwordHash)
                 if (!passwordMatched) throw Error('Invalid credentials.')

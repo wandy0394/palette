@@ -19,7 +19,7 @@ export default class Authenticator {
             name:name
         }
         const response = await axiosInstance
-            .post('/register', params)
+            .post('/signup', params)
             .then((response)=>{
                 return response.data
             })

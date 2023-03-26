@@ -24,6 +24,7 @@ import { width } from "@mui/system"
 import { Result } from "../model/common/error"
 import LibraryService from "../service/library-service"
 import { SavedPalette } from "../types/library"
+import { useAuthContext } from "../hooks/useAuthContext"
 
 
 const DUMMY_EMAIL = "dev@dev.com"
@@ -93,6 +94,9 @@ export default function Editor(props:Props) {
     const wheelRef = useRef<HTMLDivElement>(null)
     const [state, dispatch] = useChosenColour(initialState)
 
+
+    const {user} = useAuthContext() 
+
     useLayoutEffect(()=>{
         if (!wheelRef.current) return
         const resizeObserver = new ResizeObserver(()=>{
@@ -106,11 +110,11 @@ export default function Editor(props:Props) {
     }, [])
 
     useEffect(()=>{
-        if (params.id) {
+        if (params.id && user) {
             //get palette by id
             async function get() {
                 try {
-                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(DUMMY_EMAIL, DUMMY_ID, params.id as string)
+                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(user.user.id, params.id as string)
                     console.log(savedPalette)
                     if (savedPalette && savedPalette.length > 0) {
                         let payload = {
@@ -123,6 +127,7 @@ export default function Editor(props:Props) {
                     }
                     else {
                         //no 
+                        console.log('no')
                     }
                 }
                 catch (e) {
@@ -238,12 +243,12 @@ export default function Editor(props:Props) {
     }
 
 
-    function savePalette() {
+    function savePalette(userId:number, userEmail:string) {
         //TODO:check if user logged in, otherwise, prompt them to sign up
         if (state.palette) {
             async function save() {
                 try {
-                    const result = await LibraryService.savePalette(DUMMY_EMAIL, state.palette)
+                    const result = await LibraryService.savePalette(userEmail, userId, state.palette)
                 }
                 catch (e) {
                     console.log('Could not add palette')
@@ -252,14 +257,13 @@ export default function Editor(props:Props) {
 
             async function update() {
                 try {
-                    const result = await LibraryService.updatePalette(DUMMY_EMAIL, state.palette, parseInt(params.id as string)) //TODO: validate params.id
+                    const result = await LibraryService.updatePalette(userEmail, userId, state.palette, parseInt(params.id as string)) //TODO: validate params.id
                 }
                 catch (e) {
                     console.log('Could not update palette')
                 }
             }
             if (params.id) {
-                console.log('update')
                 update()
             }
             else {
@@ -282,7 +286,9 @@ export default function Editor(props:Props) {
                 </div>
             </section>
             <section className='bg-neutral-800 w-full py-8 px-24'>
-                <button className='btn btn-primary w-full mb-8' onClick={savePalette}>Save</button>
+                {
+                    user?<button className='btn btn-primary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
+                }
                 {
                     <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center pb-8`}>
                         {

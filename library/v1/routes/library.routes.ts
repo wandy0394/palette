@@ -8,7 +8,7 @@ router.route("/paletteLibrary")
     .delete(LibraryController.deletePalette)
     .put(LibraryController.updatePalette)
 
-router.route("/paletteLibrary/:id")
+router.route("/paletteLibrary/:userId")
     .get(LibraryController.getPalette)
 
 router.route("/paletteLibrary/:userId/:paletteId")

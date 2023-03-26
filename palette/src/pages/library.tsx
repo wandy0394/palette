@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import ContentBox from "../components/common/ContentBox";
 import PaletteSwatch from "../components/PaletteSwatch";
+import { useAuthContext } from "../hooks/useAuthContext";
 import useLibrary from "../hooks/useLibrary";
 import LibraryService from "../service/library-service";
 import { Palette } from "../types/colours";
@@ -33,17 +34,18 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 }
 
 export default function Library() {
-    const [library, setLibrary] = useLibrary({userEmail: DUMMY_EMAIL})
+    const {user} = useAuthContext()
+    const [library, setLibrary] = useLibrary({userId: user.user.id})
 
     
 
 
-    function handleDeleteClick(id:number) {
+    function handleDeleteClick(paletteId:number) {
         //call api service to delete
         async function deletePalette() {
             try {
-                await LibraryService.deletePalette(DUMMY_EMAIL, id)
-                const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== id)
+                await LibraryService.deletePalette(user.user.email, user.user.id, paletteId)
+                const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== paletteId)
                 setLibrary(newLibrary)
             }
             catch (e) {

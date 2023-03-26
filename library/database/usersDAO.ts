@@ -49,13 +49,14 @@ class UsersDAO {
                                         '${hash}'
                                     );
                                 `
-                db.query(sqlQuery, (err, results, fields)=>{
+                db.query(sqlQuery, (err, results:ResultSetHeader, fields)=>{
                     if (err) {
                         console.log(err)
                         reject('Error querying database')
                     }
                     else {
                         resolve({
+                            id:results.insertId,
                             name:name,
                             email:email
                         })
@@ -75,12 +76,13 @@ class UsersDAO {
         if (!validator.isEmail(email)) throw Error('Email is not valid.')
 
         let user:User = {
+            id:-1,
             name:'',
             email:''
         }
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery = `SELECT name, email, passwordHash from Users where email='${email}' LIMIT 1`
+                const sqlQuery = `SELECT id, name, email, passwordHash from Users where email='${email}' LIMIT 1`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
                         console.log(err)
@@ -96,6 +98,8 @@ class UsersDAO {
                             user.name = rows[0].name
                             user.email = rows[0].email
                             user.passwordHash = rows[0].passwordHash
+                            user.id = rows[0].id
+                            console.log(rows[0])
                             resolve(user)
                         }
                     }
@@ -114,6 +118,7 @@ class UsersDAO {
         if (!validator.isEmail(email)) throw Error('Email is not valid.')
 
         let user:User = {
+            id:-1,
             name:'',
             email:''
         }
@@ -130,6 +135,7 @@ class UsersDAO {
                         reject(`User with email ${email} does not exist.`)
                     }
                     else {
+                        user.id = rows[0].id
                         user.name = rows[0].name
                         user.email = rows[0].email
                         resolve(user)

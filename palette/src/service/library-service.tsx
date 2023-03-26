@@ -23,7 +23,7 @@ class LibraryService {
         }
     }
 
-    static async getPalettes(userEmail:string, userId:number):Promise<SavedPalette[]> {
+    static async getPalettes(userId:number):Promise<SavedPalette[]> {
         try {
             let palettes = await this.#request<{data:SavedPalette[]}>(URL+`${userId}`)
             return palettes.data
@@ -34,7 +34,7 @@ class LibraryService {
         }
     }
 
-    static async getPaletteById(userEmail:string, userId:number, paletteId:string):Promise<SavedPalette[]|null> {
+    static async getPaletteById(userId:number, paletteId:string):Promise<SavedPalette[]|null> {
         //need to either pass userEmail
         try {
             const response = await this.#request<{data:SavedPalette[]|null}>(URL+`${userId}/${paletteId}`)
@@ -46,14 +46,14 @@ class LibraryService {
         }
     }
 
-    static async savePalette(userEmail:string, palette:Palette) {
+    static async savePalette(userEmail:string, userId:number, palette:Palette) {
         let config:RequestInit = {
             method:'POST',
             headers: {
                 "Content-Type":"application/json"
             },
             body: JSON.stringify({
-                userId:1,
+                userId:userId,
                 userEmail:userEmail,
                 palette:palette
             })
@@ -67,14 +67,14 @@ class LibraryService {
         }
     }
 
-    static async updatePalette(userEmail:string, palette:Palette, paletteId:number) {
+    static async updatePalette(userEmail:string, userId:number, palette:Palette, paletteId:number) {
         let config:RequestInit = {
             method:'PUT',
             headers: {
                 "Content-Type":"application/json"
             },
             body: JSON.stringify({
-                userId:1,
+                userId:userId,
                 userEmail:userEmail,
                 palette:palette,
                 paletteId:paletteId
@@ -90,14 +90,14 @@ class LibraryService {
         }
     }
 
-    static async deletePalette(userEmail:string, paletteId:number) {
+    static async deletePalette(userEmail:string, userId:number, paletteId:number) {
         let config:RequestInit = {
             method:'DELETE',
             headers: {
                 "Content-Type":"application/json"
             },
             body: JSON.stringify({
-                userId:1,
+                userId:userId,
                 userEmail:userEmail,
                 paletteId:paletteId
             })

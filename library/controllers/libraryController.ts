@@ -1,13 +1,14 @@
 import {Request, Response, NextFunction} from 'express'
 import LibraryService from "../services/libraryService"
-import { Result } from '../types/error'
-import { Palette, SavedPalette } from '../types/types'
-
-const DUMMY_EMAIL='dev@dev.com'
 
 class LibraryController {
     static async getPalette(req:Request, res:Response, next:NextFunction) {
-        LibraryService.getPalette(DUMMY_EMAIL, 1)
+        const userId = parseInt(req.params.userId) //id needs to be validated
+        if (!userId) {
+            res.status(400).send({status:'error', response:'Invalid User Id'})
+            return
+        }
+        LibraryService.getPalette(userId)
             .then(response=>{
                 res.status(200).send({data:response})
             })
@@ -18,9 +19,8 @@ class LibraryController {
     static async getPaletteById(req:Request, res:Response, next:NextFunction) {
         const paletteId = parseInt(req.params.paletteId) //need to check that param is actually integer
         const userId = parseInt(req.params.userId) //need to check that param is actually integer
-        const userEmail = req.params.userEmail
 
-        LibraryService.getPaletteById(DUMMY_EMAIL, userId, paletteId)
+        LibraryService.getPaletteById(userId, paletteId)
             .then(response=>{
                 res.status(200).send({data:response})
             })
@@ -29,8 +29,6 @@ class LibraryController {
             })
     }
     static async addPalette(req:Request, res:Response, next:NextFunction) {
-        // console.log(req.body.userEmail)
-        
         const body = (req.body)
         if (req.body.userId === undefined) {
             res.status(400).send({response:'Missing userId', status:'error'}) 
@@ -44,7 +42,7 @@ class LibraryController {
             res.status(400).send({response:'Missing Palette', status:'error'})
             return
         }
-        LibraryService.addPalette(req.body.userEmail, req.body.palette)
+        LibraryService.addPalette(req.body.userEmail, req.body.userId, req.body.palette)
             .then(response=>{
                 res.status(200).send({response:response, status:'ok'})
             })

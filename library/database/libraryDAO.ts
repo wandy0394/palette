@@ -28,7 +28,7 @@ class LibraryDAO {
             console.error('No db')
         }
     }
-    static getPalette(userEmail:string, userId:number):Promise<SavedPalette[]> {
+    static getPalette(userId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
             try {
                 const sqlQuery:string = `SELECT * from Palettes where UserId=${userId};`
@@ -42,7 +42,6 @@ class LibraryDAO {
                         let palette:SavedPalette = {
                             id:row.Id,
                             name:row.name,
-                            email:userEmail,
                             palette: {
                                 mainColour:row.MainColour,
                                 accentColours:row.AccentColours,
@@ -62,7 +61,7 @@ class LibraryDAO {
         })
         return promise
     }
-    static getPaletteById(userEmail:string, userId:number, paletteId:number):Promise<SavedPalette[]> {
+    static getPaletteById(userId:number, paletteId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
                 try {
                     const sqlQuery:string = `SELECT * from Palettes where UserId=${userId} and Id=${paletteId};`
@@ -77,7 +76,6 @@ class LibraryDAO {
                             let palette:SavedPalette[] = [{
                                 id:row.Id,
                                 name:row.name,
-                                email:userEmail,
                                 palette: {
                                     mainColour:row.MainColour,
                                     accentColours:row.AccentColours,
@@ -129,7 +127,6 @@ class LibraryDAO {
                                                 )`
                 db.query(sqlQuery, (err, results, fields)=>{
                     if (err) {
-                        // console.error(err)
                         reject('Invalid query')
                     }
                     resolve('ok')
@@ -160,7 +157,6 @@ class LibraryDAO {
 
                 db.query(sqlQuery, (err, results, fields)=>{
                     if (err) {
-                        // console.error(err)
                         reject('Invalid query')
                     }
                     resolve('ok')
@@ -179,7 +175,6 @@ class LibraryDAO {
                        
                 db.query(sqlQuery, (err, results, fields)=>{
                     if (err) {
-                        // console.error(err)
                         reject('Invalid query')
                     }
                     resolve('ok')

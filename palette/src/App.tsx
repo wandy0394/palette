@@ -1,15 +1,12 @@
-import { Link, Route, Router, Routes, useLocation } from 'react-router-dom'
-import {useState} from 'react'
+import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import Editor from './pages/editor'
 import Login from './pages/login'
 import Palette from './pages/palette'
 import Signup from './pages/signup'
 import Library from './pages/library'
-import Updater from './pages/updater'
 import { useAuthContext } from './hooks/useAuthContext'
 import { useLogout } from './hooks/useLogout'
-
 
 type Props = {
   isActive:(targetPath:string)=>boolean,
@@ -33,6 +30,7 @@ function App() {
     return (target === location.pathname)
   }
   
+
   
   return (
     <div className="h-auto text-neutral-400">
@@ -45,12 +43,13 @@ function App() {
             <NavLink isActive={isActive} targetPath='/library' title='Library'/>
           </div>
         </div>
-        
           {
             user?
               (<div className="navbar-end flex items-center justify-end gap-4 py-1" >
                 Hello {user.user.email}
-                <button onClick={logout} className='btn btn-primary'>Sign out</button>
+                <Link to='/'>
+                  <button onClick={logout} className='btn btn-primary'>Sign out</button>
+                </Link>
               </div>):
               (<div className="navbar-end flex items-center justify-end gap-4 py-1">
                 <Link to='/signup'>

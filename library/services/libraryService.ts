@@ -1,7 +1,7 @@
 import LibraryDAO from "../database/libraryDAO";
 import { Palette, SavedPalette } from "../types/types";
 import {Connection} from "mysql2"
-import { fail, Result, success } from "../types/error";
+
 
 class LibraryService {
     static injectConn(connection:Connection) {
@@ -12,14 +12,14 @@ class LibraryService {
         LibraryDAO.checkConnection()
     }
 
-    static async getPalette(userEmail:string, userId:number):Promise<SavedPalette[]> {
+    static async getPalette(userId:number):Promise<SavedPalette[]> {
         
-        const data = LibraryDAO.getPalette(userEmail, userId)
+        const data = LibraryDAO.getPalette(userId)
         return data
     }
-    static async getPaletteById(userEmail:string, userId:number, paletteId:number):Promise<SavedPalette[]> {
+    static async getPaletteById(userId:number, paletteId:number):Promise<SavedPalette[]> {
         
-        const data = LibraryDAO.getPaletteById(userEmail, userId, paletteId)
+        const data = LibraryDAO.getPaletteById(userId, paletteId)
         return data
     }
     static async updatePalette(userId:number, paletteId:number, palette:Palette):Promise<string> {
@@ -42,10 +42,10 @@ class LibraryService {
         }
     }
 
-    static async addPalette(userEmail:string, palette:Palette):Promise<string> {
+    static async addPalette(userEmail:string, userId:number, palette:Palette):Promise<string> {
         try {
 
-            const result = LibraryDAO.addPalette(1, userEmail, palette, "DUMMY")
+            const result = LibraryDAO.addPalette(userId, userEmail, palette, "DUMMY")
             return result        
         }
         catch (e) {
