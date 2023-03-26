@@ -11,8 +11,31 @@ class UserService {
         UsersDAO.checkConnection()
     }
 
-    static async signup() {
-
+    static async signup(email:string, password:string, name:string):Promise<User> {
+        
+        // return UsersDAO.userExists(email)
+        //     .then(response=>{
+        //         return UsersDAO.signup(email, password, name)
+        //     })
+        //     .catch(response=>{
+        //         throw new Error(response)
+        //     })
+        try {
+            const userExists = await UsersDAO.userExists(email)
+            if (userExists) {
+                console.log('exist')
+                throw new Error('User already exists')
+            }
+            else {
+                console.log('not exist')
+                const result = await UsersDAO.signup(email, password, name)
+                return result
+                // throw new Error('asdf')
+            }
+        }
+        catch(e) {
+            throw(e)
+        }
     }
 
     static async login() {

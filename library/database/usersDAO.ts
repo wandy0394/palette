@@ -32,16 +32,38 @@ class UsersDAO {
         if (!email || !password || ! name) throw Error('Email, password and name must be filled.')
         if (!validator.isEmail(email)) throw Error('Email is not valid.')
         //if (!validator.isStrongPassword(password)) throw Error ('Password not strong enough.')    
-        let user:User = {
-            name:'',
-            email:''
-        }
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(password, salt)
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
-
+                const sqlQuery = `INSERT INTO Users
+                                    (
+                                        name, 
+                                        email,
+                                        passwordHash
+                                    )
+                                    VALUES
+                                    (
+                                        '${name}',
+                                        '${email}',
+                                        '${hash}'
+                                    );
+                                `
+                db.query(sqlQuery, (err, results, fields)=>{
+                    if (err) {
+                        console.log(err)
+                        reject('Error querying database')
+                    }
+                    else {
+                        resolve({
+                            name:name,
+                            email:email
+                        })
+                    }
+                })
             }
             catch(e) {
-                
+                reject(e)
             }
         })
 
@@ -84,13 +106,39 @@ class UsersDAO {
                     const rows = (result as RowDataPacket[])
                     console.log(rows.length)
                     if (rows.length <= 0) {
-                        console.log('hello')
                         reject(`User with email ${email} does not exist.`)
                     }
                     else {
                         user.name = rows[0].name
                         user.email = rows[0].email
                         resolve(user)
+                    }
+                })
+            }
+            catch(e) {
+                reject(e)
+            }
+        })
+
+        return promise
+    }
+    static async userExists(email:string):Promise<boolean> {
+        if (!email) throw Error('Email, password must be filled.')
+        if (!validator.isEmail(email)) throw Error('Email is not valid.')
+
+        const promise:Promise<boolean> = new Promise((resolve, reject)=>{
+            try {
+                const sqlQuery = `SELECT 1 from Users where email='${email}' LIMIT 1;`
+                db.query(sqlQuery, (err, result, fields)=>{
+                    if (err) {
+                        reject('Error querying database.')
+                    }
+                    const rows = (result as RowDataPacket[])
+                    if (rows.length <= 0) {
+                        resolve(false)
+                    }
+                    else {
+                        resolve(true)
                     }
                 })
             }
