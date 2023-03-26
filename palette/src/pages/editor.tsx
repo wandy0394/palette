@@ -15,20 +15,18 @@ import PaletteSwatchEditor from "../components/PaletteSwatchEditor"
 import ColourWheelPicker from "../components/ColourWheelPicker"
 import { Point } from "../types/cartesian"
 import {  createColour, rgb2cartesian } from "../model/common/utils"
-import { useLocation, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import CustomTriadicSchemeGenerator from "../model/CustomTriadicSchemeGenerator"
 import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerator"
 import { ACTION_TYPES, useChosenColour } from "../hooks/useChosenColour"
 import HarmonySelector from "../components/HarmonySelector"
-import { width } from "@mui/system"
 import { Result } from "../model/common/error"
 import LibraryService from "../service/library-service"
 import { SavedPalette } from "../types/library"
 import { useAuthContext } from "../hooks/useAuthContext"
 
 
-const DUMMY_EMAIL = "dev@dev.com"
-const DUMMY_ID = 1
+
 type Harmonies = {
     [key:string]:{id:number, label:string, generator:PaletteGenerator},
 }
@@ -93,7 +91,7 @@ export default function Editor(props:Props) {
     const [handleWidth, setHandleWidth] = useState<number>(initHandleWidth)
     const wheelRef = useRef<HTMLDivElement>(null)
     const [state, dispatch] = useChosenColour(initialState)
-
+    const navigate = useNavigate()
 
     const {user} = useAuthContext() 
 
@@ -110,7 +108,7 @@ export default function Editor(props:Props) {
     }, [])
 
     useEffect(()=>{
-        if (params.id && user) {
+        if (params.id) {
             //get palette by id
             async function get() {
                 try {
@@ -134,13 +132,19 @@ export default function Editor(props:Props) {
                     console.error(e)
                 }
             }
-            get()
+            if (user) {   
+                get()
+            }
+            else {
+                //user has passed a param to the url but there are not palette ids associated with their user id. Redirect them
+                navigate('/editor')
+            }
             ////TODO:check that logged in user has access to this id
             //if not, throw error
             console.log(params)
         }
         else {
-            console.log('no params')
+            console.log('no params or userId')
         }
     },[params])
     useEffect(()=>{
