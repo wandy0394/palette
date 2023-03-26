@@ -70,7 +70,7 @@ class UsersDAO {
         return promise
     }
 
-    static async login(email:string):Promise<User> {
+    static async getOneUser(email:string):Promise<User> {
         if (!email) throw Error('Email must be filled.')
         if (!validator.isEmail(email)) throw Error('Email is not valid.')
 

@@ -40,7 +40,7 @@ class UserService {
     static async login(email:string, password:string) {
         
         try {
-            const user = await UsersDAO.login(email)
+            const user = await UsersDAO.getOneUser(email)
             if (user && user.passwordHash) {
                 const passwordMatched = await bcrypt.compare(password, user.passwordHash)
                 if (!passwordMatched) throw Error('Invalid credentials.')
