@@ -48,7 +48,7 @@ class UserController {
     static async getUser(req:Request, res:Response, next:NextFunction) {
         const {email} = req.body
         if (!email) {
-            res.status(400).send({status:'error', response:'Bad request: Missing email field'})
+            res.status(400).send({status:'error', error:'Bad request: Missing email field'})
             return
         }
         UserService.getUser(email)

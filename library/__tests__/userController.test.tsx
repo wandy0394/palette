@@ -222,20 +222,93 @@ describe('Login Test', ()=>{
         const mReq:Request = {body:{
             email:'test@test.com',
             password:'password',
-            name:'Test'
         }} as any
 
         const mRes:Response = {
             status: sandbox.stub().returnsThis(),
             send: sandbox.stub()
         } as any
-        sandbox.stub(UserService, 'login').rejects({
-            response:'rejected'
-        })
-        UserController.signup(mReq, mRes, ()=>true)
+        sandbox.stub(UserService, 'login').throws(new Error("rejected"))
+        
+        UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { error:'Internal server error: ' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { error:'Internal server error: Error: rejected' })
+    })
+    
+})
+
+
+describe('getUser Test', ()=>{
+    var sandbox:any
+    beforeEach(function() {
+        sandbox = sinon.createSandbox()
+    })
+
+    afterEach(function() {
+        sandbox.restore();
+    })
+
+    it('should respond with error, missing email field', async()=>{
+        const mReq:Request = {body:{
+            email:'',
+        }} as any
+        // const mRes = {
+
+        // }
+        sandbox.stub(UserService, 'getUser').resolves({
+            id:1,
+            name:'Test',
+            email:'test@test.com'
+        })
+        const mRes:Response = {
+            status: sandbox.stub().returnsThis(),
+            send: sandbox.stub()
+        } as any
+
+        UserController.getUser(mReq, mRes, ()=>true)
+        await flushPromises()
+        sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing email field' })
+    })
+
+   
+
+    it('should successfully get user', async()=>{
+        const mReq:Request = {body:{
+            email:'test@test.com',
+        }} as any
+
+        const mRes:Response = {
+            status: sandbox.stub().returnsThis(),
+            send: sandbox.stub()
+        } as any
+        sandbox.stub(UserService, 'getUser').resolves({
+            id:1,
+            name:'Test',
+            email:'test@test.com'
+        })
+        UserController.getUser(mReq, mRes, ()=>true)
+        await flushPromises()
+        sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { user: { id: 1, name: 'Test', email: 'test@test.com' } })
+    })
+
+    it('should not successfully get user', async()=>{
+        const mReq:Request = {body:{
+            email:'test@test.com',
+            password:'password',
+        }} as any
+
+        const mRes:Response = {
+            status: sandbox.stub().returnsThis(),
+            send: sandbox.stub()
+        } as any
+        sandbox.stub(UserService, 'getUser').rejects('rejected')
+        UserController.getUser(mReq, mRes, ()=>true)
+        await flushPromises()
+        sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { error:'Internal server error: rejected' })
     })
     
 })
