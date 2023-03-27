@@ -11,11 +11,15 @@ export default function useSessionStorage<T>(key:string, initialValue:T):[T, Rea
     const [item, setItem] = useState<T>(setInitialValue)
 
     useEffect(()=>{
+        console.log('set')
         try {
+            console.log(key)
+            console.log(item)
             sessionStorage.setItem(key, JSON.stringify(item))
         }
         catch {
             //handle error here
+            console.log('error')
         }
     }, [item, key])
 

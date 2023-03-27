@@ -1,4 +1,5 @@
 import {createContext, useReducer, useEffect} from 'react'
+import useSessionStorage from '../../hooks/useSessionStorage'
 
 export const ACTION_TYPES = {
     LOGIN:'LOGIN',
@@ -34,13 +35,14 @@ export const AuthContextProvider  = ({children}:any) => {
     const [state, dispatch] = useReducer(authReducer, {
         user:null
     })
+    
     console.log('AuthContext state: ', state)
 
     let called = false
     useEffect(()=>{
         if (!called) {
-            if (localStorage.getItem('user')) {
-                const user = JSON.parse(localStorage.getItem('user') as string)
+            if (sessionStorage.getItem('user')) {
+                const user = JSON.parse(sessionStorage.getItem('user') as string)
                 dispatch({type:ACTION_TYPES.LOGIN, payload:user})
             }
         }
