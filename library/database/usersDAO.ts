@@ -14,7 +14,7 @@ class UsersDAO {
     
     static checkConnection() {
         if (db) {
-            let sqlQuery:string = 'SELECT * from Users;'
+            let sqlQuery:string = 'SELECT * from Users LIMIT 1;'
             db.query(sqlQuery, (err, results, fields)=>{
                 if (err) {
                     console.error(err)

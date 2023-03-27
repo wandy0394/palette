@@ -12,11 +12,13 @@ class LibraryService {
         LibraryDAO.checkConnection()
     }
 
+
     static async getPalette(userId:number):Promise<SavedPalette[]> {
         
         const data = LibraryDAO.getPalette(userId)
         return data
     }
+
     static async getPaletteById(userId:number, paletteId:number):Promise<SavedPalette[]> {
         
         const data = LibraryDAO.getPaletteById(userId, paletteId)

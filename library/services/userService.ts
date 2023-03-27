@@ -28,7 +28,7 @@ class UserService {
         }
     }
 
-    static async login(email:string, password:string) {
+    static async login(email:string, password:string):Promise<User> {
         
         try {
             const user = await UsersDAO.getOneUser(email)

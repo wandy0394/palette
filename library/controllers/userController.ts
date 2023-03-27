@@ -6,35 +6,35 @@ class UserController {
     static async signup(req:Request, res:Response, next:NextFunction) {
         const {email, password, name} = req.body
         if (!email) {
-            res.status(400).send({status:'error', response:'Bad request: Missing email field'})
+            res.status(400).send({status:'error', error:'Bad request: Missing email field'})
             return
         }
         if (!password) {
-            res.status(400).send({status:'error', response:'Bad request: Missing password field'})
+            res.status(400).send({status:'error', error:'Bad request: Missing password field'})
             return
         }
         if (!name) {
-            res.status(400).send({status:'error', response:'Bad request: Missing name field'})
+            res.status(400).send({status:'error', error:'Bad request: Missing name field'})
             return
         }
         UserService.signup(email, password, name)
             .then(response=>{
-                res.status(200).send({status:'ok', user:response})
+                res.status(200).send({status:'ok', data:response})
             })
             .catch(response=>{
                 
-                res.status(500).send({status:'error', response:response})
+                res.status(500).send({status:'error', error:response})
             })
     }
 
     static async login(req:Request, res:Response, next:NextFunction) {
         const {email, password} = req.body
         if (!email) {
-            res.status(400).send({status:'error', response:'Bad request: Missing email field'})
+            res.status(400).send({status:'error', error:'Bad request: Missing email field'})
             return
         }
         if (!password) {
-            res.status(400).send({status:'error', response:'Bad request: Missing password field'})
+            res.status(400).send({status:'error', error:'Bad request: Missing password field'})
             return
         }
         try {
