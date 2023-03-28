@@ -32,11 +32,12 @@ class UserService {
         
         try {
             const user = await UsersDAO.getOneUser(email)
-            console.log(user)
             if (user && user.passwordHash) {
                 const passwordMatched = await bcrypt.compare(password, user.passwordHash)
                 if (!passwordMatched) throw Error('Invalid credentials.')
-                return user
+                const retUser:User = {...user}
+                retUser.passwordHash=undefined
+                return retUser
             }
             else {
                 throw new Error(`User with email ${email} not found`)

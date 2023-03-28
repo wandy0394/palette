@@ -85,12 +85,10 @@ class UsersDAO {
                 const sqlQuery = `SELECT id, name, email, passwordHash from Users where email='${email}' LIMIT 1`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
-                        console.log(err)
                         reject('Error querying database')
                     }
                     else {
                         const rows = (result as RowDataPacket[])
-                        console.log(rows.length)
                         if (rows.length <= 0) {
                             reject(`User with email ${email} does not exist.`)
                         }
@@ -99,7 +97,6 @@ class UsersDAO {
                             user.email = rows[0].email
                             user.passwordHash = rows[0].passwordHash
                             user.id = rows[0].id
-                            console.log(rows[0])
                             resolve(user)
                         }
                     }
