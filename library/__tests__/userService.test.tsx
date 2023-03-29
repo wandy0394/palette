@@ -4,9 +4,9 @@ import sinon from "sinon"
 import UserService from "../services/userService"
 import UsersDAO from "../database/usersDAO"
 import { User } from "../types/types"
-import {Request, Response, NextFunction, Send} from 'express'
+
 import bcrypt from "bcrypt"
-const flushPromises = () => new Promise(setImmediate)
+
 
 describe('Signup test', ()=>{
 
