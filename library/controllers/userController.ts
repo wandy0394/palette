@@ -19,7 +19,7 @@ class UserController {
         }
         UserService.signup(email, password, name)
             .then(response=>{
-                res.status(200).send({status:'ok', data:response})
+                res.status(200).send({status:'ok', user:response})
             })
             .catch(response=>{
                 
@@ -39,10 +39,17 @@ class UserController {
         }
         try {
             const user = await UserService.login(email, password)
-            res.status(200).send({user:user})
+            res.status(200).send({status:'ok', user:user})
         }
-        catch(e) {
-            res.status(500).send({error:'Internal server error: ' + e})
+        catch(e:any) {
+            console.log
+            if (e.message) {
+                res.status(500).send({status:'error', error:e.message})
+            }
+            else {
+                console.log(e)
+                res.status(500).send({status:'error', error:'Internal Server Error'})
+            }
         }
     }
     static async getUser(req:Request, res:Response, next:NextFunction) {
@@ -51,13 +58,20 @@ class UserController {
             res.status(400).send({status:'error', error:'Bad request: Missing email field'})
             return
         }
-        UserService.getUser(email)
-            .then(response=>{
-                res.status(200).send({user:response})
-            })
-            .catch(response=>{
-                res.status(500).send({error:'Internal server error: ' + response})
-            })
+        try {
+            const user = await UserService.getUser(email)
+            res.status(200).send({status:'ok', user:user})
+        }
+        catch(e:any) {
+            console.log
+            if (e.message) {
+                res.status(500).send({status:'error', error:e.message})
+            }
+            else {
+                console.log(e)
+                res.status(500).send({status:'error', error:'Internal Server Error'})
+            }
+        }        
     }
 }
 

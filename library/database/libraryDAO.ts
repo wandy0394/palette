@@ -31,10 +31,11 @@ class LibraryDAO {
     static getPalette(userId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery:string = `SELECT * from Palettes where UserId=${userId};`
+                const sqlQuery:string = `SELECT * from 1Palettes where UserId=${userId};`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
-                        reject(err)
+                        console.log(err)
+                        return reject(new Error('Error querying database'))
                     }
                     const rows = (result as RowDataPacket[])
                     const output:SavedPalette[] = []
@@ -55,7 +56,7 @@ class LibraryDAO {
                 })
             }
             catch (e) {
-                console.log('error')
+                
                 reject(e)
             }
         })
@@ -67,7 +68,7 @@ class LibraryDAO {
                     const sqlQuery:string = `SELECT * from Palettes where UserId=${userId} and Id=${paletteId};`
                     db.query(sqlQuery, (err, result, fields)=>{
                         if (err) {
-                            reject(err)
+                            return reject(new Error('Error querying database'))
                         }
                         if ((result as RowDataPacket[]).length > 0) {
 
@@ -91,7 +92,7 @@ class LibraryDAO {
                     })
                 }
                 catch (e) {
-                    console.log('error')
+                    
                     reject(e)
                 }
             })
@@ -127,13 +128,14 @@ class LibraryDAO {
                                                 )`
                 db.query(sqlQuery, (err, results, fields)=>{
                     if (err) {
-                        reject('Invalid query')
+                        console.log(err)
+                        return reject(new Error('Error querying database'))
                     }
                     resolve('ok')
                 })
             }
             catch (e) {
-                reject('DB error')
+                reject(e)
             }
         })
         return promise
@@ -157,13 +159,14 @@ class LibraryDAO {
 
                 db.query(sqlQuery, (err, results, fields)=>{
                     if (err) {
-                        reject('Invalid query')
+                        console.log(err)
+                        return reject(new Error('Error querying database'))
                     }
                     resolve('ok')
                 })
             }
             catch (e) {
-                reject('DB error')
+                reject(e)
             }
         })
         return promise
@@ -175,13 +178,14 @@ class LibraryDAO {
                        
                 db.query(sqlQuery, (err, results, fields)=>{
                     if (err) {
-                        reject('Invalid query')
+                        console.log(err)
+                        return reject(new Error('Error querying database'))
                     }
                     resolve('ok')
                 })
             }
             catch (e) {
-                reject('DB error')
+                reject(e)
             }
         })
         return promise        

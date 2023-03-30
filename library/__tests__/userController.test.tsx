@@ -112,7 +112,7 @@ describe('Signup Test', ()=>{
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'ok', data: { id: 1, name: 'Test', email: 'test@test.com' } })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'ok', user: { id: 1, name: 'Test', email: 'test@test.com' } })
     })
 
     it('should not successfully signup', async()=>{
@@ -215,7 +215,7 @@ describe('Login Test', ()=>{
         UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { user: { id: 1, name: 'Test', email: 'test@test.com' } })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status:'ok', user: { id: 1, name: 'Test', email: 'test@test.com' } })
     })
 
     it('should not successfully login', async()=>{
@@ -233,7 +233,7 @@ describe('Login Test', ()=>{
         UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { error:'Internal server error: Error: rejected' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'error', error: 'rejected' })
     })
     
 })
@@ -291,7 +291,7 @@ describe('getUser Test', ()=>{
         UserController.getUser(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { user: { id: 1, name: 'Test', email: 'test@test.com' } })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'ok', user: { id: 1, name: 'Test', email: 'test@test.com' } })
     })
 
     it('should not successfully get user', async()=>{
@@ -308,7 +308,7 @@ describe('getUser Test', ()=>{
         UserController.getUser(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { error:'Internal server error: rejected' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'error', error: 'Internal Server Error' } )
     })
     
 })

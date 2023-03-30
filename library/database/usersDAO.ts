@@ -52,7 +52,7 @@ class UsersDAO {
                 db.query(sqlQuery, (err, results:ResultSetHeader, fields)=>{
                     if (err) {
                         console.log(err)
-                        reject('Error querying database')
+                        return reject(new Error('Error querying database'))
                     }
                     else {
                         resolve({
@@ -64,7 +64,7 @@ class UsersDAO {
                 })
             }
             catch(e) {
-                reject(e)
+                return reject(e)
             }
         })
 
@@ -85,12 +85,13 @@ class UsersDAO {
                 const sqlQuery = `SELECT id, name, email, passwordHash from Users where email='${email}' LIMIT 1`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
-                        reject('Error querying database')
+                        console.log(err)
+                        return reject(new Error('Error querying database'))
                     }
                     else {
                         const rows = (result as RowDataPacket[])
                         if (rows.length <= 0) {
-                            reject(`User with email ${email} does not exist.`)
+                            return reject(new Error(`User with email ${email} does not exist.`))
                         }
                         else {
                             user.name = rows[0].name
@@ -124,12 +125,13 @@ class UsersDAO {
                 const sqlQuery = `SELECT * from Users where email='${email}';`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
-                        reject('Error querying database.')
+                        console.log(err)
+                        return reject(new Error('Error querying database.'))
                     }
                     const rows = (result as RowDataPacket[])
-                    console.log(rows.length)
+                    
                     if (rows.length <= 0) {
-                        reject(`User with email ${email} does not exist.`)
+                        return reject(new Error(`User with email ${email} does not exist.`))
                     }
                     else {
                         user.id = rows[0].id
@@ -155,7 +157,8 @@ class UsersDAO {
                 const sqlQuery = `SELECT 1 from Users where email='${email}' LIMIT 1;`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
-                        reject('Error querying database.')
+                        console.log(err)
+                        return reject(new Error('Error querying database.'))
                     }
                     const rows = (result as RowDataPacket[])
                     if (rows.length <= 0) {

@@ -32,7 +32,7 @@ describe('getPalette test', ()=>{
         LibraryController.getPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {error:'Internal server error'})
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Error' } )
     })
 
 
@@ -52,7 +52,7 @@ describe('getPalette test', ()=>{
         LibraryController.getPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:['testResult']})
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {status:'ok', data:['testResult']})
     })
     it('should respond with error', async()=>{
         const mReq:Request = {params:{
@@ -101,7 +101,7 @@ describe('getPaletteById test', ()=>{
         LibraryController.getPaletteById(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:['testResult']})
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {status:'ok', data:['testResult']})
     })
 
 
@@ -119,7 +119,7 @@ describe('getPaletteById test', ()=>{
         LibraryController.getPaletteById(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {error:'Internal server error'})
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Error' } )
     })
 
 })
@@ -204,7 +204,7 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:{error:'Error'}, status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Internal server error' } )        
     })
 
     it('should succeed', async()=>{
@@ -328,7 +328,7 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:{error:'Error'}, status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Internal server error' } )        
     })
 
     it('should succeed', async()=>{
@@ -432,7 +432,7 @@ describe('deletePalette test', ()=>{
         LibraryController.deletePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:{error:'Error'}, status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Internal server error' } )        
     })
 
     it('should succeed', async()=>{
