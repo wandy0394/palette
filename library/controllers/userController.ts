@@ -17,14 +17,20 @@ class UserController {
             res.status(400).send({status:'error', error:'Bad request: Missing name field'})
             return
         }
-        UserService.signup(email, password, name)
-            .then(response=>{
-                res.status(200).send({status:'ok', user:response})
-            })
-            .catch(response=>{
-                
-                res.status(500).send({status:'error', error:response})
-            })
+        try {
+            const user = await UserService.signup(email, password, name)
+            res.status(200).send({status:'ok', user:user})
+        }
+        catch(e:any) {
+            console.log
+            if (e.message) {
+                res.status(500).send({status:'error', error:e.message})
+            }
+            else {
+                console.log(e)
+                res.status(500).send({status:'error', error:'Internal Server Error'})
+            }
+        }
     }
 
     static async login(req:Request, res:Response, next:NextFunction) {

@@ -31,7 +31,7 @@ class LibraryDAO {
     static getPalette(userId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery:string = `SELECT * from 1Palettes where UserId=${userId};`
+                const sqlQuery:string = `SELECT * from Palettes where UserId=${userId};`
                 db.query(sqlQuery, (err, result, fields)=>{
                     if (err) {
                         console.log(err)
