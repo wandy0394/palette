@@ -23,7 +23,7 @@ export default function Palette() {
 
     return (
         <ContentBox>
-            <section className= 'w-full py-8 px-8 md:py-16 md:px-24'>
+            <section className= 'w-full flex flex-col gap-4 py-8 px-8 md:py-16 md:px-24'>
                 <ColourPickerSection colours={colours} setColours={setColours}/>
                 <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
             </section>

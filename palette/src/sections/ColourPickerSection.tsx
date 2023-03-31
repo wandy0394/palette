@@ -31,16 +31,14 @@ function ColourPicker(props:ColourPickerProps) {
     }
 
     return (
-        <div className='w-full grid grid-cols-[1fr_4fr] items-center justify-center gap-4 py-8'>
-            <div className='w-full flex flex-col gap-2 items-center justify-center'>
-                <div className='flex gap-4 items-center'>
-                    {
-                        !messageVisible?
-                            <span className='flex justify-center'>RGB#</span>:
-                            <span className='text-red-500' style={{visibility:messageVisible?'visible':'hidden'}}>Invalid RGB</span>
-                    }
-                    <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
-                </div>
+        <div className='w-full grid grid-cols-[1fr_4fr] items-center justify-center gap-4'>
+            <div className='flex gap-4 pl-4 items-center'>
+                {
+                    !messageVisible?
+                        <span className='flex justify-center'>RGB#</span>:
+                        <span className='text-red-500' style={{visibility:messageVisible?'visible':'hidden'}}>Invalid RGB</span>
+                }
+                <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
 
             </div>
             <ColouredSquare colour={colour}/>
@@ -60,7 +58,7 @@ export default function ColourPickerSection(props:Props) {
         <ErrorBoundary>
             <div className='flex flex-col items-center justify-center w-full gap-4 '>
                 <div className='w-full flex flex-col items-center'>
-                        <h2 className='font-bold text-2xl text-neutral-400 w-full'>Choose a colour. We will generate swatches for you</h2>
+                        <h2 className='font-bold text-2xl text-neutral-400 w-full'>Choose a colour and we will generate swatches for you.</h2>
                 </div>
                 <div className='w-full gap-4 '>
                     {

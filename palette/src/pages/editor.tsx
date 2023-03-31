@@ -278,18 +278,14 @@ export default function Editor(props:Props) {
 
     return (
         <ContentBox>
-            <section className='bg-neutral-900 w-full py-16 px-24'>
-                <div className='w-full px-24 flex gap-16 items-center'>
-                    <div className='w-1/2 flex flex-col items-center justify-center gap-16'>
-                        <ColourPickerSection colours={colours} setColours={setColours}/>
-                    </div>
-                    <div className='w-1/2 flex flex-col items-center justify-center gap-16'>
-                        <HarmonySelector value={selectedHarmony} setValue={makeSelection} harmonies={colourHarmonies}/>
-                        <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
-                    </div>
+            <section className='w-full py-16 px-24'>
+                <div className='w-full flex flex-col items-center justify-center gap-4'>
+                    <ColourPickerSection colours={colours} setColours={setColours}/>
+                    <HarmonySelector value={selectedHarmony} setValue={makeSelection} harmonies={colourHarmonies}/>
+                    <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
                 </div>
             </section>
-            <section className='bg-neutral-800 w-full py-8 px-24'>
+            <section className='w-full py-8 px-24'>
                 {
                     user?<button className='btn btn-primary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
                 }
@@ -301,7 +297,8 @@ export default function Editor(props:Props) {
                                 showColourPicker={showColourPicker}
                             />
                         }
-                        <div className='h-full w-full flex items-center justify-center gap-8'>
+                        <div className='h-full w-full flex flex-col items-center justify-center gap-8'>
+                            <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
                             <ColourWheelPicker 
                                 ref={wheelRef}
                                 colourValue={value} 
@@ -314,7 +311,6 @@ export default function Editor(props:Props) {
                                 position={position}
                                 setPosition={setPosition}
                             />
-                            <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
                         </div>
                     </div>
                 }

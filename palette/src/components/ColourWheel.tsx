@@ -64,7 +64,7 @@ export default function ColourWheel(props:Props) {
     }
     return (
         <ErrorBoundary>
-            <div className='relative w-full flex items-center justify-center aspect-square border-2 border-solid'>
+            <div className='relative w-full flex items-center justify-center aspect-square'>
                 {
                     wheelWidths.map((width, wheelIndex)=>{
                         

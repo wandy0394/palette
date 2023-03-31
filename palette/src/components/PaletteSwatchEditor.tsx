@@ -23,7 +23,7 @@ export default function PaletteSwatchEditor(props:Props) {
 
     return (
         <div className='w-full grid grid-rows-2 gap-0 h-full flex-wrap'>
-            <div className='w-full grid grid-cols-2 border border-solid border-red-500'>
+            <div className='w-full grid grid-cols-2'>
                 <div className='w-full items-center justify-center'>
                     <div className='flex flex-col w-full h-full items-center' style={{border:(state.role === ACTION_TYPES.UPDATE_MAINCOLOUR)?'2px solid white':''}}>
                         <ColouredBar hover={true} colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, 0, ACTION_TYPES.UPDATE_MAINCOLOUR)}/>

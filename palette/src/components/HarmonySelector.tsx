@@ -4,7 +4,7 @@ export default function HarmonySelector(props:{value:any, setValue:Function, har
     const {harmonies, value, setValue} = props
     return (
         <ErrorBoundary>
-            <select className='select select-primary w-full max-w-xs' value={value} onChange={(e)=>setValue(e.target.value)}>
+            <select className='select select-primary w-full text-xl' value={value} onChange={(e)=>setValue(e.target.value)}>
                 <option disabled selected>Choose a colour harmony</option>
                 {
                     (harmonies !== undefined) &&
