@@ -24,9 +24,9 @@ class LibraryService {
         const data = LibraryDAO.getPaletteById(userId, paletteId)
         return data
     }
-    static async updatePalette(userId:number, paletteId:number, palette:Palette):Promise<string> {
+    static async updatePalette(userId:number, paletteId:number, palette:Palette, name:string):Promise<string> {
         try {
-            const result = LibraryDAO.updatePalette(userId, paletteId, palette)
+            const result = LibraryDAO.updatePalette(userId, paletteId, palette, name)
             return result
         }
         catch (e) {
@@ -44,10 +44,10 @@ class LibraryService {
         }
     }
 
-    static async addPalette(userEmail:string, userId:number, palette:Palette):Promise<string> {
+    static async addPalette(userEmail:string, userId:number, palette:Palette, name:string):Promise<string> {
         try {
 
-            const result = LibraryDAO.addPalette(userId, userEmail, palette, "DUMMY")
+            const result = LibraryDAO.addPalette(userId, userEmail, palette, name)
             return result        
         }
         catch (e) {

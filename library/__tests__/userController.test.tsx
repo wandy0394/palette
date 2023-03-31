@@ -126,13 +126,11 @@ describe('Signup Test', ()=>{
             status: sandbox.stub().returnsThis(),
             send: sandbox.stub()
         } as any
-        sandbox.stub(UserService, 'signup').rejects({
-            response:'rejected'
-        })
+        sandbox.stub(UserService, 'signup').rejects(new Error('rejected'))
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error:{response:'rejected'} })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'rejected' })
     })
     
 })

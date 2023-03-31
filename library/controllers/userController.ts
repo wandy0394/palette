@@ -22,7 +22,6 @@ class UserController {
             res.status(200).send({status:'ok', user:user})
         }
         catch(e:any) {
-            console.log
             if (e.message) {
                 res.status(500).send({status:'error', error:e.message})
             }

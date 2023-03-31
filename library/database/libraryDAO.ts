@@ -141,7 +141,7 @@ class LibraryDAO {
         return promise
     }
 
-    static async updatePalette(userId:number, paletteId:number, palette:Palette):Promise<string> {
+    static async updatePalette(userId:number, paletteId:number, palette:Palette, name:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{
             try {
                 const mainColour = JSON.stringify(palette.mainColour)
@@ -153,7 +153,8 @@ class LibraryDAO {
                                                 MainColour = '${mainColour}',
                                                 AccentColours = '${accentColours}',
                                                 SupportColours = '${supportColours}',
-                                                ColourVerticies = '${colourVerticies}'
+                                                ColourVerticies = '${colourVerticies}',
+                                                name = '${name}'
                                             WHERE
                                                 UserId=${userId} and Id=${paletteId}`
 

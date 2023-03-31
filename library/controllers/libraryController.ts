@@ -56,7 +56,11 @@ class LibraryController {
             res.status(400).send({response:'Missing Palette', status:'error'})
             return
         }
-        LibraryService.addPalette(req.body.userEmail, req.body.userId, req.body.palette)
+        if (req.body.name === undefined) {
+            res.status(400).send({response:'Missing Name', status:'error'})
+            return
+        }
+        LibraryService.addPalette(req.body.userEmail, req.body.userId, req.body.palette, req.body.name)
             .then(response=>{
                 res.status(200).send({response:response, status:'ok'})
             })
@@ -75,6 +79,7 @@ class LibraryController {
         const paletteId = req.body.paletteId
         const userId = req.body.userId
         const palette = req.body.palette
+        const name = req.body.name
         if (req.body.userId === undefined) {
             res.status(400).send({response:'Missing userId', status:'error'}) 
             return
@@ -91,7 +96,11 @@ class LibraryController {
             res.status(400).send({response:'Missing PaletteId', status:'error'})
             return
         }
-        LibraryService.updatePalette(userId, paletteId, palette)
+        if (req.body.name === undefined) {
+            res.status(400).send({response:'Missing Name', status:'error'})
+            return
+        }
+        LibraryService.updatePalette(userId, paletteId, palette, name)
             .then(response=>{
                 res.status(200).send({response:response, status:'ok'})
             })

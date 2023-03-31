@@ -187,12 +187,31 @@ describe('addPalette test', ()=>{
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
         sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Palette', status:'error'})        
     })
+    it('should return error, missing Name', async()=>{
+        const mReq:Request = {body:{
+            userId:1,
+            userEmail:'test@test.com',
+            palette:'palette',
+            name:undefined
+        }} as any
+
+        const mRes:Response = {
+            status: sandbox.stub().returnsThis(),
+            send: sandbox.stub()
+        } as any
+
+        LibraryController.addPalette(mReq, mRes, ()=>true)
+        await flushPromises()
+        sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Name', status:'error'})        
+    })
 
     it('should throw error', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
-            palette:'palette'
+            palette:'palette',
+            name:'PaletteName'
         }} as any
 
         sandbox.stub(LibraryService, 'addPalette').rejects({error:'Error'})
@@ -211,7 +230,8 @@ describe('addPalette test', ()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
-            palette:'palette'
+            palette:'palette',
+            name:'PaletteName'
         }} as any
 
         sandbox.stub(LibraryService, 'addPalette').resolves('success')
@@ -311,12 +331,32 @@ describe('updatePalette test', ()=>{
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
         sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing PaletteId', status:'error'})        
     })
+    it('should return error, missing Name', async()=>{
+        const mReq:Request = {body:{
+            userId:1,
+            userEmail:'test@test.com',
+            palette:'palette',
+            paletteId:2,
+            name:undefined
+        }} as any
+
+        const mRes:Response = {
+            status: sandbox.stub().returnsThis(),
+            send: sandbox.stub()
+        } as any
+
+        LibraryController.updatePalette(mReq, mRes, ()=>true)
+        await flushPromises()
+        sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Name', status:'error'})        
+    })
     it('should throw error', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:2
+            paletteId:2,
+            name:'Name'
         }} as any
 
         sandbox.stub(LibraryService, 'updatePalette').rejects({error:'Error'})
@@ -336,7 +376,8 @@ describe('updatePalette test', ()=>{
             userId:1,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:2
+            paletteId:2,
+            name:'PaletteName'
         }} as any
 
         sandbox.stub(LibraryService, 'updatePalette').resolves('success')
