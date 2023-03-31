@@ -29,11 +29,11 @@ export default function ColourScheme(props:Props) {
     return (
         <ErrorBoundary>
             <div className='w-full flex flex-col items-center justify-center gap-4 md:gap-16'>
-                <div className="prose align-center">
+                {/* <div className="prose align-center">
                     <h2 className='flex gap-2 items-center text-neutral-400'>
                         {generator.getName()} 
                     </h2>
-                </div>
+                </div> */}
 
                 <PaletteGrid
                     initPalettes={palettes}

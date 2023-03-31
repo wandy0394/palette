@@ -7,16 +7,15 @@ type Props = {
     palette: Palette
 }
 
-export default function PaletteSwatch(props:Props) {
+export default function PaletteRow(props:Props) {
     const{palette} = props
     return (
         <ErrorBoundary>
-            <div className='w-full grid grid-rows-2 h-full'>
-                <div className='w-full grid grid-cols-2'>
+            <div className='w-full grid grid-rows-1 h-full'>
+                <div className='w-full grid grid-cols-3'>
                     <div className='w-full items-center justify-center'>
                         <div className='flex flex-col gap-4 w-full h-full items-center'>
                             <ColouredBar colour={palette.mainColour.rgb}/>
-                            {/* <div className='prose-xl'>#{palette.mainColour.rgb}</div> */}
                         </div>
                     </div>
                     <div className='w-full flex items-center justify-center'>
@@ -26,13 +25,11 @@ export default function PaletteSwatch(props:Props) {
                                 return (
                                     <div key={`accent-${index}`} className='flex flex-col gap-0 w-full h-full items-center'>
                                         <ColouredBar colour={colour.rgb}/>
-                                        {/* <div className='prose-xl'>#{colour.rgb}</div> */}
                                     </div>
                                 )
                             })
                         }
                     </div>
-                </div>
                 <div className='w-full flex items-center justify-center'>
                     {
                         palette &&
@@ -45,6 +42,7 @@ export default function PaletteSwatch(props:Props) {
                             )
                         })
                     }
+                </div>
                 </div>
 
             </div>

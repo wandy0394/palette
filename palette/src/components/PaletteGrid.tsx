@@ -8,6 +8,7 @@ import ValueSlider from "./ValueSlider"
 import { useNavigate } from "react-router-dom"
 import ErrorBoundary from "./ErrorBoundary"
 import { Result } from "../model/common/error"
+import PaletteRow from "./PaletteRow"
 
 const cc = new ColourConverter()
 type Props = {
@@ -68,22 +69,27 @@ export default function PaletteGrid(props:Props) {
 
     return (
         <ErrorBoundary>
-            <div className='w-full flex flex-col items-center justify-center gap-8'>
+            <div className='w-full flex flex-col items-center justify-center gap-16 md:gap-24'>
                 {
                     (palettes) && (
                         palettes.map((palette, index)=>{
                             return (
-                                <div key={`palette=${index}`} className='w-full flex flex-col border rounded  border-neutral-500'>
-                                    <div className='w-full flex items-center justify-end gap-4 p-4'>
-                                        <button className='btn btn-xs btn-primary md:btn-sm' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
-                                        <button className='btn btn-xs btn-secondary md:btn-sm' onClick={()=>editPalette(palette)}>Edit</button>
-                                    </div>
+                                <div key={`palette=${index}`} className='w-full flex flex-col items-center' >
+                                    <div  className='w-1/2 flex flex-col bg-base-300 shadow-lg'>
+                                        <div className='w-full flex items-center'>
+                                            <div className='prose w-full flex justify-start px-4'>
+                                                <h3>
+                                                    {generator.getName()} #{index+1}
+                                                </h3>
+                                            </div>
+                                            <div className='w-full flex items-center justify-end gap-4 p-4'>
+                                                <button className='btn btn-xs btn-primary md:btn-sm' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
+                                                <button className='btn btn-xs btn-secondary md:btn-sm' onClick={()=>editPalette(palette)}>Edit</button>
+                                            </div>
+                                        </div>
 
-                                    <div className='w-full grid grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-4 justify-items-center pb-8'>
-                                        <PaletteSwatch palette={palette}/>
-                                        <div className='h-full w-full flex items-center justify-center gap-8 border border-solid border-orange-500'>
-                                            <ColourWheel palette={palette} colourValue={values[index]}/>
-                                            <ValueSlider value={values[index]} updateValue={(value)=>updateValue(value, index)}/>
+                                        <div className='w-full h-48 flex items-center justify-center gap-4 justify-items-center'>
+                                            <PaletteRow palette={palette}/>
                                         </div>
                                     </div>
                                 </div>

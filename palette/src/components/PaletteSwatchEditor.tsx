@@ -26,8 +26,7 @@ export default function PaletteSwatchEditor(props:Props) {
             <div className='w-full grid grid-cols-2 border border-solid border-red-500'>
                 <div className='w-full items-center justify-center'>
                     <div className='flex flex-col w-full h-full items-center' style={{border:(state.role === ACTION_TYPES.UPDATE_MAINCOLOUR)?'2px solid white':''}}>
-                        <ColouredBar colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, 0, ACTION_TYPES.UPDATE_MAINCOLOUR)}/>
-                        {/* <div className='prose-xl'>#{palette.mainColour.rgb}</div> */}
+                        <ColouredBar hover={true} colour={palette.mainColour.rgb} onSelect={()=>showColourPicker(palette.mainColour, 0, ACTION_TYPES.UPDATE_MAINCOLOUR)}/>
                     </div>
                 </div>
                 <div className='w-full flex items-center justify-center'>
@@ -35,9 +34,7 @@ export default function PaletteSwatchEditor(props:Props) {
                         palette?.accentColours.map((colour, index)=>{
                             return (
                                 <div key={`accent-${index}`} className='flex flex-col w-full h-full items-center' style={{border:(state.index===index && state.role === ACTION_TYPES.UPDATE_ACCENTCOLOUR)?'2px solid white':''}}>
-                                    <ColouredBar colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, ACTION_TYPES.UPDATE_ACCENTCOLOUR)}/>
-                                
-                                    {/* <div className='prose-xl'>#{colour.rgb}</div> */}
+                                    <ColouredBar hover={true} colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, ACTION_TYPES.UPDATE_ACCENTCOLOUR)}/>
                                 </div>
                             )
                         })
@@ -49,8 +46,7 @@ export default function PaletteSwatchEditor(props:Props) {
                     palette?.supportColours.map((colour, index)=>{
                         return (
                             <div key={`accent-${index}`} className='flex flex-col w-full h-full items-center' style={{border:(state.index===index && state.role === ACTION_TYPES.UPDATE_SUPPORTCOLOUR)?'2px solid white':''}}>
-                                <ColouredBar colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, ACTION_TYPES.UPDATE_SUPPORTCOLOUR)}/>
-                                {/* <div className='prose-xl'>#{colour.rgb}</div> */}
+                                <ColouredBar hover={true} colour={colour.rgb} onSelect={()=>showColourPicker(colour, index, ACTION_TYPES.UPDATE_SUPPORTCOLOUR)}/>
                             </div>
                         )
                     })
