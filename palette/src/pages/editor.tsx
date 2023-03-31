@@ -254,7 +254,7 @@ export default function Editor(props:Props) {
         if (state.palette) {
             async function save() {
                 try {
-                    const result = await LibraryService.savePalette(userEmail, userId, state.palette)
+                    const result = await LibraryService.savePalette(userEmail, userId, state.palette, paletteName)
                 }
                 catch (e) {
                     console.log('Could not add palette')
@@ -263,7 +263,7 @@ export default function Editor(props:Props) {
 
             async function update() {
                 try {
-                    const result = await LibraryService.updatePalette(userEmail, userId, state.palette, parseInt(params.id as string)) //TODO: validate params.id
+                    const result = await LibraryService.updatePalette(userEmail, userId, state.palette, parseInt(params.id as string), paletteName) //TODO: validate params.id
                 }
                 catch (e) {
                     console.log('Could not update palette')
