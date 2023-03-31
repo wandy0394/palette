@@ -46,7 +46,7 @@ class LibraryService {
         }
     }
 
-    static async savePalette(userEmail:string, userId:number, palette:Palette) {
+    static async savePalette(userEmail:string, userId:number, palette:Palette, name:string) {
         let config:RequestInit = {
             method:'POST',
             headers: {
@@ -55,7 +55,8 @@ class LibraryService {
             body: JSON.stringify({
                 userId:userId,
                 userEmail:userEmail,
-                palette:palette
+                palette:palette,
+                name:name
             })
         }
         try {
@@ -67,7 +68,7 @@ class LibraryService {
         }
     }
 
-    static async updatePalette(userEmail:string, userId:number, palette:Palette, paletteId:number) {
+    static async updatePalette(userEmail:string, userId:number, palette:Palette, paletteId:number, name:string) {
         let config:RequestInit = {
             method:'PUT',
             headers: {
@@ -77,7 +78,8 @@ class LibraryService {
                 userId:userId,
                 userEmail:userEmail,
                 palette:palette,
-                paletteId:paletteId
+                paletteId:paletteId,
+                name:name
             })
         }
         try {
