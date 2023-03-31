@@ -4,7 +4,7 @@ export default function ColouredSquare(props:{colour:HEX, onSelect?:React.MouseE
     const {colour, onSelect} = props
     return (
         <div 
-            className={`rounded aspect-square border border-solid w-full hover:border-primary hover:border-2`} 
+            className={`rounded border h-full border-solid w-full hover:border-primary hover:border-2`} 
             style={{backgroundColor: `#${colour}`}}
             onClick={onSelect}
         />
