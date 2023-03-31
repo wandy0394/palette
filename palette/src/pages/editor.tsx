@@ -91,6 +91,7 @@ export default function Editor(props:Props) {
     const [handleWidth, setHandleWidth] = useState<number>(initHandleWidth)
     const wheelRef = useRef<HTMLDivElement>(null)
     const [state, dispatch] = useChosenColour(initialState)
+    const [paletteName, setPaletteName] = useState<string>('')
     const navigate = useNavigate()
 
     const {user} = useAuthContext() 
@@ -121,6 +122,7 @@ export default function Editor(props:Props) {
                             role:ACTION_TYPES.UPDATE_MAINCOLOUR,
                             index:0
                         }
+                        setPaletteName(savedPalette[0].name)
                         dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
                     }
                     else {
@@ -285,35 +287,38 @@ export default function Editor(props:Props) {
                     <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
                 </div>
             </section>
-            <section className='w-full py-8 px-24'>
-                {
-                    user?<button className='btn btn-primary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
-                }
-                {
-                    <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center pb-8`}>
-                        {
-                            <PaletteSwatchEditor 
-                                state={state}
-                                showColourPicker={showColourPicker}
-                            />
-                        }
-                        <div className='h-full w-full flex flex-col items-center justify-center gap-8'>
-                            <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
-                            <ColourWheelPicker 
-                                ref={wheelRef}
-                                colourValue={value} 
-                                palette = {state.palette}
-                                chosenColour={state.colour}
-                                setChosenColour = {(colour:Colour)=>dispatch({type:state.role, payload:{colour:colour, index:state.index}})}
-                                wheelWidth={wheelWidth}
-                                handleWidth={handleWidth}
-                                handlePosition={handlePosition}
-                                position={position}
-                                setPosition={setPosition}
-                            />
+            <section className='w-full flex flex-col items-center justify-center px-24'>
+                <input className='w-full rounded text-2xl py-2 pl-4' placeholder="Palette Name" value={paletteName} onChange={(e)=>setPaletteName(e.target.value)}></input>
+                <div className='w-full py-8 '>
+                    {
+                        <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center pb-8`}>
+                            {
+                                <PaletteSwatchEditor 
+                                    state={state}
+                                    showColourPicker={showColourPicker}
+                                />
+                            }
+                            <div className='h-full w-full flex flex-col items-center justify-center gap-8'>
+                                <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
+                                <ColourWheelPicker 
+                                    ref={wheelRef}
+                                    colourValue={value} 
+                                    palette = {state.palette}
+                                    chosenColour={state.colour}
+                                    setChosenColour = {(colour:Colour)=>dispatch({type:state.role, payload:{colour:colour, index:state.index}})}
+                                    wheelWidth={wheelWidth}
+                                    handleWidth={handleWidth}
+                                    handlePosition={handlePosition}
+                                    position={position}
+                                    setPosition={setPosition}
+                                    />
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                    {
+                        (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
+                    }
+                </div>
             </section>
 
         </ContentBox>
