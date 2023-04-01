@@ -24,6 +24,8 @@ import { Result } from "../model/common/error"
 import LibraryService from "../service/library-service"
 import { SavedPalette } from "../types/library"
 import { useAuthContext } from "../hooks/useAuthContext"
+import EditorAlertBox from "../components/EditorAlertBox"
+import AlertBox, { AlertType } from "../components/common/AlertBox"
 
 
 
@@ -93,6 +95,11 @@ export default function Editor(props:Props) {
     const [state, dispatch] = useChosenColour(initialState)
     const [paletteName, setPaletteName] = useState<string>('')
     const navigate = useNavigate()
+
+
+    const [message, setMessage] = useState<string>('')
+    const [alertType, setAlertType] = useState<AlertType>('none')
+    const [visible, setVisible] = useState<boolean>(false)
 
     const {user} = useAuthContext() 
 
@@ -195,7 +202,6 @@ export default function Editor(props:Props) {
             setValue(colour.hsv.value*MAX_VALUE)
         }
         let newPosition = rgb2cartesian(colour.rgb, wheelWidth/2, handleWidth/2)
-        console.log(colour.rgb)
         setHandlePostion(newPosition)
     }
 
@@ -211,6 +217,9 @@ export default function Editor(props:Props) {
                     dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
                     initChosenColour(newPalette.mainColour)
                     initHandlePosition(newPalette.mainColour)
+                    setMessage('Palette generated.')
+                    setAlertType('info')
+                    setVisible(true)
                 }
                 else {
                     ////TODO:handle error
@@ -234,7 +243,6 @@ export default function Editor(props:Props) {
                 value:value / MAX_VALUE
             }
             const newColour:Colour = createColour(newHSV)
-            console.log(state.role)
             dispatch({type:state.role, payload:{colour:newColour, index:state.index}})
         }
     }
@@ -255,18 +263,31 @@ export default function Editor(props:Props) {
             async function save() {
                 try {
                     const result = await LibraryService.savePalette(userEmail, userId, state.palette, paletteName)
+                    setMessage('Palette saved.')
+                    setAlertType('success')
+                    setVisible(true)
+
                 }
                 catch (e) {
-                    console.log('Could not add palette')
+                    setMessage('Could not save palette')
+                    setAlertType('error')
+                    setVisible(true)
+
                 }
             }
 
             async function update() {
                 try {
                     const result = await LibraryService.updatePalette(userEmail, userId, state.palette, parseInt(params.id as string), paletteName) //TODO: validate params.id
+                    setMessage('Palette updated.')
+                    setAlertType('success')
+                    setVisible(true)
+
                 }
                 catch (e) {
-                    console.log('Could not update palette')
+                    setMessage('Could not update palette')
+                    setAlertType('error')
+                    setVisible(true)
                 }
             }
             if (params.id) {
@@ -319,6 +340,7 @@ export default function Editor(props:Props) {
                         (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
                     }
                 </div>
+                <AlertBox message={message} alertType={alertType} visible={visible} setVisible={setVisible}/>
             </section>
 
         </ContentBox>
