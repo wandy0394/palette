@@ -16,8 +16,8 @@ export function useLogin() {
         const response = await Authenticator.login(email, password)
         if (response.error) {
             setIsLoading(false)
-            setError(response.error.response)
-            throw Error(response.error.response)
+            setError(response.error.error)
+            throw Error(response.error.error)
         }
         else {
             //store user in session storage

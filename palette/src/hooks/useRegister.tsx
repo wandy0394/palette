@@ -14,10 +14,9 @@ export function useRegister() {
         
         const response = await Authenticator.register(email, password, name)
         if (response.error) {
-            console.log(response.error)
             setIsLoading(false)
-            setError(response.error.response)
-            throw Error(response.error.response)
+            setError(response.error.error)
+            throw Error(response.error.error)
         }
         else {
             //store user in session storage
