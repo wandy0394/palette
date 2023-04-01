@@ -1,9 +1,10 @@
 import { HEX } from "../types/colours"
-import {useState, ChangeEvent} from "react"
+import {useState, ChangeEvent, useRef, useCallback} from "react"
 import ColourConverter from "../model/colourConverter"
 import ColouredSquare from "../components/ColouredSquare"
 import ErrorBoundary from "../components/ErrorBoundary"
-
+import { HexColorPicker } from "react-colorful";
+import useOnClickOutside from "../hooks/useClickOutside"
 type Props = {
     colours: HEX[],
     setColours: React.Dispatch<React.SetStateAction<HEX[]>>
@@ -17,6 +18,14 @@ const converter = new ColourConverter()
 function ColourPicker(props:ColourPickerProps) {
     const {colour, setColour} = props
     const [messageVisible, setMessageVisible] = useState<boolean>(false)
+    const [visible, setVisible] = useState(false)
+    const popover = useRef<HTMLDivElement>(null);
+
+    const hide = useCallback(()=>{
+        setVisible(false)
+    }, [])
+    useOnClickOutside(popover, hide)
+    
 
     function handleInputChange(e:ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
@@ -30,6 +39,10 @@ function ColourPicker(props:ColourPickerProps) {
         setColour(e.target.value)
     }
 
+    function onSelect() {
+        setVisible(true)
+    }
+
     return (
         <div className='w-full grid grid-cols-[1fr_4fr] items-center justify-center gap-4'>
             <div className='flex gap-4 pl-4 items-center'>
@@ -41,7 +54,17 @@ function ColourPicker(props:ColourPickerProps) {
                 <input className={`input w-full text-center ${messageVisible?'border-red-500':''}`} value={`${colour}`} onChange={(e:ChangeEvent<HTMLInputElement>) => handleInputChange(e)}></input>
 
             </div>
-            <ColouredSquare colour={colour}/>
+            <div className='w-full h-full flex items-center gap-2'>
+
+                <ColouredSquare colour={colour} onSelect={onSelect}/>
+                {
+                    visible?
+                    <div className='absolute right-20' ref={popover}>
+                        <HexColorPicker color={colour} onChange={(e)=>setColour(e.slice(1, e.length))}/>
+                    </div>
+                    :null
+                }
+            </div>
         </div>
     )
 }
