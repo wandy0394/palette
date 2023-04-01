@@ -79,11 +79,11 @@ export function useChosenColour(initialState:ColourState):[ColourState, React.Di
             case ACTION_TYPES.UPDATE_COLOURVERTICIES:
                 if (payload.colour && payload.index !== undefined) {
 
-                    newPalette = updateSupportColour(state, payload.colour, payload.index)
+                    newPalette = updateColourVerticies(state, payload.colour, payload.index)
                     newState = {
                         palette:newPalette,
                         colour:payload.colour,
-                        role:ACTION_TYPES.UPDATE_SUPPORTCOLOUR,
+                        role:ACTION_TYPES.UPDATE_COLOURVERTICIES,
                         index:payload.index
                     }
                     return newState

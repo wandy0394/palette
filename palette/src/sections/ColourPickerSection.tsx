@@ -60,7 +60,7 @@ export default function ColourPickerSection(props:Props) {
                 <div className='w-full flex flex-col items-center'>
                         <h2 className='font-bold text-2xl text-neutral-400 w-full'>Choose a colour and we will generate swatches for you.</h2>
                 </div>
-                <div className='w-full gap-4 '>
+                <div className='w-full flex flex-col items-center justify-center gap-4 '>
                     {
                         colours.map((colour, index)=>{
                             return <ColourPicker key={index} colour={colour} setColour={(colour:HEX)=>setColour(index, colour)}/>

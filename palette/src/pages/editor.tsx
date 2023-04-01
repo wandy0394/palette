@@ -30,19 +30,23 @@ import AlertBox, { AlertType } from "../components/common/AlertBox"
 
 
 type Harmonies = {
-    [key:string]:{id:number, label:string, generator:PaletteGenerator},
+    [key:string]:{
+        id:number, 
+        label:string, 
+        generator:PaletteGenerator,
+        isCustom:boolean
+    },
 }
 
 const colourHarmonies:Harmonies = {
-    complementary: {id:1, label:'Complementary', generator:new ComplementarySchemeGenerator(new ColourConverter())},
-    splitComplementary: {id:2, label:'Split Complementary', generator:new SplitComplementarySchemeGenerator(new ColourConverter())},
-    triadic: {id:3, label:'Triadic', generator:new TriadicSchemeGenerator(new ColourConverter())},
-    analogous: {id:4, label:'Analogous', generator:new AnalogousSchemeGenerator(new ColourConverter())},
-    tetratic: {id:5, label:'Tetratic', generator:new TetraticSchemeGenerator(new ColourConverter())},
-    square: {id:6, label:'Square', generator:new SquareSchemeGenerator(new ColourConverter())},
-    custom3: {id:7, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter())},
-    custom4: {id:8, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter())},
-    
+    complementary: {id:1, label:'Complementary', generator:new ComplementarySchemeGenerator(new ColourConverter()), isCustom:false},
+    splitComplementary: {id:2, label:'Split Complementary', generator:new SplitComplementarySchemeGenerator(new ColourConverter()), isCustom:false},
+    triadic: {id:3, label:'Triadic', generator:new TriadicSchemeGenerator(new ColourConverter()), isCustom:false},
+    analogous: {id:4, label:'Analogous', generator:new AnalogousSchemeGenerator(new ColourConverter()), isCustom:false},
+    tetratic: {id:5, label:'Tetratic', generator:new TetraticSchemeGenerator(new ColourConverter()), isCustom:false},
+    square: {id:6, label:'Square', generator:new SquareSchemeGenerator(new ColourConverter()), isCustom:false},
+    custom3: {id:7, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter()), isCustom:true},
+    custom4: {id:8, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true},
 }
 
 const initWheelWidth = 400
@@ -174,7 +178,18 @@ export default function Editor(props:Props) {
     }, [location])
 
     useEffect(()=>{
-        if (state.colour && state.role === ACTION_TYPES.UPDATE_MAINCOLOUR) setColours([state.colour.rgb])
+        if (state.colour && state.role === ACTION_TYPES.UPDATE_MAINCOLOUR) {
+            let currColours = [...colours]
+            currColours[0] = state.colour.rgb
+            setColours(currColours)
+        }
+        else if (state.colour && state.role === ACTION_TYPES.UPDATE_ACCENTCOLOUR && colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
+            let currColours = [colours[0]]
+            state.palette.accentColours.forEach(colour=>{
+                currColours.push(colour.rgb)
+            })
+            setColours(currColours)
+        }
     }, [state.colour])
 
     function initChosenColour(colour:Colour) {
@@ -208,7 +223,8 @@ export default function Editor(props:Props) {
 
     function generatePalettes() {
         if (generator) {
-            let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
+            // let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
+            let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], colours)
             if (result.isSuccess()) {
                 let verticies:Colour[][] = result.value
                 let paletteResult:Result<Palette,string> = generator.generatePalette(colours[0], verticies[0])
@@ -256,6 +272,23 @@ export default function Editor(props:Props) {
         }
     }
 
+    useEffect(()=>{
+        generatePalettes()
+
+    }, [generator])
+
+    useEffect(()=>{
+        if (colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
+            let newColours:string[] = [colours[0]]
+                state.palette.accentColours.forEach(colour=>{
+                    newColours.push(colour.rgb)
+            })
+            setColours(newColours)
+        }
+        else {
+            setColours([state.palette.mainColour.rgb])
+        }
+    }, [state.palette.accentColours])
 
     function savePalette(userId:number, userEmail:string) {
         //TODO:check if user logged in, otherwise, prompt them to sign up
@@ -309,7 +342,7 @@ export default function Editor(props:Props) {
                 </div>
             </section>
             <section className='w-full flex flex-col items-center justify-center px-24'>
-                <input className='w-full rounded text-2xl py-2 pl-4' placeholder="Palette Name" value={paletteName} onChange={(e)=>setPaletteName(e.target.value)}></input>
+                <input className='w-full rounded text-2xl py-2 pl-4' placeholder="Palette name..." value={paletteName} onChange={(e)=>setPaletteName(e.target.value)}></input>
                 <div className='w-full py-8 '>
                     {
                         <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center pb-8`}>
