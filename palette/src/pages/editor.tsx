@@ -26,6 +26,7 @@ import { SavedPalette } from "../types/library"
 import { useAuthContext } from "../hooks/useAuthContext"
 import EditorAlertBox from "../components/EditorAlertBox"
 import AlertBox, { AlertType } from "../components/common/AlertBox"
+import CustomComplementarySchemeGenerator from "../model/CustomComplementarySchemeGenerator"
 
 
 
@@ -45,8 +46,9 @@ const colourHarmonies:Harmonies = {
     analogous: {id:4, label:'Analogous', generator:new AnalogousSchemeGenerator(new ColourConverter()), isCustom:false},
     tetratic: {id:5, label:'Tetratic', generator:new TetraticSchemeGenerator(new ColourConverter()), isCustom:false},
     square: {id:6, label:'Square', generator:new SquareSchemeGenerator(new ColourConverter()), isCustom:false},
-    custom3: {id:7, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter()), isCustom:true},
-    custom4: {id:8, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true},
+    custom2: {id:7, label:'Custom(2)', generator:new CustomComplementarySchemeGenerator(new ColourConverter()), isCustom:true},
+    custom3: {id:8, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter()), isCustom:true},
+    custom4: {id:9, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true},
 }
 
 const initWheelWidth = 400
