@@ -31,8 +31,8 @@ class LibraryDAO {
     static getPalette(userId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery:string = `SELECT * from Palettes where UserId=${userId};`
-                db.query(sqlQuery, (err, result, fields)=>{
+                const sqlQuery:string = `SELECT * from Palettes where UserId=?;`
+                db.query(sqlQuery, [userId], (err, result, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -65,8 +65,8 @@ class LibraryDAO {
     static getPaletteById(userId:number, paletteId:number):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
                 try {
-                    const sqlQuery:string = `SELECT * from Palettes where UserId=${userId} and Id=${paletteId};`
-                    db.query(sqlQuery, (err, result, fields)=>{
+                    const sqlQuery:string = `SELECT * from Palettes where UserId=? and Id=?;`
+                    db.query(sqlQuery, [userId, paletteId],(err, result, fields)=>{
                         if (err) {
                             return reject(new Error('Error querying database'))
                         }
@@ -108,25 +108,17 @@ class LibraryDAO {
                 const supportColours = JSON.stringify(palette.supportColours)
                 const colourVerticies = JSON.stringify(palette.colourVerticies)
                 
-                const sqlQuery:string = `INSERT INTO Palettes 
-                                            (
-                                                name,
-                                                MainColour,
-                                                AccentColours,
-                                                SupportColours,
-                                                ColourVerticies,
-                                                UserId
-                                            )
-                                            VALUES
-                                            (
-                                                '${name}',
-                                                '${mainColour}',
-                                                '${accentColours}',
-                                                '${supportColours}',
-                                                '${colourVerticies}',
-                                                ${userId}
-                                                )`
-                db.query(sqlQuery, (err, results, fields)=>{
+                const values = {
+                    name:name,
+                    MainColour:mainColour,
+                    AccentColours:accentColours,
+                    SupportColours:supportColours,
+                    ColourVerticies:colourVerticies,
+                    UserId:userId
+                }
+
+                const sqlQuery:string = `INSERT INTO Palettes set ?;`
+                db.query(sqlQuery, [values], (err, results, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -148,17 +140,15 @@ class LibraryDAO {
                 const accentColours = JSON.stringify(palette.accentColours)
                 const supportColours = JSON.stringify(palette.supportColours)
                 const colourVerticies = JSON.stringify(palette.colourVerticies)
-                const sqlQuery:string = `UPDATE Palettes 
-                                            SET
-                                                MainColour = '${mainColour}',
-                                                AccentColours = '${accentColours}',
-                                                SupportColours = '${supportColours}',
-                                                ColourVerticies = '${colourVerticies}',
-                                                name = '${name}'
-                                            WHERE
-                                                UserId=${userId} and Id=${paletteId}`
-
-                db.query(sqlQuery, (err, results, fields)=>{
+                const values = {
+                    name:name,
+                    MainColour:mainColour,
+                    AccentColours:accentColours,
+                    SupportColours:supportColours,
+                    ColourVerticies:colourVerticies,
+                }
+                const sqlQuery:string = `Update Palettes SET ? WHERE UserId=? and Id=?;`
+                db.query(sqlQuery, [values, userId, paletteId], (err, results, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -175,9 +165,10 @@ class LibraryDAO {
     static deletePalette(userId:number, id:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{
             try {
-                const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=${userId} and Id=${id}` 
+                const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=? and Id=?` 
+                // const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=${userId} and Id=${id}` 
                        
-                db.query(sqlQuery, (err, results, fields)=>{
+                db.query(sqlQuery, [userId, id], (err, results, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))

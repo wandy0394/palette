@@ -36,20 +36,14 @@ class UsersDAO {
         const hash = await bcrypt.hash(password, salt)  //move this to service layer
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery = `INSERT INTO Users
-                                    (
-                                        name, 
-                                        email,
-                                        passwordHash
-                                    )
-                                    VALUES
-                                    (
-                                        '${name}',
-                                        '${email}',
-                                        '${hash}'
-                                    );
-                                `
-                db.query(sqlQuery, (err, results:ResultSetHeader, fields)=>{
+                const values={
+                    name:name,
+                    email:email,
+                    passwordHash:hash
+                }
+
+                const sqlQuery:string = `INSERT INTO Users set ?`
+                db.query(sqlQuery, [values], (err, results:ResultSetHeader, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -82,8 +76,8 @@ class UsersDAO {
         }
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery = `SELECT id, name, email, passwordHash from Users where email='${email}' LIMIT 1`
-                db.query(sqlQuery, (err, result, fields)=>{
+                const sqlQuery = `SELECT id, name, email, passwordHash from Users where email=? LIMIT 1`
+                db.query(sqlQuery, [email], (err, result, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -122,8 +116,8 @@ class UsersDAO {
         }
         const promise:Promise<User> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery = `SELECT * from Users where email='${email}';`
-                db.query(sqlQuery, (err, result, fields)=>{
+                const sqlQuery = `SELECT * from Users where email=?;`
+                db.query(sqlQuery, [email], (err, result, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database.'))
@@ -154,8 +148,8 @@ class UsersDAO {
 
         const promise:Promise<boolean> = new Promise((resolve, reject)=>{
             try {
-                const sqlQuery = `SELECT 1 from Users where email='${email}' LIMIT 1;`
-                db.query(sqlQuery, (err, result, fields)=>{
+                const sqlQuery = `SELECT 1 from Users where email=? LIMIT 1;`
+                db.query(sqlQuery, [email], (err, result, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database.'))
