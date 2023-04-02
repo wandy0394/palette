@@ -1,8 +1,8 @@
 import axios from "axios"
 
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.0.128:8080/api/v1/users/',
-    // baseURL:'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/users',
+    // baseURL: 'http://192.168.0.128:8080/api/v1/users/',
+    baseURL:'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/users',
     // timeout:3000,
     headers: {
         "Accept" : "*",
