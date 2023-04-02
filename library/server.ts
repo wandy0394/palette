@@ -7,7 +7,7 @@ import helmet from 'helmet'
 const app:Express = express()
 app.use(cors())
 app.use(express.json())
-// app.use(helmet)
+app.use(helmet())
 app.use("/api/v1/paletteLibrary", libraryRouter)
 app.use("/api/v1/users", userRouter)
 
