@@ -24,7 +24,7 @@ export default function Signup() {
     }
 
     return (
-        <div className='m-auto py-24 w-full'>
+        <div className='m-auto py-24 w-full h-screen'>
 
             <form onSubmit={handleSubmit} className='flex flex-col gap-y-4 items-center justify-center w-2/3 mx-auto'>
                 <h3 className='text-4xl font-bold'>Sign Up</h3>

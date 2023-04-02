@@ -22,7 +22,7 @@ export default function Login() {
     }
 
     return (
-        <div className='m-auto py-24 w-full'>
+        <div className='m-auto py-24 w-full h-screen'>
             <form onSubmit={handleSubmit} className='flex flex-col gap-y-4 items-center justify-center w-2/3 mx-auto'>
                 <h3 className='text-4xl font-bold'>Log in</h3>
                 <div className='flex flex-col gap-y-2 w-1/3'>
