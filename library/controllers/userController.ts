@@ -4,8 +4,8 @@ import UserService from '../services/userService'
 import jwt from "jsonwebtoken"
 
 
-function createToken(_id:number) {
-    return jwt.sign({_id}, process.env.SECRET as string, {expiresIn:'3d'})
+function createToken(userId:number, email:string) {
+    return jwt.sign({userId, email}, process.env.JWT_SECRET as string, {expiresIn:'3d'})
 }
 class UserController {
 
@@ -25,8 +25,8 @@ class UserController {
         }
         try {
             const user = await UserService.signup(email, password, name)
-            const token = createToken(user.id)
-            res.status(200).send({status:'ok', user:user, token:token})
+            const token = createToken(user.id, user.email)
+            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
         }
         catch(e:any) {
             if (e.message) {
@@ -51,8 +51,8 @@ class UserController {
         }
         try {
             const user = await UserService.login(email, password)
-            const token = createToken(user.id)
-            res.status(200).send({status:'ok', user:user, token:token})
+            const token = createToken(user.id, user.email)
+            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
         }
         catch(e:any) {
             console.log
@@ -73,7 +73,7 @@ class UserController {
         }
         try {
             const user = await UserService.getUser(email)
-            res.status(200).send({status:'ok', user:user})
+            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}})
         }
         catch(e:any) {
             console.log

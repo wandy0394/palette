@@ -36,7 +36,7 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 
 export default function Library() {
     const {user} = useAuthContext()
-    const [library, setLibrary] = useLibrary({userId: user?.user.id, token:user?.token})
+    const [library, setLibrary] = useLibrary({token:user?.token})
 
     
 
@@ -45,7 +45,7 @@ export default function Library() {
         //call api service to delete
         async function deletePalette() {
             try {
-                await LibraryService.deletePalette(user.user.email, user.user.id, paletteId, user.token)
+                await LibraryService.deletePalette(paletteId, user.token)
                 const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== paletteId)
                 setLibrary(newLibrary)
             }

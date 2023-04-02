@@ -24,7 +24,7 @@ class LibraryService {
         }
     }
 
-    static async getPalettes(userId:number, token:string):Promise<SavedPalette[]> {
+    static async getPalettes(token:string):Promise<SavedPalette[]> {
         let config:RequestInit = {
             headers: {
                 "Content-Type":"application/json",
@@ -32,16 +32,16 @@ class LibraryService {
             },
         }
         try {
-            let palettes = await this.#request<{data:SavedPalette[]}>(URL+`${userId}`, config)
+            let palettes = await this.#request<{data:SavedPalette[]}>(URL, config)
             return palettes.data
         }
-        catch (e:unknown) {
+        catch (e) {
             console.log(e)
             throw (e)
         }
     }
 
-    static async getPaletteById(userId:number, paletteId:string, token:string):Promise<SavedPalette[]|null> {
+    static async getPaletteById(paletteId:string, token:string):Promise<SavedPalette[]|null> {
         //need to either pass userEmail
         let config:RequestInit = {
             headers: {
@@ -50,7 +50,7 @@ class LibraryService {
             },
         }
         try {
-            const response = await this.#request<{data:SavedPalette[]|null}>(URL+`${userId}/${paletteId}`, config)
+            const response = await this.#request<{data:SavedPalette[]|null}>(URL+`${paletteId}`, config)
             return response.data
         }
         catch (e) {
@@ -59,7 +59,7 @@ class LibraryService {
         }
     }
 
-    static async savePalette(userEmail:string, userId:number, palette:Palette, name:string, token:string) {
+    static async savePalette(palette:Palette, name:string, token:string) {
         let config:RequestInit = {
             method:'POST',
             headers: {
@@ -67,8 +67,6 @@ class LibraryService {
                 'Authorization':'Bearer ' + token
             },
             body: JSON.stringify({
-                userId:userId,
-                userEmail:userEmail,
                 palette:palette,
                 name:name
             })
@@ -82,7 +80,7 @@ class LibraryService {
         }
     }
 
-    static async updatePalette(userEmail:string, userId:number, palette:Palette, paletteId:number, name:string, token:string) {
+    static async updatePalette(palette:Palette, paletteId:number, name:string, token:string) {
         let config:RequestInit = {
             method:'PUT',
             headers: {
@@ -90,8 +88,6 @@ class LibraryService {
                 'Authorization':'Bearer ' + token
             },
             body: JSON.stringify({
-                userId:userId,
-                userEmail:userEmail,
                 palette:palette,
                 paletteId:paletteId,
                 name:name
@@ -107,7 +103,7 @@ class LibraryService {
         }
     }
 
-    static async deletePalette(userEmail:string, userId:number, paletteId:number, token:string) {
+    static async deletePalette(paletteId:number, token:string) {
         let config:RequestInit = {
             method:'DELETE',
             headers: {
@@ -115,8 +111,6 @@ class LibraryService {
                 'Authorization':'Bearer ' + token
             },
             body: JSON.stringify({
-                userId:userId,
-                userEmail:userEmail,
                 paletteId:paletteId
             })
         }

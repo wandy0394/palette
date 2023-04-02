@@ -9,10 +9,8 @@ router.route("/paletteLibrary")
     .post(LibraryController.addPalette)
     .delete(LibraryController.deletePalette)
     .put(LibraryController.updatePalette)
-
-router.route("/paletteLibrary/:userId")
     .get(LibraryController.getPalette)
 
-router.route("/paletteLibrary/:userId/:paletteId")
+router.route("/paletteLibrary/:paletteId")
     .get(LibraryController.getPaletteById)    
 export default router

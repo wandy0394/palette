@@ -1,6 +1,4 @@
 import jwt from 'jsonwebtoken'
-import { User } from '../types/types'
-
 
 
 export default function requireAuth(req:any, res:any, next:any):void {
@@ -9,8 +7,10 @@ export default function requireAuth(req:any, res:any, next:any):void {
     if (!authorization) return res.status(401).json({status:'error', error:'Auth token missing.'})
     const token = authorization.split(" ")[1]
     try {
-        const {_id} = jwt.verify(token, process.env.SECRET as string) as jwt.JwtPayload
-        // req.user = await Users.findOne({_id}).select('_id')
+        const {userId, email} = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload
+        // TODO: check that user exists and has userId matches email
+        req.body.userId = userId
+        req.body.userEmail = email
         next()
     }
     catch(e) {
@@ -18,5 +18,3 @@ export default function requireAuth(req:any, res:any, next:any):void {
         res.status(401).json({status:'error', error:'Unauthorised.'})
     }
 }
-
-module.exports = requireAuth

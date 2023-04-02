@@ -3,9 +3,10 @@ import LibraryService from "../services/libraryService"
 
 class LibraryController {
     static async getPalette(req:Request, res:Response, next:NextFunction) {
-        const userId = parseInt(req.params.userId) //id needs to be validated
+        // const userId = parseInt(req.params.userId) //id needs to be validated
+        const userId = req.body.userId
         if (!userId) {
-            res.status(400).send({status:'error', response:'Invalid User Id'})
+            res.status(400).send({status:'error', response:'Missing User Id'})
             return
         }
         if (!(Number.isInteger(userId))) {
@@ -27,7 +28,8 @@ class LibraryController {
     }
     static async getPaletteById(req:Request, res:Response, next:NextFunction) {
         const paletteId = parseInt(req.params.paletteId) //need to check that param is actually integer
-        const userId = parseInt(req.params.userId) //need to check that param is actually integer
+        // const userId = parseInt(req.params.userId) //need to check that param is actually integer
+        const userId = req.body.userId
 
         LibraryService.getPaletteById(userId, paletteId)
             .then(response=>{
@@ -43,7 +45,6 @@ class LibraryController {
             })
     }
     static async addPalette(req:Request, res:Response, next:NextFunction) {
-        const body = (req.body)
         if (req.body.userId === undefined) {
             res.status(400).send({response:'Missing userId', status:'error'}) 
             return
