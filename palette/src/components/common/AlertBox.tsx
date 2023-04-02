@@ -31,7 +31,7 @@ export default function AlertBox(props:Props) {
         <div>
         {
             (alertType !== 'none') && visible &&
-                <div className='toast'>
+                <div className='toast z-[100]'>
                     <div className = {`alert alert-${alertType} cursor-pointer`} onClick={()=>(setVisible(false))}>
                         <span>{message}</span>
                     </div>

@@ -71,7 +71,7 @@ export default function Library() {
         <ContentBox>
             {
                 (library.length <= 0) &&
-                    (<section className='text-2xl'>You have no palettes saved.</section>)
+                    (<section className='text-2xl h-screen'>You have no palettes saved.</section>)
             }
             <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
             {

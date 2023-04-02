@@ -102,7 +102,7 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
     return (
         <ErrorBoundary>
 
-            <div className='w-1/2 h-full flex flex-col items-center justify-center gap-4'>
+            <div className='w-full md:w-1/2 h-full flex flex-col items-center justify-center gap-4'>
                 <div ref={ref} className='w-full h-full'>
                     <Interactive 
                         

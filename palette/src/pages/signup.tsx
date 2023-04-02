@@ -16,7 +16,7 @@ export default function Signup() {
         e.preventDefault()
         register(email, password, name)
             .then(()=>{
-                navigate('/')
+                navigate('/generator')
             })
             .catch((error)=>{
 
@@ -26,9 +26,9 @@ export default function Signup() {
     return (
         <div className='m-auto py-24 w-full h-screen'>
 
-            <form onSubmit={handleSubmit} className='flex flex-col gap-y-4 items-center justify-center w-2/3 mx-auto'>
+            <form onSubmit={handleSubmit} className='flex flex-col gap-y-4 items-center justify-center w-full lg:w-2/3 mx-auto'>
                 <h3 className='text-4xl font-bold'>Sign Up</h3>
-                <div className='flex flex-col gap-y-2 w-1/3'>
+                <div className='flex flex-col gap-y-2 w-full lg:w-1/2 xl:w-1/3'>
                     <label className='text-xl'>Name:</label>
                     <input
                         className='w-full'
@@ -37,7 +37,7 @@ export default function Signup() {
                         value={name}
                     />
                 </div>
-                <div className='flex flex-col gap-y-2 w-1/3'>
+                <div className='flex flex-col gap-y-2 w-full lg:w-1/2 xl:w-1/3'>
                     <label className='text-xl'>Email:</label>
                     <input
                         className='w-full'
@@ -46,7 +46,7 @@ export default function Signup() {
                         value={email}
                     />
                 </div>
-                <div className='flex flex-col gap-y-2 w-1/3'>
+                <div className='flex flex-col gap-y-2 lg:w-1/2 xl:w-1/3'>
                     <label className='text-xl'>Password:</label>
                     <input
                         className='w-full'

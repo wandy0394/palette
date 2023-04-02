@@ -44,7 +44,7 @@ function ColourPicker(props:ColourPickerProps) {
     }
 
     return (
-        <div className='w-full grid grid-cols-[1fr_4fr] items-center justify-center gap-4'>
+        <div className='w-full grid grid-cols-[1fr_1fr] md:grid-cols-[1fr_2fr] items-center justify-center gap-4'>
             <div className='flex gap-4 pl-4 items-center'>
                 {
                     !messageVisible?

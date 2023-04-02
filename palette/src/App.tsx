@@ -7,6 +7,9 @@ import Signup from './pages/signup'
 import Library from './pages/library'
 import { useAuthContext } from './hooks/useAuthContext'
 import { useLogout } from './hooks/useLogout'
+import { useCallback, useRef, useState } from 'react'
+import useOnClickOutside from './hooks/useClickOutside'
+import {FiMenu} from 'react-icons/fi'
 
 type Props = {
   isActive:(targetPath:string)=>boolean,
@@ -34,12 +37,21 @@ function App() {
   const location = useLocation()
   const {user} = useAuthContext()
   const {logout} = useLogout()
+  const [visible, setVisible] = useState<boolean>(false)
 
   function isActive(target:string):boolean {
     return (location.pathname.includes(target))
   }
   
+  function toggleMenu() {
+    setVisible(p=>!p)
+  }
+  const popover = useRef<HTMLUListElement>(null);
 
+  const hideMenu = useCallback(()=>{
+      setVisible(false)
+  }, [])
+  useOnClickOutside(popover, hideMenu)
   
   return (
     <div className="text-neutral-400">
@@ -64,18 +76,33 @@ function App() {
               </div>):
               (<div className="navbar-end flex items-center justify-end gap-4 py-1">
                 <Link to='/signup'>
-                  <div className="btn btn-secondary">
+                  <div className="btn btn-secondary hidden  md:flex md:btn-md">
                     Signup
                   </div>
                 </Link>
                 <Link to='/login'>
-                  <div className="btn btn-primary">Login</div>
+                  <div className="btn btn-primary hidden md:flex md:btn-md">Login</div>
                 </Link>
+                <button className='btn md:hidden' onClick={toggleMenu}>
+                  <FiMenu/>
+                </button>
+                <ul ref={popover} className={`menu top-16 bg-base-300 rounded ${visible?'absolute':'hidden'}`}>
+                  <li>
+                    <Link to='/signup'>
+                      Signup
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to='/login'>
+                      Login
+                    </Link>
+                  </li>
+                </ul>
               </div>)
           }
 
       </div>
-      <div className='sm:px-24 lg:px-48 bg-neutral-700'>
+      <div className='px-8 sm:px-20 lg:px-48 bg-neutral-700'>
         <Routes>
           <Route path="/generator" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>

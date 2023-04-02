@@ -225,7 +225,6 @@ export default function Editor(props:Props) {
 
     function generatePalettes() {
         if (generator) {
-            // let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], state.palette.colourVerticies)
             let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], colours)
             if (result.isSuccess()) {
                 let verticies:Colour[][] = result.value
@@ -336,41 +335,41 @@ export default function Editor(props:Props) {
 
     return (
         <ContentBox>
-            <section className='w-full py-16 px-24'>
+            <section className='w-full py-16 lg:px-24'>
                 <div className='w-full flex flex-col items-center justify-center gap-4'>
                     <ColourPickerSection colours={colours} setColours={setColours}/>
                     <HarmonySelector value={selectedHarmony} setValue={makeSelection} harmonies={colourHarmonies}/>
                     <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
                 </div>
             </section>
-            <section className='w-full h-screen flex flex-col items-center justify-start px-24'>
+            <section className='w-full h-screen flex flex-col items-center justify-start lg:px-24'>
                 <input className='w-full rounded text-2xl py-2 pl-4' placeholder="Palette name..." value={paletteName} onChange={(e)=>setPaletteName(e.target.value)}></input>
-                <div className='w-full py-8 '>
-                    {
-                        <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'} grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center pb-8`}>
-                            {
-                                <PaletteSwatchEditor 
-                                    state={state}
-                                    showColourPicker={showColourPicker}
+                <div className='w-full py-8'>
+                    
+                    <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'}  grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center`}>
+                        
+                        <PaletteSwatchEditor 
+                            state={state}
+                            showColourPicker={showColourPicker}
+                        />
+                        
+                        <div className='h-full w-full flex flex-col items-center justify-center gap-8 '>
+                            <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
+                            <ColourWheelPicker 
+                                ref={wheelRef}
+                                colourValue={value} 
+                                palette = {state.palette}
+                                chosenColour={state.colour}
+                                setChosenColour = {(colour:Colour)=>dispatch({type:state.role, payload:{colour:colour, index:state.index}})}
+                                wheelWidth={wheelWidth}
+                                handleWidth={handleWidth}
+                                handlePosition={handlePosition}
+                                position={position}
+                                setPosition={setPosition}
                                 />
-                            }
-                            <div className='h-full w-full flex flex-col items-center justify-center gap-8'>
-                                <ValueSlider value={value} updateValue={(value)=>updateValue(value)}/>
-                                <ColourWheelPicker 
-                                    ref={wheelRef}
-                                    colourValue={value} 
-                                    palette = {state.palette}
-                                    chosenColour={state.colour}
-                                    setChosenColour = {(colour:Colour)=>dispatch({type:state.role, payload:{colour:colour, index:state.index}})}
-                                    wheelWidth={wheelWidth}
-                                    handleWidth={handleWidth}
-                                    handlePosition={handlePosition}
-                                    position={position}
-                                    setPosition={setPosition}
-                                    />
-                            </div>
                         </div>
-                    }
+                    </div>
+                    
                     {
                         (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
                     }

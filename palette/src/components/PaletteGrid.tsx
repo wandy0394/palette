@@ -75,14 +75,14 @@ export default function PaletteGrid(props:Props) {
                         palettes.map((palette, index)=>{
                             return (
                                 <div key={`palette=${index}`} className='w-full flex flex-col items-center' >
-                                    <div  className='w-1/2 flex flex-col bg-base-300 shadow-lg'>
+                                    <div  className='w-full lg:w-2/3 flex flex-col bg-base-300 shadow-lg'>
                                         <div className='w-full flex items-center'>
-                                            <div className='prose w-full flex justify-start px-4'>
-                                                <h3>
+                                            <div className='w-full flex justify-start px-4'>
+                                                <div className='text-lg lg:text-2xl font-bold'>
                                                     {generator.getName()} #{index+1}
-                                                </h3>
+                                                </div>
                                             </div>
-                                            <div className='w-full flex items-center justify-end gap-4 p-4'>
+                                            <div className='w-full flex flex-wrap items-center justify-end gap-4 p-4'>
                                                 <button className='btn btn-xs btn-primary md:btn-sm' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
                                                 <button className='btn btn-xs btn-secondary md:btn-sm' onClick={()=>editPalette(palette)}>Edit</button>
                                             </div>
