@@ -1,7 +1,9 @@
 import express from 'express'
 import LibraryController from "../../controllers/libraryController"
+import requireAuth from '../../middleware/requireAuth'
 
 const router = express.Router()
+router.use(requireAuth)
 
 router.route("/paletteLibrary")
     .post(LibraryController.addPalette)

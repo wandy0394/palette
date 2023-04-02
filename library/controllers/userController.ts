@@ -1,8 +1,14 @@
 import {Request, Response, NextFunction} from 'express'
 import LibraryService from '../services/libraryService'
 import UserService from '../services/userService'
+import jwt from "jsonwebtoken"
 
+
+function createToken(_id:number) {
+    return jwt.sign({_id}, process.env.SECRET as string, {expiresIn:'3d'})
+}
 class UserController {
+
     static async signup(req:Request, res:Response, next:NextFunction) {
         const {email, password, name} = req.body
         if (!email) {
@@ -19,7 +25,8 @@ class UserController {
         }
         try {
             const user = await UserService.signup(email, password, name)
-            res.status(200).send({status:'ok', user:user})
+            const token = createToken(user.id)
+            res.status(200).send({status:'ok', user:user, token:token})
         }
         catch(e:any) {
             if (e.message) {
@@ -44,7 +51,8 @@ class UserController {
         }
         try {
             const user = await UserService.login(email, password)
-            res.status(200).send({status:'ok', user:user})
+            const token = createToken(user.id)
+            res.status(200).send({status:'ok', user:user, token:token})
         }
         catch(e:any) {
             console.log

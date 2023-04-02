@@ -2,7 +2,8 @@ import { fail, Result, success } from "../model/common/error";
 import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
 
-const URL = 'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/paletteLibrary/paletteLibrary/'
+const URL = 'http://192.168.0.128:8080/api/v1/paletteLibrary/paletteLibrary/'
+// const URL = 'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/paletteLibrary/paletteLibrary/'
 
 
 
@@ -16,16 +17,22 @@ class LibraryService {
             }
             const errorMessage = await response.json()
             console.error(errorMessage)
-            throw new Error('Something went wrong: ' + errorMessage.response)
+            throw new Error('Something went wrong: ' + errorMessage.error)
         } 
         catch(e) {
             throw e
         }
     }
 
-    static async getPalettes(userId:number):Promise<SavedPalette[]> {
+    static async getPalettes(userId:number, token:string):Promise<SavedPalette[]> {
+        let config:RequestInit = {
+            headers: {
+                "Content-Type":"application/json",
+                'Authorization':'Bearer ' + token
+            },
+        }
         try {
-            let palettes = await this.#request<{data:SavedPalette[]}>(URL+`${userId}`)
+            let palettes = await this.#request<{data:SavedPalette[]}>(URL+`${userId}`, config)
             return palettes.data
         }
         catch (e:unknown) {
@@ -34,10 +41,16 @@ class LibraryService {
         }
     }
 
-    static async getPaletteById(userId:number, paletteId:string):Promise<SavedPalette[]|null> {
+    static async getPaletteById(userId:number, paletteId:string, token:string):Promise<SavedPalette[]|null> {
         //need to either pass userEmail
+        let config:RequestInit = {
+            headers: {
+                "Content-Type":"application/json",
+                'Authorization':'Bearer ' + token
+            },
+        }
         try {
-            const response = await this.#request<{data:SavedPalette[]|null}>(URL+`${userId}/${paletteId}`)
+            const response = await this.#request<{data:SavedPalette[]|null}>(URL+`${userId}/${paletteId}`, config)
             return response.data
         }
         catch (e) {
@@ -46,11 +59,12 @@ class LibraryService {
         }
     }
 
-    static async savePalette(userEmail:string, userId:number, palette:Palette, name:string) {
+    static async savePalette(userEmail:string, userId:number, palette:Palette, name:string, token:string) {
         let config:RequestInit = {
             method:'POST',
             headers: {
-                "Content-Type":"application/json"
+                "Content-Type":"application/json",
+                'Authorization':'Bearer ' + token
             },
             body: JSON.stringify({
                 userId:userId,
@@ -68,11 +82,12 @@ class LibraryService {
         }
     }
 
-    static async updatePalette(userEmail:string, userId:number, palette:Palette, paletteId:number, name:string) {
+    static async updatePalette(userEmail:string, userId:number, palette:Palette, paletteId:number, name:string, token:string) {
         let config:RequestInit = {
             method:'PUT',
             headers: {
-                "Content-Type":"application/json"
+                "Content-Type":"application/json",
+                'Authorization':'Bearer ' + token
             },
             body: JSON.stringify({
                 userId:userId,
@@ -92,11 +107,12 @@ class LibraryService {
         }
     }
 
-    static async deletePalette(userEmail:string, userId:number, paletteId:number) {
+    static async deletePalette(userEmail:string, userId:number, paletteId:number, token:string) {
         let config:RequestInit = {
             method:'DELETE',
             headers: {
-                "Content-Type":"application/json"
+                "Content-Type":"application/json",
+                'Authorization':'Bearer ' + token
             },
             body: JSON.stringify({
                 userId:userId,

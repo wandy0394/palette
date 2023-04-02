@@ -126,7 +126,7 @@ export default function Editor(props:Props) {
             //get palette by id
             async function get() {
                 try {
-                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(user.user.id, params.id as string)
+                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(user.user.id, params.id as string, user.token)
                     console.log(savedPalette)
                     if (savedPalette && savedPalette.length > 0) {
                         let payload = {
@@ -297,7 +297,7 @@ export default function Editor(props:Props) {
         if (state.palette) {
             async function save() {
                 try {
-                    const result = await LibraryService.savePalette(userEmail, userId, state.palette, paletteName)
+                    const result = await LibraryService.savePalette(userEmail, userId, state.palette, paletteName, user.token)
                     setMessage('Palette saved.')
                     setAlertType('success')
                     setVisible(true)
@@ -313,7 +313,7 @@ export default function Editor(props:Props) {
 
             async function update() {
                 try {
-                    const result = await LibraryService.updatePalette(userEmail, userId, state.palette, parseInt(params.id as string), paletteName) //TODO: validate params.id
+                    const result = await LibraryService.updatePalette(userEmail, userId, state.palette, parseInt(params.id as string), paletteName, user.token) //TODO: validate params.id
                     setMessage('Palette updated.')
                     setAlertType('success')
                     setVisible(true)

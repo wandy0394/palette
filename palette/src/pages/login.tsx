@@ -13,7 +13,7 @@ export default function Login() {
         e.preventDefault()
         login(email, password)
             .then(()=>{
-                navigate('/')
+                navigate('/generator')
                 // console.log('success')
             })
             .catch((error)=>{
