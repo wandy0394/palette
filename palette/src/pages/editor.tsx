@@ -343,7 +343,7 @@ export default function Editor(props:Props) {
                     <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
                 </div>
             </section>
-            <section className='w-full flex flex-col items-center justify-center px-24'>
+            <section className='w-full h-screen flex flex-col items-center justify-start px-24'>
                 <input className='w-full rounded text-2xl py-2 pl-4' placeholder="Palette name..." value={paletteName} onChange={(e)=>setPaletteName(e.target.value)}></input>
                 <div className='w-full py-8 '>
                     {

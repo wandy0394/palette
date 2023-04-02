@@ -17,7 +17,15 @@ type Props = {
 function NavLink(props:Props) {
   const {isActive, targetPath, title} = props
   return (
-    <Link to={targetPath} className={`md:text-2xl tab tab-bordered ${isActive(targetPath)?'tab-active':''}`} >{title}</Link>
+    <Link 
+      to={targetPath} 
+      className={
+        `md:text-2xl text-neutral-400 tab tab-bordered rounded hover:bg-neutral-400 hover:text-neutral-800 no-underline
+        ${isActive(targetPath)?'bg-neutral-400 text-neutral-800':''}`
+      } 
+    >
+      {title}
+    </Link>
 
   )
 }
@@ -26,19 +34,20 @@ function App() {
   const location = useLocation()
   const {user} = useAuthContext()
   const {logout} = useLogout()
+
   function isActive(target:string):boolean {
-    return (target === location.pathname)
+    return (location.pathname.includes(target))
   }
   
 
   
   return (
-    <div className="h-auto text-neutral-400">
+    <div className="text-neutral-400">
       <div className="navbar bg-neutral-800">
         <div className="navbar-start"></div>
         <div className="navbar-center">
-          <div className='tabs flex gap-16'>
-            <NavLink isActive={isActive} targetPath='/' title='Generator'/>
+          <div className='flex gap-4'>
+            <NavLink isActive={isActive} targetPath='/generator' title='Generator'/>
             <NavLink isActive={isActive} targetPath='/editor' title='Editor'/>
             <NavLink isActive={isActive} targetPath='/library' title='Library'/>
           </div>
@@ -66,7 +75,7 @@ function App() {
       </div>
       <div className='h-full sm:px-24 lg:px-48 bg-neutral-700'>
         <Routes>
-          <Route path="/" element={<Palette/>}/>
+          <Route path="/generator" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>
           <Route path="/editor/:id/" element={<Editor/>}/>
           <Route path="/library" element={<Library/>}/>
