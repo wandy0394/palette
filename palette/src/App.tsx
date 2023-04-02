@@ -54,10 +54,12 @@ function App() {
         </div>
           {
             user?
-              (<div className="navbar-end flex items-center justify-end gap-4 py-1" >
-                Hello {user.user.email}
+              (<div className="navbar-end items-center justify-end gap-4 py-1 flex" >
+                <div className='text-center hidden md:flex'>
+                  Hello {user.user.email}
+                </div>
                 <Link to='/'>
-                  <button onClick={logout} className='btn btn-primary'>Sign out</button>
+                  <button onClick={logout} className='btn btn-primary btn-xs md:btn-md'>Sign out</button>
                 </Link>
               </div>):
               (<div className="navbar-end flex items-center justify-end gap-4 py-1">
@@ -73,7 +75,7 @@ function App() {
           }
 
       </div>
-      <div className='h-full sm:px-24 lg:px-48 bg-neutral-700'>
+      <div className='sm:px-24 lg:px-48 bg-neutral-700'>
         <Routes>
           <Route path="/generator" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>

@@ -19,18 +19,23 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 
     
     return (
-        <div className='bg-base-300 shadow-lg flex flex-col items-center justify-center w-full h-1/2'>
-            <div className='w-full flex items-center justify-between py-4'>
-                <div className='w-full flex justify-start px-8'>
-                    <h2 className='text-2xl font-bold'>{savedPalette.name}</h2>
+        <ContentBox>
+
+            <div className='bg-base-300 shadow-lg flex flex-col items-center justify-center w-full h-full'>
+                <div className='w-full flex items-center justify-between py-2 md:py-4'>
+                    <div className='w-full flex justify-start px-8'>
+                        <h2 className='text-lg md:text-2xl font-bold'>{savedPalette.name}</h2>
+                    </div>
+                    <div className='flex gap-4 pr-8'>
+                        <button className='btn btn-xs lg:btn-md btn-primary' onClick={handleEditClick}>Edit</button>
+                        <button className='btn btn-xs lg:btn-md btn-secondary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                    </div>
                 </div>
-                <div className='flex gap-4 pr-8'>
-                    <button className='btn btn-xs lg:btn-md btn-primary' onClick={handleEditClick}>Edit</button>
-                    <button className='btn btn-xs lg:btn-md btn-secondary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                <div className='w-full h-24 md:h-40'>
+                    <PaletteSwatch palette={savedPalette.palette}/> 
                 </div>
             </div>
-            <PaletteSwatch palette={savedPalette.palette}/>
-        </div>
+        </ContentBox>
     )
 }
 
@@ -68,7 +73,7 @@ export default function Library() {
                 (library.length <= 0) &&
                     (<section className='text-2xl'>You have no palettes saved.</section>)
             }
-            <div className='w-full h-screen grid lg:grid-cols-2 gap-16 py-16'>
+            <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
             {
                 
                 (library.length > 0) &&
