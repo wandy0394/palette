@@ -1,4 +1,7 @@
 import axios from "axios"
+import Cookies from 'js-cookie'
+// import {useCookies} from 'react-cookie'
+
 
 const axiosInstance = axios.create({
     baseURL: 'http://192.168.0.128:8080/api/v1/users/',
@@ -8,6 +11,7 @@ const axiosInstance = axios.create({
         "Accept" : "*",
         "Content-Type": "application/json",
     },
+    withCredentials:true    //need this in the request to store the cookie that is sent by the server in the response
 })
 
 export default class Authenticator {

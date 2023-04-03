@@ -50,7 +50,7 @@ export default function Library() {
         //call api service to delete
         async function deletePalette() {
             try {
-                await LibraryService.deletePalette(paletteId, user.token)
+                await LibraryService.deletePalette(paletteId)
                 const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== paletteId)
                 setLibrary(newLibrary)
             }

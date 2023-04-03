@@ -126,7 +126,7 @@ export default function Editor(props:Props) {
             //get palette by id
             async function get() {
                 try {
-                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(params.id as string, user.token)
+                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(params.id as string)
                     console.log(savedPalette)
                     if (savedPalette && savedPalette.length > 0) {
                         let payload = {
@@ -296,7 +296,7 @@ export default function Editor(props:Props) {
         if (state.palette) {
             async function save() {
                 try {
-                    const result = await LibraryService.savePalette(state.palette, paletteName, user.token)
+                    const result = await LibraryService.savePalette(state.palette, paletteName)
                     setMessage('Palette saved.')
                     setAlertType('success')
                     setVisible(true)
@@ -312,7 +312,7 @@ export default function Editor(props:Props) {
 
             async function update() {
                 try {
-                    const result = await LibraryService.updatePalette(state.palette, parseInt(params.id as string), paletteName, user.token) //TODO: validate params.id
+                    const result = await LibraryService.updatePalette(state.palette, parseInt(params.id as string), paletteName) //TODO: validate params.id
                     setMessage('Palette updated.')
                     setAlertType('success')
                     setVisible(true)
@@ -371,7 +371,7 @@ export default function Editor(props:Props) {
                     </div>
                     
                     {
-                        (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mb-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
+                        (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mt-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
                     }
                 </div>
                 <AlertBox message={message} alertType={alertType} visible={visible} setVisible={setVisible}/>

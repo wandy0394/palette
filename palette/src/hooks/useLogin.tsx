@@ -2,7 +2,6 @@ import { ACTION_TYPES, AuthContext } from "../components/context/AuthContext"
 import {useState} from 'react'
 import Authenticator from "../service/authentication-service";
 import { useAuthContext } from "./useAuthContext";
-import useSessionStorage from "./useSessionStorage";
 
 export function useLogin() {
     const [error, setError] = useState<string | null>(null)
@@ -20,8 +19,6 @@ export function useLogin() {
             throw Error(response.error.error)
         }
         else {
-            //store user in session storage
-            sessionStorage.setItem('user', JSON.stringify(response))
             //update auth context
             if (dispatch) dispatch({type:ACTION_TYPES.LOGIN, payload:response})
             setIsLoading(false)

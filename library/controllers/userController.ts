@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction} from 'express'
+import {Request, Response, NextFunction, CookieOptions} from 'express'
 import LibraryService from '../services/libraryService'
 import UserService from '../services/userService'
 import jwt from "jsonwebtoken"
@@ -8,6 +8,13 @@ function createToken(userId:number, email:string) {
     return jwt.sign({userId, email}, process.env.JWT_SECRET as string, {expiresIn:'3d'})
 }
 class UserController {
+
+    static cookieParameters:CookieOptions = {
+        maxAge: 86400,
+        sameSite:'none'
+        // httpOnly:true,
+        // secure: process.env.NODE_ENV === 'production'
+    }
 
     static async signup(req:Request, res:Response, next:NextFunction) {
         const {email, password, name} = req.body
@@ -26,7 +33,7 @@ class UserController {
         try {
             const user = await UserService.signup(email, password, name)
             const token = createToken(user.id, user.email)
-            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
+            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
         }
         catch(e:any) {
             if (e.message) {
@@ -52,10 +59,10 @@ class UserController {
         try {
             const user = await UserService.login(email, password)
             const token = createToken(user.id, user.email)
-            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
+            res.cookie('user', JSON.stringify({email:user.email, name:user.name}))
+            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
         }
         catch(e:any) {
-            console.log
             if (e.message) {
                 res.status(500).send({status:'error', error:e.message})
             }

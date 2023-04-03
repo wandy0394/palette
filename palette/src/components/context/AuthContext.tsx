@@ -1,5 +1,6 @@
 import {createContext, useReducer, useEffect} from 'react'
 import useSessionStorage from '../../hooks/useSessionStorage'
+import Cookies from 'js-cookie'
 
 export const ACTION_TYPES = {
     LOGIN:'LOGIN',
@@ -41,9 +42,14 @@ export const AuthContextProvider  = ({children}:any) => {
     let called = false
     useEffect(()=>{
         if (!called) {
-            if (sessionStorage.getItem('user')) {
-                const user = JSON.parse(sessionStorage.getItem('user') as string)
-                dispatch({type:ACTION_TYPES.LOGIN, payload:user})
+            // if (sessionStorage.getItem('user')) {
+            //     const user = JSON.parse(sessionStorage.getItem('user') as string)
+            //     dispatch({type:ACTION_TYPES.LOGIN, payload:user})
+            // }
+            if (Cookies.get('user')) {
+                const user = JSON.parse(Cookies.get('user') as string)
+                // const user = Cookies.get('user')
+                dispatch({type:ACTION_TYPES.LOGIN, payload:{user}})
             }
         }
         return ()=>{
