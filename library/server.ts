@@ -1,12 +1,16 @@
+import dotenv from 'dotenv'
 import express, {Request, Express, Response} from "express"
 import cors from "cors"
 import libraryRouter from "./v1/routes/library.routes"
 import userRouter from "./v1/routes/users.routes"
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
+import sessions from 'express-session'
 
 const app:Express = express()
 const allowedOrigins = ['http://192.168.0.128:5173']
+
+dotenv.config()
 app.use(cors({
     //By default, Access-Control-Allow-Origin is *. This cannot be * for credentials to pass through
     // Refer to error 'Reason: Credential is not supported if the CORS header 'Access-Control-Allow-Origin' is *
@@ -18,11 +22,21 @@ app.use(cors({
         }
         return callback(null, true)
     },
-    credentials:true    //allow HTTP cookies and credentials from the client
+    credentials:true,    //allow HTTP cookies and credentials from the client
 }))
 app.use(express.json())
 app.use(helmet())
-app.use(cookieParser())
+app.use(sessions({
+    secret:process.env.SESSION_SECRET as string,
+    resave:false,
+    saveUninitialized:false,
+    cookie: {
+        maxAge: 1000*60*60*24*3,
+        sameSite: 'lax',
+        httpOnly:true,
+        secure: process.env.NODE_ENV === 'production'
+    }
+}))
 
 app.use("/api/v1/paletteLibrary", libraryRouter)
 app.use("/api/v1/users", userRouter)

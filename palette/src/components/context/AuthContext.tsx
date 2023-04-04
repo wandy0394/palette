@@ -41,14 +41,9 @@ export const AuthContextProvider  = ({children}:any) => {
 
     let called = false
     useEffect(()=>{
-        if (!called) {
-            // if (sessionStorage.getItem('user')) {
-            //     const user = JSON.parse(sessionStorage.getItem('user') as string)
-            //     dispatch({type:ACTION_TYPES.LOGIN, payload:user})
-            // }
+        if (true) {
             if (Cookies.get('user')) {
                 const user = JSON.parse(Cookies.get('user') as string)
-                // const user = Cookies.get('user')
                 dispatch({type:ACTION_TYPES.LOGIN, payload:{user}})
             }
         }

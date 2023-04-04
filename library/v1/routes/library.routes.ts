@@ -4,7 +4,6 @@ import requireAuth from '../../middleware/requireAuth'
 import requireAuthCookie from '../../middleware/requireAuthCookie'
 
 const router = express.Router()
-// router.use(requireAuth)
 router.use(requireAuthCookie)
 
 router.route("/paletteLibrary")

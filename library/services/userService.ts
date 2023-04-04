@@ -1,11 +1,13 @@
 import {Connection} from "mysql2"
 import UsersDAO from "../database/usersDAO"
-import { User } from "../types/types"
+import { Session, User } from "../types/types"
 import bcrypt from "bcrypt"
+import SessionsDAO from "../database/sessionsDAO"
 class UserService {
 
     static injectConn(connection:Connection) {
         UsersDAO.initDb(connection)
+        SessionsDAO.initDb(connection)
     }
     
     static connectionCheck() {
@@ -54,6 +56,36 @@ class UserService {
             return result
         }
         catch (e) {
+            throw(e)
+        }
+    }
+
+    static async addSession(sid:string, userEmail:string, userId:number):Promise<boolean> {
+        try {
+            const result = await SessionsDAO.addSession(sid, userEmail, userId)
+            return result
+        }
+        catch(e) {
+            throw(e)
+        }
+    }
+
+    static async getSessionBySessionId(sid:string):Promise<Session> {
+        try {
+            const result = await SessionsDAO.getSessionBySessionId(sid)
+            return result
+        }
+        catch(e) {
+            throw(e)
+        }
+    }
+
+    static async deleteSessionBySessionId(sid:string):Promise<boolean> {
+        try {
+            const result = await SessionsDAO.deleteSessionBySessionId(sid)
+            return result
+        }
+        catch(e) {
             throw(e)
         }
     }

@@ -1,6 +1,7 @@
 import {Request, Response, NextFunction, CookieOptions} from 'express'
 import UserService from '../services/userService'
 import jwt from "jsonwebtoken"
+import parseCookieHeader from '../util/parseCookieHeader'
 
 
 function createToken(userId:number, email:string) {
@@ -9,7 +10,7 @@ function createToken(userId:number, email:string) {
 class UserController {
 
     static cookieParameters:CookieOptions = {
-        maxAge: 86400,
+        maxAge: 1000*60*60*24*3,
         sameSite: process.env.NODE_ENV === 'production'?'none':'lax',
         httpOnly:true,
         secure: process.env.NODE_ENV === 'production'
@@ -17,7 +18,7 @@ class UserController {
 
 
     static userCookieParams:CookieOptions = {
-        maxAge: 86400,
+        maxAge: 1000*60*60*24*3,
         sameSite: process.env.NODE_ENV === 'production'?'none':'lax',
         httpOnly:false,
         secure: process.env.NODE_ENV === 'production'
@@ -39,9 +40,9 @@ class UserController {
         }
         try {
             const user = await UserService.signup(email, password, name)
-            const token = createToken(user.id, user.email)
+            await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
-            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
+            res.cookie('sid', req.sessionID).status(200).send({status:'ok', user:{name:user.name}})
         }
         catch(e:any) {
             if (e.message) {
@@ -66,9 +67,10 @@ class UserController {
         }
         try {
             const user = await UserService.login(email, password)
-            const token = createToken(user.id, user.email)
+            // res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
+            await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
-            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
+            res.cookie('sid', req.sessionID).status(200).send({status:'ok', user:{name:user.name}})
         }
         catch(e:any) {
             if (e.message) {
@@ -103,8 +105,10 @@ class UserController {
     }
 
     static async logout(req:Request, res:Response, next:NextFunction) {
-        res.clearCookie('auth_token')
+        const cookies = parseCookieHeader(req.headers?.cookie)
+        if (cookies.sid) await UserService.deleteSessionBySessionId(cookies.sid)
         res.clearCookie('user')
+        res.clearCookie('sid')
         res.status(200).send({status:'ok', data:'Logout successsful'})
     }
 }

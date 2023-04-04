@@ -5,6 +5,12 @@ export type HSV = {
     value:number
 } 
 
+export type Session = {
+    sessionId:string,
+    userEmail:string,
+    userId:number,
+    id:number
+}
 
 export type Palette  = {
     mainColour:Colour

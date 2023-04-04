@@ -1,17 +1,23 @@
 import {Request, Response, NextFunction} from 'express'
-import jwt from 'jsonwebtoken'
+import UserService from '../services/userService'
+import parseCookieHeader from '../util/parseCookieHeader'
 
-export  default function requireAuthCookie(req:Request, res:Response, next:NextFunction) {
-    const token = req.cookies.auth_token
-    if (!token) return res.status(403).json({status:'error', error:'Missing authorization token'})
-    try {
-        const {userId, email} = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload
-        req.body.userId = userId
-        req.body.userEmail = email
+
+
+export default async function requireAuthCookie(req:Request, res:Response, next:NextFunction) {
+
+    const sid = parseCookieHeader(req.headers?.cookie).sid
+    if (!sid) return res.status(401).json({status:'error', error:'Unauthorised.'})
+    try {      
+        const result = await UserService.getSessionBySessionId(sid)
+        if (Object.keys(result).length > 0) {
+            req.body.userId= result.userId
+            req.body.userEmail=result.userEmail
+            req.body.sessionID=sid
+        }
         next()
     }
     catch(e) {
-        console.log(e)
         res.status(401).json({status:'error', error:'Unauthorised.'})
     }
 }
