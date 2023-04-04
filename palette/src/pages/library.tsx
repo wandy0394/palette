@@ -78,7 +78,7 @@ export default function Library() {
                 
                 (library.length > 0) &&
                 library.map((savedPalette, index)=>{
-                    return <SavedPaletteEntry savedPalette={savedPalette} handleDeleteClick={()=>handleDeleteClick(savedPalette.id)}/>
+                    return <SavedPaletteEntry key={'palette'+index} savedPalette={savedPalette} handleDeleteClick={()=>handleDeleteClick(savedPalette.id)}/>
                 })
             }
             </div>

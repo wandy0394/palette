@@ -1,5 +1,4 @@
 import {Request, Response, NextFunction, CookieOptions} from 'express'
-import LibraryService from '../services/libraryService'
 import UserService from '../services/userService'
 import jwt from "jsonwebtoken"
 
@@ -11,9 +10,17 @@ class UserController {
 
     static cookieParameters:CookieOptions = {
         maxAge: 86400,
-        sameSite:'none'
-        // httpOnly:true,
-        // secure: process.env.NODE_ENV === 'production'
+        sameSite: process.env.NODE_ENV === 'production'?'none':'lax',
+        httpOnly:true,
+        secure: process.env.NODE_ENV === 'production'
+    }
+
+
+    static userCookieParams:CookieOptions = {
+        maxAge: 86400,
+        sameSite: process.env.NODE_ENV === 'production'?'none':'lax',
+        httpOnly:false,
+        secure: process.env.NODE_ENV === 'production'
     }
 
     static async signup(req:Request, res:Response, next:NextFunction) {
@@ -33,7 +40,8 @@ class UserController {
         try {
             const user = await UserService.signup(email, password, name)
             const token = createToken(user.id, user.email)
-            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
+            res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
+            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
         }
         catch(e:any) {
             if (e.message) {
@@ -59,8 +67,8 @@ class UserController {
         try {
             const user = await UserService.login(email, password)
             const token = createToken(user.id, user.email)
-            res.cookie('user', JSON.stringify({email:user.email, name:user.name}))
-            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{email:user.email, name:user.name}, token:token})
+            res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
+            res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
         }
         catch(e:any) {
             if (e.message) {
@@ -92,6 +100,12 @@ class UserController {
                 res.status(500).send({status:'error', error:'Internal Server Error'})
             }
         }        
+    }
+
+    static async logout(req:Request, res:Response, next:NextFunction) {
+        res.clearCookie('auth_token')
+        res.clearCookie('user')
+        res.status(200).send({status:'ok', data:'Logout successsful'})
     }
 }
 

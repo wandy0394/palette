@@ -291,7 +291,7 @@ export default function Editor(props:Props) {
         }
     }, [state.palette.accentColours])
 
-    function savePalette(userId:number, userEmail:string) {
+    function savePalette() {
         //TODO:check if user logged in, otherwise, prompt them to sign up
         if (state.palette) {
             async function save() {
@@ -371,7 +371,7 @@ export default function Editor(props:Props) {
                     </div>
                     
                     {
-                        (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mt-8' onClick={()=>savePalette(user.user.id, user.user.email)}>Save</button>:null
+                        (user&&(state.palette.colourVerticies.length>0))?<button className='btn btn-secondary w-full mt-8' onClick={()=>savePalette()}>Save</button>:null
                     }
                 </div>
                 <AlertBox message={message} alertType={alertType} visible={visible} setVisible={setVisible}/>

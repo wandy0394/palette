@@ -40,6 +40,9 @@ function App() {
   const [visible, setVisible] = useState<boolean>(false)
 
   function isActive(target:string):boolean {
+    if (target === '/') {
+      return location.pathname === target
+    }
     return (location.pathname.includes(target))
   }
   
@@ -59,7 +62,7 @@ function App() {
         <div className="navbar-start"></div>
         <div className="navbar-center">
           <div className='flex gap-4'>
-            <NavLink isActive={isActive} targetPath='/generator' title='Generator'/>
+            <NavLink isActive={isActive} targetPath='/' title='Generator'/>
             <NavLink isActive={isActive} targetPath='/editor' title='Editor'/>
             <NavLink isActive={isActive} targetPath='/library' title='Library'/>
           </div>
@@ -68,7 +71,7 @@ function App() {
             user?
               (<div className="navbar-end items-center justify-end gap-4 py-1 flex" >
                 <div className='text-center hidden md:flex'>
-                  Hello {user.user.email}
+                  Hello {user.user.name}
                 </div>
                 <Link to='/'>
                   <button onClick={logout} className='btn btn-primary btn-xs md:btn-md'>Sign out</button>
@@ -104,7 +107,7 @@ function App() {
       </div>
       <div className='px-8 sm:px-20 lg:px-48 bg-neutral-700'>
         <Routes>
-          <Route path="/generator" element={<Palette/>}/>
+          <Route path="/" element={<Palette/>}/>
           <Route path="/editor" element={<Editor/>}/>
           <Route path="/editor/:id/" element={<Editor/>}/>
           <Route path="/library" element={<Library/>}/>

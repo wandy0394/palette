@@ -9,6 +9,9 @@ router.route("/signup")
 router.route("/login")
     .post(UserController.login)
 
+router.route("/logout")
+    .get(UserController.logout)
+
 router.route("/users")
     .get(UserController.getUser)
 

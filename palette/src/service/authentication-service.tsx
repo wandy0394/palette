@@ -64,4 +64,25 @@ export default class Authenticator {
             })
         return response
     }
+
+    static async logout() {
+
+        const response = await axiosInstance
+            .get('/logout')
+            .then((response)=>{
+                return response.data
+            })
+            .catch((error)=>{
+                if (error.response) {
+                    return {error:error.response.data}
+                }
+                else if (error.request) {
+                    return {error:error.request}
+                }
+                else {
+                    return {error:'An error has occurred.'}
+                }
+            })
+        return response        
+    }
 }

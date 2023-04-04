@@ -16,7 +16,7 @@ export default function Signup() {
         e.preventDefault()
         register(email, password, name)
             .then(()=>{
-                navigate('/generator')
+                navigate('/')
             })
             .catch((error)=>{
 
