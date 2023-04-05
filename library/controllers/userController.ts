@@ -67,6 +67,7 @@ class UserController {
         }
         try {
             const user = await UserService.login(email, password)
+            console.log(req.session, req.sessionID, req.session.id)
             // res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
             await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
