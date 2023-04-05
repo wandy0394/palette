@@ -2,8 +2,8 @@ import { fail, Result, success } from "../model/common/error";
 import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
 
-const URL = 'http://192.168.0.128:8080/api/v1/paletteLibrary/paletteLibrary/'
-// const URL = 'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/paletteLibrary/paletteLibrary/'
+// const URL = 'http://192.168.0.128:8080/api/v1/paletteLibrary/paletteLibrary/'
+const URL = 'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/paletteLibrary/paletteLibrary/'
 
 
 

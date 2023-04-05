@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'
 import sessions from 'express-session'
 
 const app:Express = express()
-const allowedOrigins = ['http://192.168.0.128:5173']
+const allowedOrigins = ['http://192.168.0.128:5173', 'https://paletto-382422.ts.r.appspot.com']
 
 dotenv.config()
 app.use(cors({

@@ -19,7 +19,7 @@ class UserController {
 
     static userCookieParams:CookieOptions = {
         maxAge: 1000*60*60*24*3,
-        sameSite: process.env.NODE_ENV === 'production'?'none':'lax',
+        sameSite: 'lax',
         httpOnly:false,
         secure: process.env.NODE_ENV === 'production'
     }
