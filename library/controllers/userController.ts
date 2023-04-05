@@ -42,7 +42,7 @@ class UserController {
             const user = await UserService.signup(email, password, name)
             await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
-            res.cookie('sid', req.sessionID).status(200).send({status:'ok', user:{name:user.name}})
+            res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', user:{name:user.name}})
         }
         catch(e:any) {
             if (e.message) {
@@ -67,8 +67,6 @@ class UserController {
         }
         try {
             const user = await UserService.login(email, password)
-            console.log(req.session, req.sessionID, req.session.id)
-            // res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
             await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
             res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', user:{name:user.name}})
