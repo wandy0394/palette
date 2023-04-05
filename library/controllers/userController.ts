@@ -19,7 +19,7 @@ class UserController {
 
     static userCookieParams:CookieOptions = {
         maxAge: 1000*60*60*24*3,
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production'?'none':'lax',
         httpOnly:false,
         secure: process.env.NODE_ENV === 'production'
     }
@@ -70,7 +70,7 @@ class UserController {
             // res.cookie('auth_token', token, UserController.cookieParameters).status(200).send({status:'ok', user:{name:user.name}})
             await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
-            res.cookie('sid', req.sessionID).status(200).send({status:'ok', user:{name:user.name}})
+            res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', user:{name:user.name}})
         }
         catch(e:any) {
             if (e.message) {
