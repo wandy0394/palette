@@ -110,6 +110,24 @@ class UserController {
         res.clearCookie('sid')
         res.status(200).send({status:'ok', data:'Logout successsful'})
     }
+
+    static async getUserBySession(req:Request, res:Response, next:NextFunction) {
+        const cookies = parseCookieHeader(req.headers?.cookie)
+        if (!cookies.sid) {
+            res.status(401).send({status:'error', error:'Unauthorised.'})
+            return
+        }
+        try {
+            const session = await UserService.getSessionBySessionId(cookies.sid)
+            const user = await (UserService.getUser(session.userEmail))
+            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}})
+            
+        }
+        catch (e) {
+            res.status(401).send({status:'error', error:'Unauthorised.'})
+            return
+        }
+    }
 }
 
 export default UserController

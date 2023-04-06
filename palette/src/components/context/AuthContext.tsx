@@ -1,6 +1,7 @@
 import {createContext, useReducer, useEffect} from 'react'
 import useSessionStorage from '../../hooks/useSessionStorage'
 import Cookies from 'js-cookie'
+import Authenticator from '../../service/authentication-service'
 
 export const ACTION_TYPES = {
     LOGIN:'LOGIN',
@@ -39,13 +40,20 @@ export const AuthContextProvider  = ({children}:any) => {
     
     console.log('AuthContext state: ', state)
 
+    async function getSession() {
+        const result = await Authenticator.getSession()
+        if (result.error) {
+            //no session
+        }
+        else {
+            dispatch({type:ACTION_TYPES.LOGIN, payload:result})
+        }
+    }
+
     let called = false
     useEffect(()=>{
-        if (true) {
-            if (Cookies.get('user')) {
-                const user = JSON.parse(Cookies.get('user') as string)
-                dispatch({type:ACTION_TYPES.LOGIN, payload:{user}})
-            }
+        if (!called) {
+            getSession()
         }
         return ()=>{
             called = true

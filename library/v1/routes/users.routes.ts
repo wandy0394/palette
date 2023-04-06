@@ -15,5 +15,7 @@ router.route("/logout")
 router.route("/users")
     .get(UserController.getUser)
 
+router.route("/session")
+    .get(UserController.getUserBySession)
 
 export default router

@@ -4,8 +4,8 @@ import Cookies from 'js-cookie'
 
 
 const axiosInstance = axios.create({
-    // baseURL: 'http://192.168.0.128:8080/api/v1/users/',
-    baseURL:'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/users',
+    baseURL: 'http://192.168.0.128:8080/api/v1/users/',
+    // baseURL:'https://app-library-dot-paletto-382422.ts.r.appspot.com/api/v1/users',
     // timeout:3000,
     headers: {
         "Accept" : "*",
@@ -84,5 +84,27 @@ export default class Authenticator {
                 }
             })
         return response        
+    }
+
+    static async getSession() {
+        const response = await axiosInstance
+            .get('/session')
+            .then((response=>{
+                console.log(response.data)
+                return response.data
+            }))
+            .catch((error=>{
+                if (error.response) {
+                    console.log(error.response.data)
+                    return {error:error.response.data}
+                }
+                else if (error.request) {
+                    return {error:error.request}
+                }
+                else {
+                    return {error:'An error has occurred.'}
+                }                
+            }))
+        return response
     }
 }
