@@ -7,7 +7,6 @@ import LibraryService from "../service/library-service";
 import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
 
-const DUMMY_EMAIL:string = 'dev@email.com'
 
 function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(id:number)=>void}) {
     const {savedPalette, handleDeleteClick} = props
@@ -16,8 +15,6 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     function handleEditClick() {
         navigate('/editor/'+savedPalette.id)
     }
-
-    
     return (
         <ContentBox>
 
@@ -27,8 +24,17 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
                         <h2 className='text-lg md:text-2xl font-bold'>{savedPalette.name}</h2>
                     </div>
                     <div className='flex gap-4 pr-8'>
-                        <button className='btn btn-xs lg:btn-md btn-primary' onClick={handleEditClick}>Edit</button>
-                        <button className='btn btn-xs lg:btn-md btn-secondary' onClick={()=>handleDeleteClick(savedPalette.id)}>Delete</button>
+                        <button 
+                            className='btn btn-xs lg:btn-md btn-primary' 
+                            onClick={handleEditClick}
+                        >
+                            Edit
+                        </button>
+                        <button className='btn btn-xs lg:btn-md btn-secondary' 
+                            onClick={()=>handleDeleteClick(savedPalette.id)}
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
                 <div className='w-full h-24 md:h-40'>
@@ -61,26 +67,26 @@ export default function Library() {
         deletePalette();
     }
 
-    /*
-
-
-
-    */
-
     return (
         <ContentBox>
             {
                 (library.length <= 0) &&
                     (<section className='text-2xl h-screen'>You have no palettes saved.</section>)
             }
-            <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
-            {
-                
-                (library.length > 0) &&
-                library.map((savedPalette, index)=>{
-                    return <SavedPaletteEntry key={'palette'+index} savedPalette={savedPalette} handleDeleteClick={()=>handleDeleteClick(savedPalette.id)}/>
-                })
-            }
+            <div className='w-full min-h-screen'>
+                <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
+                {
+                    
+                    (library.length > 0) &&
+                    library.map((savedPalette, index)=>{
+                        return <SavedPaletteEntry 
+                                    key={'palette'+index} 
+                                    savedPalette={savedPalette} 
+                                    handleDeleteClick={()=>handleDeleteClick(savedPalette.id)}
+                                />
+                    })
+                }
+                </div>
             </div>
         </ContentBox>
     )

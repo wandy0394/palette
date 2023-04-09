@@ -162,6 +162,7 @@ export default function Editor(props:Props) {
             console.log('no params or userId')
         }
     },[params])
+    
     useEffect(()=>{
         if (state && state.colour) initHandlePosition(state.colour)
     }, [wheelWidth, handleWidth])
@@ -274,7 +275,7 @@ export default function Editor(props:Props) {
     }
 
     useEffect(()=>{
-        generatePalettes()
+        // generatePalettes()
 
     }, [generator])
 
