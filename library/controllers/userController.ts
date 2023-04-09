@@ -1,12 +1,7 @@
 import {Request, Response, NextFunction, CookieOptions} from 'express'
 import UserService from '../services/userService'
-import jwt from "jsonwebtoken"
 import parseCookieHeader from '../util/parseCookieHeader'
 
-
-function createToken(userId:number, email:string) {
-    return jwt.sign({userId, email}, process.env.JWT_SECRET as string, {expiresIn:'3d'})
-}
 class UserController {
 
     static cookieParameters:CookieOptions = {

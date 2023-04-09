@@ -282,7 +282,6 @@ abstract class PaletteGenerator {
     }
     // abstract generateColourVerticies(rgb:HEX, colourVerticies?:Colour[]):Result<Colour[][], string>
     abstract generateColourVerticies(rgb:HEX, colours?:string[]):Result<Colour[][], string>
-
     abstract generateRandomScheme(colours:Colour[]):Result<Scheme,string>
     abstract getName():string 
 

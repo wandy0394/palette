@@ -28,22 +28,22 @@ export default function Palette() {
                 <button className='btn btn-primary w-full' onClick={generatePalettes}>Generate!</button>
             </section>
            <section className='w-full md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new ComplementarySchemeGenerator(converter)}/>
+                <ColourScheme dominantColour={dominantColour} generator={new ComplementarySchemeGenerator(converter)}/>
             </section>
             <section className= 'w-full md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new SplitComplementarySchemeGenerator(converter)}/>
+                <ColourScheme dominantColour={dominantColour} generator={new SplitComplementarySchemeGenerator(converter)}/>
             </section>
             <section className= 'w-full md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new TriadicSchemeGenerator(converter)}/> 
+                <ColourScheme dominantColour={dominantColour} generator={new TriadicSchemeGenerator(converter)}/> 
             </section>
             <section className= 'w-full md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new AnalogousSchemeGenerator(converter)}/>
+                <ColourScheme dominantColour={dominantColour} generator={new AnalogousSchemeGenerator(converter)}/>
             </section>
              <section className= 'w-full md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new SquareSchemeGenerator(converter)}/>
+                <ColourScheme dominantColour={dominantColour} generator={new SquareSchemeGenerator(converter)}/>
             </section>
             <section className= 'w-full md:px-24'>
-                <ColourScheme rgb={dominantColour} generator={new TetraticSchemeGenerator(converter)}/>
+                <ColourScheme dominantColour={dominantColour} generator={new TetraticSchemeGenerator(converter)}/>
             </section>
         </ContentBox>
     )

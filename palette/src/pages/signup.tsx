@@ -1,6 +1,5 @@
 import {useState, FormEvent} from 'react'
 import {Link} from 'react-router-dom'
-import Authenticator from '../service/authentication-service'
 import { useRegister} from '../hooks/useRegister'
 import {useNavigate} from 'react-router-dom'
 

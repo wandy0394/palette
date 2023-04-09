@@ -18,29 +18,27 @@ const converter = new ColourConverter()
 function ColourPicker(props:ColourPickerProps) {
     const {colour, setColour} = props
     const [messageVisible, setMessageVisible] = useState<boolean>(false)
-    const [visible, setVisible] = useState(false)
+    const [popoverVisible, setPopoverVisible] = useState(false)
     const popover = useRef<HTMLDivElement>(null);
 
     const hide = useCallback(()=>{
-        setVisible(false)
+        setPopoverVisible(false)
     }, [])
     useOnClickOutside(popover, hide)
     
 
     function handleInputChange(e:ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
-        //regex checks if input is 6 digit hexadecimal
-        
         const value=e.target.value
         if (value.length > 6) return
-        if (value.length == 6) {
+        if (value.length === 6) {
             setMessageVisible(!converter.isValidRGB(value))
         }
         setColour(e.target.value)
     }
 
     function onSelect() {
-        setVisible(true)
+        setPopoverVisible(true)
     }
 
     return (
@@ -58,7 +56,7 @@ function ColourPicker(props:ColourPickerProps) {
 
                 <ColouredSquare colour={colour} onSelect={onSelect}/>
                 {
-                    visible?
+                    popoverVisible?
                     <div className='absolute right-20' ref={popover}>
                         <HexColorPicker color={colour} onChange={(e)=>setColour(e.slice(1, e.length))}/>
                     </div>

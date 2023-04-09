@@ -1,10 +1,7 @@
 import { Colour, HEX, Palette, Scheme } from "../types/colours"
 import {useEffect, useState } from 'react'
 import ColourConverter from "../model/colourConverter"
-import PaletteSwatch from "./PaletteSwatch"
 import PaletteGenerator from "../model/paletteGenerator"
-import ColourWheel from "./ColourWheel"
-import ValueSlider from "./ValueSlider"
 import { useNavigate } from "react-router-dom"
 import ErrorBoundary from "./ErrorBoundary"
 import { Result } from "../model/common/error"
@@ -23,7 +20,6 @@ export default function PaletteGrid(props:Props) {
     const {initPalettes, generatePalette, generator} = props
     const [palettes, setPalettes] = useState<Palette[]>(initPalettes)
     const [errorMessage, setErrorMessage] = useState<string>('')
-    const [values, setValues] = useState<number[]>([])
     const navigate = useNavigate()
 
     function generateNewScheme(mainColour:Colour, colourList:(Colour[]|undefined), index:number) {
@@ -47,23 +43,12 @@ export default function PaletteGrid(props:Props) {
         }
     }
 
-    function updateValue(newValue:number, index:number) {
-        let newValues:number[] = [...values]
-        newValues[index] = newValue
-        setValues(newValues)
-    }
-
     function editPalette(palette:Palette) {
         navigate('/editor', {state:palette})
     }
 
     useEffect(()=>{
         setPalettes(initPalettes)
-        let newValues:number[] = []
-        for (let i = 0; i < initPalettes.length; i++) {
-            newValues.push(100)
-        }
-        setValues(newValues)
     }, [initPalettes])
 
 

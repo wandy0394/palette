@@ -1,5 +1,4 @@
 import request, { RESPONSE_TYPE, RequestError } from "./request";
-// import {useCookies} from 'react-cookie'
 
 const authenticationUrl = (import.meta.env.MODE === 'development')?
                             'http://192.168.0.128:8080/api/v1/users':
