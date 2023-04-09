@@ -4,8 +4,8 @@ import PaletteSwatch from "../components/PaletteSwatch";
 import { useAuthContext } from "../hooks/useAuthContext";
 import useLibrary from "../hooks/useLibrary";
 import LibraryService from "../service/library-service";
-import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
+import { useEffect, useState } from 'react'
 
 
 function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(id:number)=>void}) {
@@ -46,9 +46,23 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
 }
 
 export default function Library() {
-    const {user} = useAuthContext()
+    const {user, finishedLoading} = useAuthContext()
     const [library, setLibrary] = useLibrary({token:user?.token})
+    const [pageLoaded, setPageLoaded] = useState<boolean>(false)
 
+    function loadPage() {
+        if (finishedLoading && library.finishedLoading) {
+            console.log(user)
+            console.log(library)
+            setPageLoaded(true)
+        }
+    }
+
+    useEffect(()=>{
+        console.log(finishedLoading)
+        console.log(library.finishedLoading)
+        loadPage()
+    }, [finishedLoading, library.finishedLoading])
     
 
 
@@ -57,8 +71,8 @@ export default function Library() {
         async function deletePalette() {
             try {
                 await LibraryService.deletePalette(paletteId)
-                const newLibrary:SavedPalette[] = library.filter(savedPalette=>savedPalette.id !== paletteId)
-                setLibrary(newLibrary)
+                const newPalette:SavedPalette[] = library.savedPalette.filter(savedPalette=>savedPalette.id !== paletteId)
+                setLibrary({...library, savedPalette:newPalette})
             }
             catch (e) {
                 console.log('Could not delete')
@@ -68,17 +82,17 @@ export default function Library() {
     }
 
     return (
-        <ContentBox>
+        <ContentBox finishedLoading={pageLoaded}>
             {
-                (library.length <= 0) &&
+                (library.savedPalette.length <= 0) &&
                     (<section className='text-2xl h-screen'>You have no palettes saved.</section>)
             }
             <div className='w-full min-h-screen'>
                 <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
                 {
                     
-                    (library.length > 0) &&
-                    library.map((savedPalette, index)=>{
+                    (library.savedPalette.length > 0) &&
+                    library.savedPalette.map((savedPalette, index)=>{
                         return <SavedPaletteEntry 
                                     key={'palette'+index} 
                                     savedPalette={savedPalette} 

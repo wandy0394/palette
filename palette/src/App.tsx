@@ -35,7 +35,7 @@ function NavLink(props:Props) {
 
 function App() {
   const location = useLocation()
-  const {user} = useAuthContext()
+  const {user, finishedLoading} = useAuthContext()
   const {logout} = useLogout()
   const [visible, setVisible] = useState<boolean>(false)
 
@@ -68,7 +68,7 @@ function App() {
           </div>
         </div>
           {
-            user?
+            user && user.user?
               (<div className="navbar-end items-center justify-end gap-4 py-1 flex" >
                 <div className='text-center hidden md:flex'>
                   Hello {user.user.name}

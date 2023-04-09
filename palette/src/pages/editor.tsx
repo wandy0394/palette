@@ -91,6 +91,7 @@ type Props = {
     updatePalette?:Function
 }
 export default function Editor(props:Props) {
+    const [pageLoaded, setPageLoaded] = useState<boolean>(false)
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
@@ -102,17 +103,16 @@ export default function Editor(props:Props) {
     
     const navigate = useNavigate()
     const location = useLocation()
-    const {user} = useAuthContext() 
+    const {user, finishedLoading} = useAuthContext() 
     const params = useParams()
 
 
     useEffect(()=>{
-        if (params.id && user) {
+        if (user && params.id) {
             //get palette by id
             async function get() {
                 try {
                     const savedPalette:SavedPalette[] = await LibraryService.getPaletteById(params.id as string)
-                    console.log(savedPalette)
                     if (savedPalette && savedPalette.length > 0) {
                         let payload = {
                             palette:savedPalette[0].palette,
@@ -122,26 +122,30 @@ export default function Editor(props:Props) {
                         }
                         setPaletteName(savedPalette[0].name)
                         dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+                        setPageLoaded(true)
                     }
                     else {
-                        //no 
+                        //TODO: Handle no palette case
                         console.log('no palette')
+                        setPageLoaded(true)
                     }
                 }
                 catch (e) {
                     console.error(e)
+                    setPageLoaded(true)
                 }
             }
             get()
             console.log(params)
         }
-        else if (params.id) {
-            navigate('/editor') //to fix. Should wait for user to login before determining whether to redirect or not
-        }
         else {
-            console.log('no params or userId')
+            console.log('no params or paletteId')
         }
-    },[params, user])
+    },[user])
+
+    useEffect(()=>{
+
+    }, [params.id])
 
     useEffect(()=>{
         if (location.state && location.state.mainColour.rgb) {
@@ -153,6 +157,10 @@ export default function Editor(props:Props) {
                 index:0
             }
             dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+            setPageLoaded(true)
+        }
+        if (finishedLoading) {
+            setPageLoaded(true)
         }
     }, [location])
 
@@ -246,7 +254,7 @@ export default function Editor(props:Props) {
     }, [state.palette.accentColours])
 
     return (
-        <ContentBox>
+        <ContentBox finishedLoading={pageLoaded}>
             <section className='w-full py-16 lg:px-24'>
                 <div className='w-full flex flex-col items-center justify-center gap-4'>
                     <ColourPickerSection colours={colours} setColours={setColours}/>

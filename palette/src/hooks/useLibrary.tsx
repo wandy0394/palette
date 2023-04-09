@@ -6,17 +6,30 @@ import { useAuthContext } from "./useAuthContext";
 type Props = {
     token:string
 }
-export default function useLibrary(props:Props) : [SavedPalette[], Dispatch<SetStateAction<SavedPalette[]>>] {
-    const [library, setLibrary] = useState<SavedPalette[]>([])
+
+type Library = {
+    savedPalette:SavedPalette[]
+    finishedLoading:boolean
+}
+
+export default function useLibrary(props:Props) : [Library, Dispatch<SetStateAction<Library>>] {
+    // const [library, setLibrary] = useState<SavedPalette[]>([])
+    const [library, setLibrary] = useState<Library>({
+        savedPalette:[],
+        finishedLoading:false
+    })
+
     useEffect(()=>{
         //make api call that gets the library
         async function getPalettes() {
             try{
                 const result = await LibraryService.getPalettes()
-                setLibrary(result)
+                
+                setLibrary({savedPalette:result, finishedLoading:true})
             }
             catch(error) {
                 // handle error
+                setLibrary({...library, finishedLoading:true})
             }
         }
         getPalettes();
