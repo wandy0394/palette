@@ -24,7 +24,7 @@ import AlertBox from "../components/common/AlertBox"
 import CustomComplementarySchemeGenerator from "../model/CustomComplementarySchemeGenerator"
 import EdtiorSection from "../sections/EditorSection"
 import useEditorAlertReducer from "../hooks/useEditorAlertReducer"
-import useColourControlsReducer, { COLOUR_CONTROLS_ACTION_TYPE } from "../hooks/useColourControlsReducer"
+import useColourControlsReducer, { COLOUR_CONTROLS_ACTION_TYPE, SLIDER_MAX_VALUE } from "../hooks/useColourControlsReducer"
 
 
 
@@ -49,8 +49,8 @@ const colourHarmonies:Harmonies = {
     custom4: {id:9, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true},
 }
 
-const initWheelWidth = 400
-const initHandleWidth = 20
+// const initWheelWidth = 400
+// const initHandleWidth = 20
 const cc = new ColourConverter()
 const emptyPalette:Palette = {
     mainColour:{
@@ -80,34 +80,34 @@ const initialState = {
     index:0,
 }
 
-const MAX_VALUE:number = 100
-const initialColourControlsState = {
-    wheelWidth:initWheelWidth,
-    handleWidth:initHandleWidth,
-    handlePosition:{x:initWheelWidth/2 - initHandleWidth/2, y:initWheelWidth/2 - initHandleWidth/2},
-    sliderValue:MAX_VALUE
-}
+// const MAX_VALUE:number = 100
+// const initialColourControlsState = {
+//     wheelWidth:initWheelWidth,
+//     handleWidth:initHandleWidth,
+//     handlePosition:{x:initWheelWidth/2 - initHandleWidth/2, y:initWheelWidth/2 - initHandleWidth/2},
+//     sliderValue:MAX_VALUE
+// }
 type Props = {
     updatePalette?:Function
 }
 export default function Editor(props:Props) {
-    const params = useParams()
     const [colours, setColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
-    const location = useLocation()
-
-    const [colourControlsState, colourControlsDispatch] = useColourControlsReducer(initialColourControlsState)
-    const [state, dispatch] = usePaletteEditorReducer(initialState)
     const [paletteName, setPaletteName] = useState<string>('')
-    const navigate = useNavigate()
+    
+    const [colourControlsState, colourControlsDispatch] = useColourControlsReducer()
+    const [state, dispatch] = usePaletteEditorReducer(initialState)
     const [alertState, alertDispatch] = useEditorAlertReducer({message:'', alertType:'none', visible:false})
-
+    
+    const navigate = useNavigate()
+    const location = useLocation()
     const {user} = useAuthContext() 
+    const params = useParams()
 
 
     useEffect(()=>{
-        if (params.id) {
+        if (params.id && user) {
             //get palette by id
             async function get() {
                 try {
@@ -132,22 +132,16 @@ export default function Editor(props:Props) {
                     console.error(e)
                 }
             }
-            if (user) {   
-                get()
-            }
-            else {
-                //user has passed a param to the url but there are not palette ids associated with their user id. Redirect them
-                console.log('redirect')
-                //navigate('/editor')
-            }
-            ////TODO:check that logged in user has access to this id
-            //if not, throw error
+            get()
             console.log(params)
+        }
+        else if (params.id) {
+            navigate('/editor') //to fix. Should wait for user to login before determining whether to redirect or not
         }
         else {
             console.log('no params or userId')
         }
-    },[params])
+    },[params, user])
 
     useEffect(()=>{
         if (location.state && location.state.mainColour.rgb) {
@@ -176,11 +170,8 @@ export default function Editor(props:Props) {
             })
             setColours(currColours)
         }
-    }, [state.colour])
+    }, [state.colour, selectedHarmony, state.role])
 
-    function initChosenColour(colour:Colour) {
-        dispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:colour}})
-    }
     function initHandlePosition(colour:Colour) {
         let result:Result<HSV, string> = cc.rgb2hsv(colour.rgb)
         let newValue:number = 0 
@@ -192,7 +183,7 @@ export default function Editor(props:Props) {
         } 
         colourControlsDispatch({
             type:COLOUR_CONTROLS_ACTION_TYPE.SET_SLIDER_VALUE, 
-            payload:{sliderValue:newValue*MAX_VALUE}
+            payload:{sliderValue:newValue*SLIDER_MAX_VALUE}
         })
         let newPosition = rgb2cartesian(colour.rgb, colourControlsState.wheelWidth/2, colourControlsState.handleWidth/2)
         colourControlsDispatch({
@@ -201,18 +192,21 @@ export default function Editor(props:Props) {
         })
     }
 
+    useEffect(()=>{
+        if (state && state.colour) initHandlePosition(state.colour)
+    }, [colourControlsState.wheelWidth, colourControlsState.handleWidth])
 
-
-    function generatePalettes() {
-        if (generator) {
-            let result:Result<Colour[][], string> = generator.generateColourVerticies(colours[0], colours)
+    function generatePalettes(targetGenerator:PaletteGenerator|undefined=generator) {
+        
+        if (targetGenerator) {
+            let result:Result<Colour[][], string> = targetGenerator.generateColourVerticies(colours[0], colours)
             if (result.isSuccess()) {
                 let verticies:Colour[][] = result.value
-                let paletteResult:Result<Palette,string> = generator.generatePalette(colours[0], verticies[0])
+                let paletteResult:Result<Palette,string> = targetGenerator.generatePalette(colours[0], verticies[0])
                 if (paletteResult.isSuccess()) {
                     let newPalette:Palette = paletteResult.value
                     dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
-                    initChosenColour(newPalette.mainColour)
+                    dispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:newPalette.mainColour}})
                     initHandlePosition(newPalette.mainColour)
                     alertDispatch({type:'info', payload:{message:'Palette generated', visibile:true}})
                 }
@@ -231,14 +225,12 @@ export default function Editor(props:Props) {
     function makeSelection(value:string) {
         setSelectedHarmony(value)
         if (value in colourHarmonies) {
-            setGenerator(colourHarmonies[value as keyof Harmonies].generator)
+            let gen = colourHarmonies[value as keyof Harmonies].generator
+            setGenerator(gen)
+            generatePalettes(gen)
+            
         }
     }
-
-    useEffect(()=>{
-        generatePalettes()  //fix this
-
-    }, [generator])
 
     useEffect(()=>{
         if (colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
@@ -265,7 +257,7 @@ export default function Editor(props:Props) {
                     />
                     <button 
                         className='btn btn-primary w-full' 
-                        onClick={generatePalettes}
+                        onClick={()=>generatePalettes(undefined)}
                     >
                         Generate!
                     </button>

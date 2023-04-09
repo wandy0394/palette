@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom"
 import { Result } from "../model/common/error"
 import ColourConverter from "../model/colourConverter"
 import { AlertAction, AlertState } from "../hooks/useEditorAlertReducer"
-import { COLOUR_CONTROLS_ACTION_TYPE, ColourControlsAction, ColourControlsState } from "../hooks/useColourControlsReducer"
+import { COLOUR_CONTROLS_ACTION_TYPE, ColourControlsAction, ColourControlsState, SLIDER_MAX_VALUE } from "../hooks/useColourControlsReducer"
 
 type Props = {
     state: PaletteState
@@ -23,8 +23,6 @@ type Props = {
     colourControlsState:ColourControlsState
     colourControlsDispatch:React.Dispatch<ColourControlsAction>
 }
-const MAX_VALUE:number = 100
-const cc = new ColourConverter()
 
 export default function EdtiorSection(props:Props) {
     const {
@@ -61,38 +59,13 @@ export default function EdtiorSection(props:Props) {
         return ()=>resizeObserver.disconnect()
     }, [])
 
-    useEffect(()=>{
-        if (state && state.colour) initHandlePosition(state.colour)
-    }, [colourControlsState.wheelWidth, colourControlsState.handleWidth])
-
-    function initHandlePosition(colour:Colour) {
-        let result:Result<HSV, string> = cc.rgb2hsv(colour.rgb)
-        let newValue:number = 0 
-        if (result.isSuccess()){
-            newValue = result.value.value 
-        }
-        else {
-            ////TODO:throw exception/error
-        } 
-        colourControlsDispatch({
-            type:COLOUR_CONTROLS_ACTION_TYPE.SET_SLIDER_VALUE, 
-            payload:{sliderValue:newValue*MAX_VALUE}
-        })
-        let newPosition = rgb2cartesian(colour.rgb, colourControlsState.wheelWidth/2, colourControlsState.handleWidth/2)
-        colourControlsDispatch({
-            type:COLOUR_CONTROLS_ACTION_TYPE.SET_HANDLE_POSITION, 
-            payload:{handlePosition:newPosition}
-        })
-    }
-
-
     function updateValue(value:number) {
         if (state.colour.hsv) {
             colourControlsDispatch({type:COLOUR_CONTROLS_ACTION_TYPE.SET_SLIDER_VALUE, payload:{sliderValue:value}})
             const newHSV:HSV = {
                 hue:state.colour.hsv.hue,
                 saturation:state.colour.hsv.saturation,
-                value:value / MAX_VALUE
+                value:value / SLIDER_MAX_VALUE
             }
             const newColour:Colour = createColour(newHSV)
             dispatch({type:state.role, payload:{colour:newColour, index:state.index}})
@@ -104,7 +77,7 @@ export default function EdtiorSection(props:Props) {
         if (colour.hsv) {
             colourControlsDispatch({
                 type:COLOUR_CONTROLS_ACTION_TYPE.SET_SLIDER_VALUE, 
-                payload:{sliderValue:colour.hsv.value*MAX_VALUE}
+                payload:{sliderValue:colour.hsv.value*SLIDER_MAX_VALUE}
             })
 
         }

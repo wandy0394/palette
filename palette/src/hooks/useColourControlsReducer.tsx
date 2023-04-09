@@ -27,8 +27,16 @@ export type ColourControlsAction = {
         sliderValue?:number
     }
 }
-
-export default function useColourControlsReducer(initialState:ColourControlsState):[ColourControlsState, React.Dispatch<ColourControlsAction>] {
+const initWheelWidth = 400
+const initHandleWidth = 20
+export const SLIDER_MAX_VALUE:number = 100
+const initialColourControlsState = {
+    wheelWidth:initWheelWidth,
+    handleWidth:initHandleWidth,
+    handlePosition:{x:initWheelWidth/2 - initHandleWidth/2, y:initWheelWidth/2 - initHandleWidth/2},
+    sliderValue:SLIDER_MAX_VALUE
+}
+export default function useColourControlsReducer(initialState:ColourControlsState=initialColourControlsState):[ColourControlsState, React.Dispatch<ColourControlsAction>] {
     
     const [state, dispatch] = useReducer(reducer, initialState)
 
