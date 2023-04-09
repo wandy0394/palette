@@ -73,24 +73,29 @@ export default function ColourWheel(props:Props) {
                         let colours = getRGBColourString(wheelHSVs)
                         return (
                             <div 
-                            key={`wheel-${wheelIndex}`} 
-                            style={{
-                                position:'absolute',
-                                width:`${width}%`, 
-                                aspectRatio:'1/1', 
-                                borderRadius:'100%', 
+                                key={`wheel-${wheelIndex}`} 
+                                style={{
+                                    position:'absolute',
+                                    width:`${width}%`, 
+                                    aspectRatio:'1/1', 
+                                    borderRadius:'100%', 
                                     background:`conic-gradient(${colours})`,
                                     transform:'rotate(90deg)',
                                     zIndex:`${wheelIndex}`
                                 }}
-                                > 
+                            > 
                             </div>
                         )
                     })
                 }
 
                 
-                <ColourWheelPoint colour={palette.mainColour.rgb} radius={radius} angle={angle} scale={5}/>
+                <ColourWheelPoint 
+                    colour={palette.mainColour.rgb} 
+                    radius={radius} 
+                    angle={angle} 
+                    scale={5}
+                />
                 {
                     palette.accentColours.map((colour, index)=>{
                         if (colour) {
@@ -98,11 +103,17 @@ export default function ColourWheel(props:Props) {
                             let angle:number = Math.floor(colour.hsv.hue) 
                             let radius:number = colour.hsv.saturation * (1000) + 950 //to scale with 5% width of circle
                             return (
-                                <ColourWheelPoint key={`accent-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={5}/>
-                                )
-                            }
-                        })
-                    }
+                                <ColourWheelPoint 
+                                    key={`accent-${index}`} 
+                                    colour={colour.rgb} 
+                                    radius={radius} 
+                                    angle={angle} 
+                                    scale={5}
+                                />
+                            )
+                        }
+                    })
+                }
                 {
                     palette.supportColours.map((colour, index)=>{
                         if (colour) {
@@ -110,11 +121,17 @@ export default function ColourWheel(props:Props) {
                             let angle:number = Math.floor(colour.hsv.hue) 
                             let radius:number = colour.hsv.saturation * 2500 + 2450 //scales with width of 2%
                             return (
-                                <ColourWheelPoint key={`support-${index}`} colour={colour.rgb} radius={radius} angle={angle} scale={2}/>
-                                )
-                            }
-                        })
-                    }
+                                <ColourWheelPoint 
+                                    key={`support-${index}`} 
+                                    colour={colour.rgb} 
+                                    radius={radius} 
+                                    angle={angle} 
+                                    scale={2}
+                                />
+                            )
+                        }
+                    })
+                }
             </div>
         </ErrorBoundary>
     )

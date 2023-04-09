@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { AlertAction } from "../../hooks/useEditorAlertReducer"
 
 export type Alert = {
     message:string
@@ -20,11 +21,11 @@ type Props = {
     message:string
     alertType:AlertType,
     visible:boolean,
-    setVisible:React.Dispatch<React.SetStateAction<boolean>>
+    hide: () => void
 }
 
 export default function AlertBox(props:Props) {
-    const {message, alertType, visible, setVisible} = props
+    const {message, alertType, visible, hide} = props
     
 
     return (
@@ -32,7 +33,9 @@ export default function AlertBox(props:Props) {
         {
             (alertType !== 'none') && visible &&
                 <div className='toast z-[100]'>
-                    <div className = {`alert alert-${alertType} cursor-pointer`} onClick={()=>(setVisible(false))}>
+                    <div className = {`alert alert-${alertType} cursor-pointer`} 
+                        onClick={hide}
+                    >
                         <span>{message}</span>
                     </div>
                 </div>

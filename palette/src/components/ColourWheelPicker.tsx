@@ -18,9 +18,9 @@ type Props = {
     handleWidth?:number
     handlePosition?:Point
     chosenColour:Colour
-    position:Point,
-    setPosition:React.Dispatch<React.SetStateAction<Point>>
     setChosenColour: (colour:Colour) => void
+    // setHandlePosition:React.Dispatch<React.SetStateAction<Point>>
+    setHandlePosition: (handlePosition:Point)=>void
 }
 
 export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
@@ -31,14 +31,9 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
         handlePosition={x:wheelWidth/2 - handleWidth/2, y:wheelWidth/2 - handleWidth/2},
         palette,
         chosenColour, 
-        position,
-        setPosition,
-        setChosenColour
+        setChosenColour,
+        setHandlePosition,
     } = props
-
-
-    const [sampleColour, setSampleColour] = useState<Colour>(chosenColour)
-
 
     function getCursorPosition(interaction: Interaction):Point {
         let x = (interaction.x < 0) ? 0 : interaction.x 
@@ -70,7 +65,7 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
 
     const handleChange = (interaction: Interaction) => {
         let newPosition = boundHandleInWheel(getCursorPosition(interaction), wheelWidth)
-        setPosition({x:newPosition.x, y:newPosition.y})
+        setHandlePosition({x:newPosition.x, y:newPosition.y})
         let radius:number = wheelWidth / 2
         let xOffset:number = handleWidth / 2 - radius
         let yOffset:number = handleWidth / 2 - radius
@@ -82,7 +77,6 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
                 rgb:result.value,
                 hsv:hsv,
             }
-            setSampleColour(newSampleColour)
             setChosenColour(newSampleColour)
         }
         else {
@@ -90,18 +84,8 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
         }
     }
 
-
-    useEffect(()=>{
-        setSampleColour(chosenColour)
-    }, [chosenColour])
-
-    useEffect(()=>{
-        setPosition(handlePosition)
-    }, [handlePosition])
-
     return (
         <ErrorBoundary>
-
             <div className='w-full md:w-1/2 h-full flex flex-col items-center justify-center gap-4'>
                 <div ref={ref} className='w-full h-full'>
                     <Interactive 
@@ -120,7 +104,7 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
                                 width:`${handleWidth}px`,
                                 top:'0', 
                                 left:'0', 
-                                transform:`translate(${position.x}px, ${position.y}px)`,
+                                transform:`translate(${handlePosition.x}px, ${handlePosition.y}px)`,
                                 border:`2px solid  ${(colourValue < 50)?'white':'black'}`
                             }}
                             />
@@ -129,7 +113,7 @@ export default forwardRef(function ColourWheelPicker(props:Props, ref:any) {
 
                 </div>
                 <div className='w-full text-2xl text-center'>
-                    #{sampleColour.rgb}
+                    #{chosenColour.rgb}
                 </div>
             </div>
         </ErrorBoundary>
