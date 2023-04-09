@@ -12,16 +12,20 @@ export function useLogin() {
         setIsLoading(true)
         setError(null)
         
-        const response = await Authenticator.login(email, password)
-        if (response.error) {
-            setIsLoading(false)
-            setError(response.error.error)
-            throw Error(response.error.error)
-        }
-        else {
-            //update auth context
+        try {
+            const response = await Authenticator.login(email, password)
             if (dispatch) dispatch({type:ACTION_TYPES.LOGIN, payload:response})
             setIsLoading(false)
+        }
+        catch (error) {
+            setIsLoading(false)
+            if (error instanceof Error) {
+                setError(error.message)
+                throw error
+            }
+            console.error(error)
+            setError('Unknown Error')
+            throw new Error('Unknown Error')
         }
     }
     return {login, error, isLoading}

@@ -11,9 +11,7 @@ export function useLogout() {
         // sessionStorage.removeItem('user')
         try {
             const result = await Authenticator.logout()
-            if (result.data) {
-                if (dispatch) dispatch({type:ACTION_TYPES.LOGOUT, payload:null})
-            }
+            if (dispatch) dispatch({type:ACTION_TYPES.LOGOUT, payload:null})
         }
         catch(e) {
             //handle error

@@ -41,12 +41,12 @@ export const AuthContextProvider  = ({children}:any) => {
     console.log('AuthContext state: ', state)
 
     async function getSession() {
-        const result = await Authenticator.getSession()
-        if (result.error) {
-            //no session
-        }
-        else {
+        try {
+            const result = await Authenticator.getSession()
             dispatch({type:ACTION_TYPES.LOGIN, payload:result})
+        }
+        catch (error) {
+
         }
     }
 

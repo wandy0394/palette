@@ -103,7 +103,6 @@ function App() {
                 </ul>
               </div>)
           }
-
       </div>
       <div className='px-8 sm:px-20 lg:px-48 bg-neutral-700'>
         <Routes>

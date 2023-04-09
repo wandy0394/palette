@@ -14,7 +14,6 @@ class LibraryService {
 
 
     static async getPalette(userId:number):Promise<SavedPalette[]> {
-        
         const data = LibraryDAO.getPalette(userId)
         return data
     }

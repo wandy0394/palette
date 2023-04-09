@@ -3,8 +3,7 @@ import LibraryService from "../services/libraryService"
 
 class LibraryController {
     static async getPalette(req:Request, res:Response, next:NextFunction) {
-        // const userId = parseInt(req.params.userId) //id needs to be validated
-        const userId = req.body.userId
+        const userId = req.body.userId  //id needs to be validated
         if (!userId) {
             res.status(400).send({status:'error', response:'Missing User Id'})
             return
@@ -18,10 +17,11 @@ class LibraryController {
                 res.status(200).send({status:'ok', data:response})
             })
             .catch(response=>{
-                if (response.message){
+                if (response instanceof Error) {
                     res.status(500).send({status:'error', error:response.message})
                 }
                 else {
+                    console.error(response)
                     res.status(500).send({status:'error', error:'Internal server error'})
                 }
             })
@@ -36,10 +36,11 @@ class LibraryController {
                 res.status(200).send({status:'ok', data:response})
             })
             .catch(response=>{
-                if (response.message){
+                if (response instanceof Error) {
                     res.status(500).send({status:'error', error:response.message})
                 }
                 else {
+                    console.error(response)
                     res.status(500).send({status:'error', error:'Internal server error'})
                 }
             })
@@ -66,10 +67,11 @@ class LibraryController {
                 res.status(200).send({response:response, status:'ok'})
             })
             .catch(response=>{
-                if (response.message){
+                if (response instanceof Error) {
                     res.status(500).send({status:'error', error:response.message})
                 }
                 else {
+                    console.error(response)
                     res.status(500).send({status:'error', error:'Internal server error'})
                 }
             })
@@ -106,10 +108,11 @@ class LibraryController {
                 res.status(200).send({response:response, status:'ok'})
             })
             .catch(response=>{
-                if (response.message){
+                if (response instanceof Error) {
                     res.status(500).send({status:'error', error:response.message})
                 }
                 else {
+                    console.error(response)
                     res.status(500).send({status:'error', error:'Internal server error'})
                 }
             })
@@ -136,10 +139,11 @@ class LibraryController {
 
             })
             .catch(response=>{
-                if (response.message){
+                if (response instanceof Error) {
                     res.status(500).send({status:'error', error:response.message})
                 }
                 else {
+                    console.error(response)
                     res.status(500).send({status:'error', error:'Internal server error'})
                 }
             })

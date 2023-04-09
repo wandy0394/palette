@@ -15,8 +15,8 @@ export default function useLibrary(props:Props) : [SavedPalette[], Dispatch<SetS
                 const result = await LibraryService.getPalettes()
                 setLibrary(result)
             }
-            catch(e) {
-                console.error('Api call failed:' + e)
+            catch(error) {
+                // handle error
             }
         }
         getPalettes();

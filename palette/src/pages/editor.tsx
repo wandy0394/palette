@@ -126,7 +126,7 @@ export default function Editor(props:Props) {
             //get palette by id
             async function get() {
                 try {
-                    const savedPalette:SavedPalette[]|null = await LibraryService.getPaletteById(params.id as string)
+                    const savedPalette:SavedPalette[] = await LibraryService.getPaletteById(params.id as string)
                     console.log(savedPalette)
                     if (savedPalette && savedPalette.length > 0) {
                         let payload = {
@@ -140,7 +140,7 @@ export default function Editor(props:Props) {
                     }
                     else {
                         //no 
-                        console.log('no')
+                        console.log('no palette')
                     }
                 }
                 catch (e) {
