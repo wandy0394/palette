@@ -16,6 +16,11 @@ type User = {
     name:string
 }
 
+type ResponseObject<T> = {
+    status:string,
+    data:T
+}
+
 export default class Authenticator {
 
     static async register(email:string, password:string, name:string) {
@@ -31,7 +36,7 @@ export default class Authenticator {
         }
 
         try {
-            const response = await request<{user:User, status:string}>(`${authenticationUrl}/signup`, config)
+            const response = await request<ResponseObject<User>>(`${authenticationUrl}/signup`, config)
             if (response.status === RESPONSE_TYPE.OK) {
                 return response
             }
@@ -55,9 +60,9 @@ export default class Authenticator {
         }
 
         try {
-            const response = await request<{user:User, status:string}>(`${authenticationUrl}/login`, config)
+            const response = await request<ResponseObject<User>>(`${authenticationUrl}/login`, config)
             if (response.status === RESPONSE_TYPE.OK) {
-                return response
+                return response.data
             }
 
         }
@@ -74,7 +79,7 @@ export default class Authenticator {
             credentials:credentials,
         }
         try {
-            const response = await request<{data:string, status:string}>(`${authenticationUrl}/logout`)
+            const response = await request<ResponseObject<string>>(`${authenticationUrl}/logout`, config)
             if (response.status === RESPONSE_TYPE.OK) {
                 return response
             }
@@ -92,9 +97,9 @@ export default class Authenticator {
             credentials:credentials,
         }
         try {
-            const response = await request<{user:User, status:string}>(`${authenticationUrl}/session`, config)
+            const response = await request<ResponseObject<User>>(`${authenticationUrl}/session`, config)
             if (response.status === RESPONSE_TYPE.OK) {
-                return response
+                return response.data
             }
         }
         catch(error) {

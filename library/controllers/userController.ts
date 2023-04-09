@@ -27,30 +27,30 @@ class UserController {
     static async signup(req:Request, res:Response, next:NextFunction) {
         const {email, password, name} = req.body
         if (!email) {
-            res.status(400).send({status:'error', error:'Bad request: Missing email field'})
+            res.status(400).send({status:'error', data:{error:'Bad request: Missing email field'}})
             return
         }
         if (!password) {
-            res.status(400).send({status:'error', error:'Bad request: Missing password field'})
+            res.status(400).send({status:'error', data:{error:'Bad request: Missing password field'}})
             return
         }
         if (!name) {
-            res.status(400).send({status:'error', error:'Bad request: Missing name field'})
+            res.status(400).send({status:'error', data:{error:'Bad request: Missing name field'}})
             return
         }
         try {
             const user = await UserService.signup(email, password, name)
             await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
-            res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', user:{name:user.name}})
+            res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', data:{user:{name:user.name}}})
         }
         catch(e:any) {
             if (e.message) {
-                res.status(500).send({status:'error', error:e.message})
+                res.status(500).send({status:'error', data:{error:e.message}})
             }
             else {
                 console.log(e)
-                res.status(500).send({status:'error', error:'Internal Server Error'})
+                res.status(500).send({status:'error', data:{error:'Internal Server Error'}})
             }
         }
     }
@@ -58,47 +58,47 @@ class UserController {
     static async login(req:Request, res:Response, next:NextFunction) {
         const {email, password} = req.body
         if (!email) {
-            res.status(400).send({status:'error', error:'Bad request: Missing email field'})
+            res.status(400).send({status:'error', data:{error:'Bad request: Missing email field'}})
             return
         }
         if (!password) {
-            res.status(400).send({status:'error', error:'Bad request: Missing password field'})
+            res.status(400).send({status:'error', data:{error:'Bad request: Missing password field'}})
             return
         }
         try {
             const user = await UserService.login(email, password)
             await UserService.addSession(req.sessionID, user.email, user.id)
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
-            res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', user:{name:user.name}})
+            res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', data:{user:{name:user.name}}})
         }
         catch(e:any) {
             if (e.message) {
-                res.status(500).send({status:'error', error:e.message})
+                res.status(500).send({status:'error', data:{error:e.message}})
             }
             else {
                 console.log(e)
-                res.status(500).send({status:'error', error:'Internal Server Error'})
+                res.status(500).send({status:'error', data:{error:'Internal Server Error'}})
             }
         }
     }
     static async getUser(req:Request, res:Response, next:NextFunction) {
         const {email} = req.body
         if (!email) {
-            res.status(400).send({status:'error', error:'Bad request: Missing email field'})
+            res.status(400).send({status:'error', data:{error:'Bad request: Missing email field'}})
             return
         }
         try {
             const user = await UserService.getUser(email)
-            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}})
+            res.status(200).send({status:'ok', data:{user:{email:user.email, name:user.name}}})
         }
         catch(e:any) {
             console.log
             if (e.message) {
-                res.status(500).send({status:'error', error:e.message})
+                res.status(500).send({status:'error', data:{error:e.message}})
             }
             else {
                 console.log(e)
-                res.status(500).send({status:'error', error:'Internal Server Error'})
+                res.status(500).send({status:'error', data:{error:'Internal Server Error'}})
             }
         }        
     }
@@ -114,17 +114,17 @@ class UserController {
     static async getUserBySession(req:Request, res:Response, next:NextFunction) {
         const cookies = parseCookieHeader(req.headers?.cookie)
         if (!cookies.sid) {
-            res.status(401).send({status:'error', error:'Unauthorised.'})
+            res.status(403).send({status:'error', data:{error:'Unauthorised.'}})
             return
         }
         try {
             const session = await UserService.getSessionBySessionId(cookies.sid)
             const user = await (UserService.getUser(session.userEmail))
-            res.status(200).send({status:'ok', user:{email:user.email, name:user.name}})
+            res.status(200).send({status:'ok', data:{user:{email:user.email, name:user.name}}})
             
         }
         catch (e) {
-            res.status(401).send({status:'error', error:'Unauthorised.'})
+            res.status(403).send({status:'error', data:{error:'Unauthorised.'}})
             return
         }
     }

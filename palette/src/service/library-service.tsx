@@ -12,6 +12,11 @@ const headers = {
 
 const credentials = "include";
 
+type ResponseObject<T> = {
+    status:string,
+    data:T
+}
+
 class LibraryService {
 
     static async getPalettes():Promise<SavedPalette[]> {
@@ -20,7 +25,7 @@ class LibraryService {
             credentials:credentials
         }
         try {
-            let response = await request<{data:SavedPalette[], status:string}>(paletteLibraryUrl, config)
+            let response = await request<ResponseObject<SavedPalette[]>>(paletteLibraryUrl, config)
             if (response.status === RESPONSE_TYPE.OK) {
                 return response.data
             }
@@ -40,7 +45,7 @@ class LibraryService {
             credentials:credentials
         }
         try {
-            const response = await request<{data:SavedPalette[], status:string}>(paletteLibraryUrl+`${paletteId}`, config)
+            const response = await request<ResponseObject<SavedPalette[]>>(paletteLibraryUrl+`${paletteId}`, config)
             if (response.status === RESPONSE_TYPE.OK) {
                 return response.data
             }
@@ -65,9 +70,9 @@ class LibraryService {
             credentials:credentials
         }
         try {
-            const response = await request<{response:string, status:string}>(paletteLibraryUrl, config)
+            const response = await request<ResponseObject<string>>(paletteLibraryUrl, config)
             if (response.status !== RESPONSE_TYPE.OK) {
-                throw new RequestError(response.response, response.status)
+                throw new RequestError(response.data, response.status)
             }
         }
         catch (error) {
@@ -88,9 +93,9 @@ class LibraryService {
             credentials:credentials
         }
         try {
-            const response = await request<{response:string, status:string}>(paletteLibraryUrl, config)
+            const response = await request<ResponseObject<string>>(paletteLibraryUrl, config)
             if (response.status !== RESPONSE_TYPE.OK) {
-                throw new RequestError(response.response, response.status)
+                throw new RequestError(response.data, response.status)
             }
         }
         catch (error) {
@@ -109,9 +114,9 @@ class LibraryService {
             credentials:credentials
         }
         try {
-            const response = await request<{response:string, status:string}>(paletteLibraryUrl, config)
+            const response = await request<ResponseObject<string>>(paletteLibraryUrl, config)
             if (response.status !== RESPONSE_TYPE.OK) {
-                throw new RequestError(response.response, response.status)
+                throw new RequestError(response.data, response.status)
             }
         }
         catch (error) {

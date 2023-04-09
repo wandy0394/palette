@@ -20,7 +20,7 @@ export default async function request<TResponse>(url: string, config: RequestIni
 
         if (!response.ok) {
             const errorResponse = await response.json()
-            const error: RequestError = new RequestError(errorResponse.error, errorResponse.status, response.status)
+            const error: RequestError = new RequestError(errorResponse.data.error, errorResponse.status, response.status)
             throw error
         }
 

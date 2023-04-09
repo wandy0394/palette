@@ -1,35 +1,36 @@
 import {Request, Response, NextFunction} from 'express'
 import LibraryService from "../services/libraryService"
+import { ResponseObject } from '../types/types'
+
 
 class LibraryController {
     static async getPalette(req:Request, res:Response, next:NextFunction) {
         const userId = req.body.userId  //id needs to be validated
         if (!userId) {
-            res.status(400).send({status:'error', response:'Missing User Id'})
+            res.status(400).json({status:'error', data:{error:'Missing User Id'}})
             return
         }
         if (!(Number.isInteger(userId))) {
-            res.status(400).send({status:'error', response:'Invalid User Id'})
+            res.status(400).json({status:'error', data:{error:'Invalid User Id'}})
             return
         }
         LibraryService.getPalette(userId)
             .then(response=>{
-                res.status(200).send({status:'ok', data:response})
+                res.status(200).json({status:'ok', data:response})
             })
             .catch(response=>{
                 if (response instanceof Error) {
-                    res.status(500).send({status:'error', error:response.message})
+                    res.status(500).json({status:'error', data:{error:response.message}})
                 }
                 else {
                     console.error(response)
-                    res.status(500).send({status:'error', error:'Internal server error'})
+                    res.status(500).json({status:'error', data:{error:'Internal server error'}})
                 }
             })
     }
     static async getPaletteById(req:Request, res:Response, next:NextFunction) {
         const paletteId = parseInt(req.params.paletteId) //need to check that param is actually integer
-        // const userId = parseInt(req.params.userId) //need to check that param is actually integer
-        const userId = req.body.userId
+        const userId = parseInt(req.body.userId) //need to check that param is actually integer
 
         LibraryService.getPaletteById(userId, paletteId)
             .then(response=>{
@@ -37,114 +38,109 @@ class LibraryController {
             })
             .catch(response=>{
                 if (response instanceof Error) {
-                    res.status(500).send({status:'error', error:response.message})
+                    res.status(500).send({status:'error', data:{error:response.message}})
                 }
                 else {
                     console.error(response)
-                    res.status(500).send({status:'error', error:'Internal server error'})
+                    res.status(500).send({status:'error', data:{error:'Internal server error'}})
                 }
             })
     }
     static async addPalette(req:Request, res:Response, next:NextFunction) {
-        if (req.body.userId === undefined) {
-            res.status(400).send({response:'Missing userId', status:'error'}) 
+
+        const {userId, userEmail, palette, name} = req.body
+        if (userId === undefined) {
+            res.status(400).send({data:{error:'Missing userId'}, status:'error'}) 
             return
         }
-        if (req.body.userEmail === undefined) {
-            res.status(400).send({response:'Missing userEmail', status:'error'}) 
+        if (userEmail === undefined) {
+            res.status(400).send({data:{error:'Missing userEmail'}, status:'error'}) 
             return
         }
-        if (req.body.palette === undefined) {
-            res.status(400).send({response:'Missing Palette', status:'error'})
+        if (palette === undefined) {
+            res.status(400).send({data:{error:'Missing Palette'}, status:'error'})
             return
         }
-        if (req.body.name === undefined) {
-            res.status(400).send({response:'Missing Name', status:'error'})
+        if (name === undefined) {
+            res.status(400).send({data:{error:'Missing Name'}, status:'error'})
             return
         }
-        LibraryService.addPalette(req.body.userEmail, req.body.userId, req.body.palette, req.body.name)
+        LibraryService.addPalette(userEmail, userId, palette, name)
             .then(response=>{
-                res.status(200).send({response:response, status:'ok'})
+                res.status(200).send({data:response, status:'ok'})
             })
             .catch(response=>{
                 if (response instanceof Error) {
-                    res.status(500).send({status:'error', error:response.message})
+                    res.status(500).send({status:'error', data:{error:response.message}})
                 }
                 else {
                     console.error(response)
-                    res.status(500).send({status:'error', error:'Internal server error'})
+                    res.status(500).send({status:'error', data:{error:'Internal server error'}})
                 }
             })
     }
 
     static updatePalette(req:Request, res:Response, next:NextFunction) {
-        
-        const paletteId = req.body.paletteId
-        const userId = req.body.userId
-        const palette = req.body.palette
-        const name = req.body.name
-        if (req.body.userId === undefined) {
-            res.status(400).send({response:'Missing userId', status:'error'}) 
+        const {paletteId, userId, userEmail, palette, name} = req.body
+        if (userId === undefined) {
+            res.status(400).send({data:{error:'Missing userId'}, status:'error'}) 
             return
         }
-        if (req.body.userEmail === undefined) {
-            res.status(400).send({response:'Missing userEmail', status:'error'}) 
+        if (userEmail === undefined) {
+            res.status(400).send({data:{error:'Missing userEmail'}, status:'error'}) 
             return
         }
-        if (req.body.palette === undefined) {
-            res.status(400).send({response:'Missing Palette', status:'error'})
+        if (palette === undefined) {
+            res.status(400).send({data:{error:'Missing Palette'}, status:'error'})
             return
         }
-        if (req.body.paletteId === undefined) {
-            res.status(400).send({response:'Missing PaletteId', status:'error'})
+        if (paletteId === undefined) {
+            res.status(400).send({data:{error:'Missing PaletteId'}, status:'error'})
             return
         }
-        if (req.body.name === undefined) {
-            res.status(400).send({response:'Missing Name', status:'error'})
+        if (name === undefined) {
+            res.status(400).send({data:{error:'Missing Name'}, status:'error'})
             return
         }
         LibraryService.updatePalette(userId, paletteId, palette, name)
             .then(response=>{
-                res.status(200).send({response:response, status:'ok'})
+                res.status(200).send({data:response, status:'ok'})
             })
             .catch(response=>{
                 if (response instanceof Error) {
-                    res.status(500).send({status:'error', error:response.message})
+                    res.status(500).send({status:'error', data:{error:response.message}})
                 }
                 else {
                     console.error(response)
-                    res.status(500).send({status:'error', error:'Internal server error'})
+                    res.status(500).send({status:'error', data:{error:'Internal server error'}})
                 }
             })
     }
 
     static deletePalette(req:Request, res:Response, next:NextFunction) {
-        const body = req.body
-        if (req.body.userId === undefined) {
-            res.status(400).send({response:'Missing userId', status:'error'}) 
+        // const body = req.body
+        const {userId, userEmail, paletteId} = req.body
+        if (userId === undefined) {
+            res.status(400).send({data:{error:'Missing userId'}, status:'error'}) 
             return
         }
-        if (req.body.userEmail === undefined) {
-            res.status(400).send({response:'Missing userEmail', status:'error'}) 
-            return
-        }
-        if (req.body.paletteId === undefined) {
-            res.status(400).send({response:'Missing PaletteId', status:'error'})
+        if (paletteId === undefined) {
+            res.status(400).send({data:{error:'Missing PaletteId'}, status:'error'})
             return
         }
 
-        LibraryService.deletePalette(req.body.userId, req.body.paletteId)
+        LibraryService.deletePalette(userId, paletteId)
             .then(response=>{
-                res.status(200).send({response:'success', status:'ok'})
+                res.status(200).send({data:'success', status:'ok'})
 
             })
             .catch(response=>{
                 if (response instanceof Error) {
-                    res.status(500).send({status:'error', error:response.message})
+                    res.status(500).send({status:'error', data:{error:response.message}})
                 }
                 else {
                     console.error(response)
-                    res.status(500).send({status:'error', error:'Internal server error'})
+                    res.status(500).send({status:'error', data:{error:'Internal server error'}})
                 }
             })
     }

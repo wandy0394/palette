@@ -42,3 +42,8 @@ export type User = {
     email:string,
     passwordHash?:string
 }
+
+export type ResponseObject<T> = {
+    status:'ok' | 'error'
+    data: T
+}
