@@ -12,6 +12,6 @@ router.route("/paletteLibrary")
     .put(LibraryController.updatePalette)
     .get(LibraryController.getPalette)
 
-router.route("/paletteLibrary/:paletteId")
-    .get(LibraryController.getPaletteById)    
+router.route("/paletteLibrary/:paletteUUID")
+    .get(LibraryController.getPaletteByUUID)    
 export default router

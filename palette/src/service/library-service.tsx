@@ -39,13 +39,13 @@ class LibraryService {
         }
     }
 
-    static async getPaletteById(paletteId:string):Promise<SavedPalette[]> {
+    static async getPaletteById(paletteUUID:string):Promise<SavedPalette[]> {
         let config:RequestInit = {
             headers: headers,
             credentials:credentials
         }
         try {
-            const response = await request<ResponseObject<SavedPalette[]>>(paletteLibraryUrl+`${paletteId}`, config)
+            const response = await request<ResponseObject<SavedPalette[]>>(paletteLibraryUrl+`${paletteUUID}`, config)
             if (response.status === RESPONSE_TYPE.OK) {
                 return response.data
             }
@@ -81,13 +81,13 @@ class LibraryService {
         }
     }
 
-    static async updatePalette(palette:Palette, paletteId:number, name:string) {
+    static async updatePalette(palette:Palette, paletteUUID:string, name:string) {
         let config:RequestInit = {
             method:'PUT',
             headers: headers,
             body: JSON.stringify({
                 palette:palette,
-                paletteId:paletteId,
+                paletteUUID:paletteUUID,
                 name:name
             }),
             credentials:credentials
@@ -104,12 +104,12 @@ class LibraryService {
         }
     }
 
-    static async deletePalette(paletteId:number) {
+    static async deletePalette(paletteUUID:string) {
         let config:RequestInit = {
             method:'DELETE',
             headers: headers,
             body: JSON.stringify({
-                paletteId:paletteId
+                paletteUUID:paletteUUID
             }),
             credentials:credentials
         }

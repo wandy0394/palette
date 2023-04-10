@@ -1,7 +1,7 @@
 import LibraryDAO from "../database/libraryDAO";
 import { Palette, SavedPalette } from "../types/types";
 import {Connection} from "mysql2"
-
+import {v4 as uuid} from 'uuid'
 
 class LibraryService {
     static injectConn(connection:Connection) {
@@ -18,14 +18,14 @@ class LibraryService {
         return data
     }
 
-    static async getPaletteById(userId:number, paletteId:number):Promise<SavedPalette[]> {
+    static async getPaletteByUUID(userId:number, paletteUUID:string):Promise<SavedPalette[]> {
         
-        const data = LibraryDAO.getPaletteById(userId, paletteId)
+        const data = LibraryDAO.getPaletteByUUID(userId, paletteUUID)
         return data
     }
-    static async updatePalette(userId:number, paletteId:number, palette:Palette, name:string):Promise<string> {
+    static async updatePalette(userId:number, paletteUUID:string, palette:Palette, name:string):Promise<string> {
         try {
-            const result = LibraryDAO.updatePalette(userId, paletteId, palette, name)
+            const result = LibraryDAO.updatePalette(userId, paletteUUID, palette, name)
             return result
         }
         catch (e) {
@@ -45,8 +45,8 @@ class LibraryService {
 
     static async addPalette(userEmail:string, userId:number, palette:Palette, name:string):Promise<string> {
         try {
-
-            const result = LibraryDAO.addPalette(userId, userEmail, palette, name)
+            const paletteUUID:string = uuid()
+            const result = LibraryDAO.addPalette(userId, palette, name, paletteUUID)
             return result        
         }
         catch (e) {

@@ -41,7 +41,7 @@ class LibraryDAO {
                     const output:SavedPalette[] = []
                     rows.forEach(row=>{
                         let palette:SavedPalette = {
-                            id:row.Id,
+                            uuid:row.uuid,
                             name:row.name,
                             palette: {
                                 mainColour:row.MainColour,
@@ -62,20 +62,18 @@ class LibraryDAO {
         })
         return promise
     }
-    static getPaletteById(userId:number, paletteId:number):Promise<SavedPalette[]> {
+    static getPaletteByUUID(userId:number, paletteUUID:string):Promise<SavedPalette[]> {
         const promise:Promise<SavedPalette[]> = new Promise((resolve, reject)=>{
                 try {
-                    const sqlQuery:string = `SELECT * from Palettes where UserId=? and Id=?;`
-                    db.query(sqlQuery, [userId, paletteId],(err, result, fields)=>{
+                    const sqlQuery:string = `SELECT * from Palettes where UserId=? and uuid=?;`
+                    db.query(sqlQuery, [userId, paletteUUID],(err, result, fields)=>{
                         if (err) {
                             return reject(new Error('Error querying database'))
                         }
                         if ((result as RowDataPacket[]).length > 0) {
-
                             const row = (result as RowDataPacket[])[0]
-                         
                             let palette:SavedPalette[] = [{
-                                id:row.Id,
+                                uuid:row.uuid,
                                 name:row.name,
                                 palette: {
                                     mainColour:row.MainColour,
@@ -91,16 +89,16 @@ class LibraryDAO {
                         }
                     })
                 }
-                catch (e) {
+                catch (error) {
                     
-                    reject(e)
+                    reject(error)
                 }
             })
             return promise
     }
 
 
-    static async addPalette(userId:number, userEmail:string, palette:Palette, name:string):Promise<string> {
+    static async addPalette(userId:number, palette:Palette, name:string, paletteUUID:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{
             try {
                 const mainColour = JSON.stringify(palette.mainColour)
@@ -114,6 +112,7 @@ class LibraryDAO {
                     AccentColours:accentColours,
                     SupportColours:supportColours,
                     ColourVerticies:colourVerticies,
+                    uuid:paletteUUID,
                     UserId:userId
                 }
 
@@ -126,14 +125,14 @@ class LibraryDAO {
                     resolve('ok')
                 })
             }
-            catch (e) {
-                reject(e)
+            catch (error) {
+                reject(error)
             }
         })
         return promise
     }
 
-    static async updatePalette(userId:number, paletteId:number, palette:Palette, name:string):Promise<string> {
+    static async updatePalette(userId:number, paletteUUID:string, palette:Palette, name:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{
             try {
                 const mainColour = JSON.stringify(palette.mainColour)
@@ -147,8 +146,8 @@ class LibraryDAO {
                     SupportColours:supportColours,
                     ColourVerticies:colourVerticies,
                 }
-                const sqlQuery:string = `Update Palettes SET ? WHERE UserId=? and Id=?;`
-                db.query(sqlQuery, [values, userId, paletteId], (err, results, fields)=>{
+                const sqlQuery:string = `Update Palettes SET ? WHERE UserId=? and uuid=?;`
+                db.query(sqlQuery, [values, userId, paletteUUID], (err, results, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -156,19 +155,19 @@ class LibraryDAO {
                     resolve('ok')
                 })
             }
-            catch (e) {
-                reject(e)
+            catch (error) {
+                reject(error)
             }
         })
         return promise
     }
-    static deletePalette(userId:number, id:string):Promise<string> {
+    static deletePalette(userId:number, paletteUUID:string):Promise<string> {
         const promise = new Promise<string>((resolve, reject)=>{
             try {
-                const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=? and Id=?` 
+                const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=? and uuid=?` 
                 // const sqlQuery:string = `DELETE FROM Palettes WHERE UserId=${userId} and Id=${id}` 
                        
-                db.query(sqlQuery, [userId, id], (err, results, fields)=>{
+                db.query(sqlQuery, [userId, paletteUUID], (err, results, fields)=>{
                     if (err) {
                         console.log(err)
                         return reject(new Error('Error querying database'))
@@ -176,8 +175,8 @@ class LibraryDAO {
                     resolve('ok')
                 })
             }
-            catch (e) {
-                reject(e)
+            catch (error) {
+                reject(error)
             }
         })
         return promise        

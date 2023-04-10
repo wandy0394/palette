@@ -8,12 +8,12 @@ import { SavedPalette } from "../types/library";
 import { useEffect, useState } from 'react'
 
 
-function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(id:number)=>void}) {
+function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(uuid:string)=>void}) {
     const {savedPalette, handleDeleteClick} = props
     const navigate = useNavigate()
 
     function handleEditClick() {
-        navigate('/editor/'+savedPalette.id)
+        navigate('/editor/'+savedPalette.uuid)
     }
     return (
         <ContentBox>
@@ -31,7 +31,7 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
                             Edit
                         </button>
                         <button className='btn btn-xs lg:btn-md btn-secondary' 
-                            onClick={()=>handleDeleteClick(savedPalette.id)}
+                            onClick={()=>handleDeleteClick(savedPalette.uuid)}
                         >
                             Delete
                         </button>
@@ -62,12 +62,12 @@ export default function Library() {
     
 
 
-    function handleDeleteClick(paletteId:number) {
+    function handleDeleteClick(paletteUUID:string) {
         //call api service to delete
         async function deletePalette() {
             try {
-                await LibraryService.deletePalette(paletteId)
-                const newPalette:SavedPalette[] = library.savedPalette.filter(savedPalette=>savedPalette.id !== paletteId)
+                await LibraryService.deletePalette(paletteUUID)
+                const newPalette:SavedPalette[] = library.savedPalette.filter(savedPalette=>savedPalette.uuid !== paletteUUID)
                 setLibrary({...library, savedPalette:newPalette})
             }
             catch (e) {
@@ -92,7 +92,7 @@ export default function Library() {
                         return <SavedPaletteEntry 
                                     key={'palette'+index} 
                                     savedPalette={savedPalette} 
-                                    handleDeleteClick={()=>handleDeleteClick(savedPalette.id)}
+                                    handleDeleteClick={()=>handleDeleteClick(savedPalette.uuid)}
                                 />
                     })
                 }

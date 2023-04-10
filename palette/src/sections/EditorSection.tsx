@@ -8,8 +8,6 @@ import { Colour, HSV } from "../types/colours"
 import {  createColour, rgb2cartesian } from "../model/common/utils"
 import LibraryService from "../service/library-service"
 import { useParams } from "react-router-dom"
-import { Result } from "../model/common/error"
-import ColourConverter from "../model/colourConverter"
 import { AlertAction, AlertState } from "../hooks/useEditorAlertReducer"
 import { COLOUR_CONTROLS_ACTION_TYPE, ColourControlsAction, ColourControlsState, SLIDER_MAX_VALUE } from "../hooks/useColourControlsReducer"
 
@@ -105,8 +103,10 @@ export default function EdtiorSection(props:Props) {
 
             async function update() {
                 try {
-                    const result = await LibraryService.updatePalette(state.palette, parseInt(params.id as string), paletteName) //TODO: validate params.id
-                    alertDispatch({type:'success', payload:{message:'Palette updated.', visibile:true}})
+                    if (params.id) {
+                        const result = await LibraryService.updatePalette(state.palette, params.id, paletteName) //TODO: validate params.id
+                        alertDispatch({type:'success', payload:{message:'Palette updated.', visibile:true}})
+                    }
                 }
                 catch (e) {
                     alertDispatch({type:'error', payload:{message:'Could not update palette.', visibile:true}})

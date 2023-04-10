@@ -1,7 +1,7 @@
 import { Palette } from "./colours"
 
 export type SavedPalette = {
-    id:number,
+    uuid:string,
     name:string,
     email:string,
     date: Date,

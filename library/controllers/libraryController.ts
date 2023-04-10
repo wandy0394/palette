@@ -28,11 +28,11 @@ class LibraryController {
                 }
             })
     }
-    static async getPaletteById(req:Request, res:Response, next:NextFunction) {
-        const paletteId = parseInt(req.params.paletteId) //need to check that param is actually integer
+    static async getPaletteByUUID(req:Request, res:Response, next:NextFunction) {
+        const paletteUUID = req.params.paletteUUID 
         const userId = parseInt(req.body.userId) //need to check that param is actually integer
 
-        LibraryService.getPaletteById(userId, paletteId)
+        LibraryService.getPaletteByUUID(userId, paletteUUID)
             .then(response=>{
                 res.status(200).send({status:'ok', data:response})
             })
@@ -81,7 +81,7 @@ class LibraryController {
     }
 
     static updatePalette(req:Request, res:Response, next:NextFunction) {
-        const {paletteId, userId, userEmail, palette, name} = req.body
+        const {paletteUUID, userId, userEmail, palette, name} = req.body
         if (userId === undefined) {
             res.status(400).send({data:{error:'Missing userId'}, status:'error'}) 
             return
@@ -94,15 +94,15 @@ class LibraryController {
             res.status(400).send({data:{error:'Missing Palette'}, status:'error'})
             return
         }
-        if (paletteId === undefined) {
-            res.status(400).send({data:{error:'Missing PaletteId'}, status:'error'})
+        if (paletteUUID === undefined) {
+            res.status(400).send({data:{error:'Missing PaletteUUID'}, status:'error'})
             return
         }
         if (name === undefined) {
             res.status(400).send({data:{error:'Missing Name'}, status:'error'})
             return
         }
-        LibraryService.updatePalette(userId, paletteId, palette, name)
+        LibraryService.updatePalette(userId, paletteUUID, palette, name)
             .then(response=>{
                 res.status(200).send({data:response, status:'ok'})
             })
@@ -119,17 +119,17 @@ class LibraryController {
 
     static deletePalette(req:Request, res:Response, next:NextFunction) {
         // const body = req.body
-        const {userId, userEmail, paletteId} = req.body
+        const {userId, paletteUUID} = req.body
         if (userId === undefined) {
             res.status(400).send({data:{error:'Missing userId'}, status:'error'}) 
             return
         }
-        if (paletteId === undefined) {
-            res.status(400).send({data:{error:'Missing PaletteId'}, status:'error'})
+        if (paletteUUID === undefined) {
+            res.status(400).send({data:{error:'Missing PaletteUUID'}, status:'error'})
             return
         }
 
-        LibraryService.deletePalette(userId, paletteId)
+        LibraryService.deletePalette(userId, paletteUUID)
             .then(response=>{
                 res.status(200).send({data:'success', status:'ok'})
 

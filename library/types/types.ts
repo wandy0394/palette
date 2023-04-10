@@ -30,7 +30,7 @@ export type Scheme = {
 } 
 
 export type SavedPalette = {
-    id:number,
+    uuid:string,
     name?:string,
     date?: Date,
     palette:Palette
