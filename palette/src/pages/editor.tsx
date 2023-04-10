@@ -17,8 +17,6 @@ import CustomTetraticSchemeGenerator from "../model/CustomTetraticSchemeGenerato
 import { ACTION_TYPES, usePaletteEditorReducer } from "../hooks/usePaletteEditorReducer"
 import HarmonySelector from "../components/HarmonySelector"
 import { Result } from "../model/common/error"
-import LibraryService from "../service/library-service"
-import { SavedPalette } from "../types/library"
 import { useAuthContext } from "../hooks/useAuthContext"
 import AlertBox from "../components/common/AlertBox"
 import CustomComplementarySchemeGenerator from "../model/CustomComplementarySchemeGenerator"
@@ -50,8 +48,6 @@ const colourHarmonies:Harmonies = {
     custom4: {id:9, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true},
 }
 
-// const initWheelWidth = 400
-// const initHandleWidth = 20
 const cc = new ColourConverter()
 const emptyPalette:Palette = {
     mainColour:{
@@ -81,13 +77,6 @@ const initialState = {
     index:0,
 }
 
-// const MAX_VALUE:number = 100
-// const initialColourControlsState = {
-//     wheelWidth:initWheelWidth,
-//     handleWidth:initHandleWidth,
-//     handlePosition:{x:initWheelWidth/2 - initHandleWidth/2, y:initWheelWidth/2 - initHandleWidth/2},
-//     sliderValue:MAX_VALUE
-// }
 type Props = {
     updatePalette?:Function
 }

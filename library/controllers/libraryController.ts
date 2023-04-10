@@ -10,13 +10,14 @@ class LibraryController {
             res.status(400).json({status:'error', data:{error:'Missing User Id'}})
             return
         }
-        if (!(Number.isInteger(userId))) {
+        if (!(Number.isSafeInteger(userId))) {
             res.status(400).json({status:'error', data:{error:'Invalid User Id'}})
             return
         }
         LibraryService.getPalette(userId)
             .then(response=>{
-                res.status(200).json({status:'ok', data:response})
+                const maxAge = 60 * 10
+                res.set('Cache-control', `public, max-age=${maxAge}`).status(200).json({status:'ok', data:response})
             })
             .catch(response=>{
                 if (response instanceof Error) {
@@ -32,9 +33,22 @@ class LibraryController {
         const paletteUUID = req.params.paletteUUID 
         const userId = parseInt(req.body.userId) //need to check that param is actually integer
 
+        if (!paletteUUID) {
+            res.status(400).json({status:'error', data:{error:'Missing Palette UUID'}})
+            return
+        }
+        if (!userId) {
+            res.status(400).json({status:'error', data:{error:'Missing User Id'}})
+            return
+        }
+        if (!(Number.isSafeInteger(userId))) {
+            res.status(400).json({status:'error', data:{error:'Invalid User Id'}})
+            return
+        }
         LibraryService.getPaletteByUUID(userId, paletteUUID)
             .then(response=>{
-                res.status(200).send({status:'ok', data:response})
+                const maxAge = 60 * 10
+                res.set('Cache-control', `public, max-age=${maxAge}`).status(200).send({status:'ok', data:response})
             })
             .catch(response=>{
                 if (response instanceof Error) {

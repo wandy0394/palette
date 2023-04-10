@@ -17,8 +17,8 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     }
     return (
         <ContentBox>
-
             <div className='bg-base-300 shadow-lg flex flex-col items-center justify-center w-full h-full'>
+                
                 <div className='w-full flex items-center justify-between py-2 md:py-4'>
                     <div className='w-full flex justify-start px-8'>
                         <h2 className='text-lg md:text-2xl font-bold'>{savedPalette.name}</h2>
@@ -27,12 +27,12 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
                         <button 
                             className='btn btn-xs lg:btn-md btn-primary' 
                             onClick={handleEditClick}
-                        >
+                            >
                             Edit
                         </button>
                         <button className='btn btn-xs lg:btn-md btn-secondary' 
                             onClick={()=>handleDeleteClick(savedPalette.uuid)}
-                        >
+                            >
                             Delete
                         </button>
                     </div>
@@ -81,7 +81,7 @@ export default function Library() {
         <ContentBox finishedLoading={pageLoaded}>
             {
                 (library.savedPalette.length <= 0) &&
-                    (<section className='text-2xl h-screen'>You have no palettes saved.</section>)
+                (<section className='text-2xl h-screen'>You have no palettes saved.</section>)
             }
             <div className='w-full min-h-screen'>
                 <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
@@ -90,10 +90,10 @@ export default function Library() {
                     (library.savedPalette.length > 0) &&
                     library.savedPalette.map((savedPalette, index)=>{
                         return <SavedPaletteEntry 
-                                    key={'palette'+index} 
-                                    savedPalette={savedPalette} 
-                                    handleDeleteClick={()=>handleDeleteClick(savedPalette.uuid)}
-                                />
+                        key={'palette'+index} 
+                        savedPalette={savedPalette} 
+                        handleDeleteClick={()=>handleDeleteClick(savedPalette.uuid)}
+                        />
                     })
                 }
                 </div>

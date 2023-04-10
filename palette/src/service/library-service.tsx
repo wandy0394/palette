@@ -1,5 +1,6 @@
 import { Palette } from "../types/colours";
 import { SavedPalette } from "../types/library";
+import CacheService from "./cache-service";
 import request, { RESPONSE_TYPE, RequestError } from "./request";
 
 const paletteLibraryUrl = (import.meta.env.MODE === 'development')?
@@ -17,6 +18,10 @@ type ResponseObject<T> = {
     data:T
 }
 
+
+
+const CACHE_LIBRARY = 'library'
+
 class LibraryService {
 
     static async getPalettes():Promise<SavedPalette[]> {
@@ -24,9 +29,13 @@ class LibraryService {
             headers: headers,
             credentials:credentials
         }
+        const cachedResponse = CacheService.checkCache(CACHE_LIBRARY)
+        if (cachedResponse) return JSON.parse(cachedResponse)
+
         try {
             let response = await request<ResponseObject<SavedPalette[]>>(paletteLibraryUrl, config)
             if (response.status === RESPONSE_TYPE.OK) {
+                CacheService.addToCache(CACHE_LIBRARY, JSON.stringify(response.data))
                 return response.data
             }
             else {
@@ -44,9 +53,12 @@ class LibraryService {
             headers: headers,
             credentials:credentials
         }
+        const cachedResponse = CacheService.checkCache(paletteUUID)
+        if (cachedResponse) return JSON.parse(cachedResponse)
         try {
             const response = await request<ResponseObject<SavedPalette[]>>(paletteLibraryUrl+`${paletteUUID}`, config)
             if (response.status === RESPONSE_TYPE.OK) {
+                CacheService.addToCache(paletteUUID, JSON.stringify(response.data))
                 return response.data
             }
             else {
@@ -74,6 +86,7 @@ class LibraryService {
             if (response.status !== RESPONSE_TYPE.OK) {
                 throw new RequestError(response.data, response.status)
             }
+            CacheService.clearCache(CACHE_LIBRARY)
         }
         catch (error) {
             if (error instanceof RequestError || error instanceof Error) throw (error)
@@ -97,6 +110,8 @@ class LibraryService {
             if (response.status !== RESPONSE_TYPE.OK) {
                 throw new RequestError(response.data, response.status)
             }
+            CacheService.clearCache(CACHE_LIBRARY)
+            CacheService.clearCache(paletteUUID)
         }
         catch (error) {
             if (error instanceof RequestError || error instanceof Error) throw (error)
@@ -118,6 +133,8 @@ class LibraryService {
             if (response.status !== RESPONSE_TYPE.OK) {
                 throw new RequestError(response.data, response.status)
             }
+            CacheService.clearCache(CACHE_LIBRARY)
+            CacheService.clearCache(paletteUUID)
         }
         catch (error) {
             if (error instanceof RequestError || error instanceof Error) throw (error)

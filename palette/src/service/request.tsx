@@ -13,17 +13,19 @@ export const RESPONSE_TYPE = {
     OK:'ok'
 }
 
+
+
 export default async function request<TResponse>(url: string, config: RequestInit = {}): Promise<TResponse> {
+
+
 
     try {
         const response = await fetch(url, config)
-
         if (!response.ok) {
             const errorResponse = await response.json()
             const error: RequestError = new RequestError(errorResponse.data.error, errorResponse.status, response.status)
             throw error
         }
-
         const data = await response.json() as TResponse
         return data
     } 
