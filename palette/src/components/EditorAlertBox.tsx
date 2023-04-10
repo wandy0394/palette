@@ -22,13 +22,13 @@ type Props = {
     message:string,
     alertType:AlertType,
     visible:boolean,
-    setVisible:React.Dispatch<React.SetStateAction<boolean>>
+    hide: () => void
 }
 export default function EditorAlertBox(props:Props) {
-    const {message, alertType, visible, setVisible} = props
+    const {message, alertType, visible, hide} = props
     return (
         <div>
-            <AlertBox message={message} alertType={alertType} visible={visible} setVisible={setVisible}/>
+            <AlertBox message={message} alertType={alertType} visible={visible} hide={hide}/>
         </div>
     )
 }
