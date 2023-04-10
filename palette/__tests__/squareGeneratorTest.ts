@@ -7,11 +7,13 @@ import SplitComplementarySchemeGenerator from "../src/model/SplitComplementarySc
 import AnalogousSchemeGenerator from "../src/model/AnalogousSchemeGenerator"
 import { describe } from "node:test"
 import {test, expect} from '@jest/globals'
+import { Colour } from "../src/types/colours"
+import { Result } from "../src/model/common/error"
 describe('Testing Palette Generator - Square', ()=>{
     let palette = new SquareSchemeGenerator(new ColourConverter())
 
     test('Test 1: FF0000', ()=>{
-        let output = palette.generateColourVerticies('FF0000')
+        let output:Result<Colour[][], string> = palette.generateColourVerticies('FF0000')
         let output0 = [
             {
                 rgb:'ff0000',
@@ -46,9 +48,8 @@ describe('Testing Palette Generator - Square', ()=>{
                 }
             },
         ]
-  
-        expect(output).toEqual([output0])
-
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) expect(output.value).toEqual([output0])
     })
 
     test('Test 2: 000000', ()=>{
@@ -88,7 +89,8 @@ describe('Testing Palette Generator - Square', ()=>{
             },
         ]
   
-        expect(output).toEqual([output0])
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) expect(output.value).toEqual([output0])
     })
 
     test('Test 3: FFFFFF', ()=>{
@@ -128,11 +130,15 @@ describe('Testing Palette Generator - Square', ()=>{
             },
         ]
   
-        expect(output).toEqual([output0])
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) expect(output.value).toEqual([output0])
+        
         // expect(output).toEqual([['ffffff', 'ffffff', 'ffffff', 'ffffff']])
     })
     test('Test 4: !FFFFF', ()=>{
         let output = palette.generateColourVerticies('!FFFFF')
-        expect(output).toEqual([[]])
+        const expectedOutput = "Unable to generate colour verticies !FFFFF.\nrgb input is in invalid format."
+        expect(output.isError()).toEqual(true)
+        if (output.isError()) expect(output.error).toEqual(expectedOutput)
     })
 })

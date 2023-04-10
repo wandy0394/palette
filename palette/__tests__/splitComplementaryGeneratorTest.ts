@@ -91,9 +91,12 @@ describe('Testing Palette Generator - Split Complementary', ()=>{
                 }
             },
         ]
-        expect(output[0]).toEqual(output0)
-        expect(output[1]).toEqual(output1)
-        expect(output[2]).toEqual(output2)
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value[0]).toEqual(output0)
+            expect(output.value[1]).toEqual(output1)
+            expect(output.value[2]).toEqual(output2)
+        }   
     })
 
     test('Test 2: 000000', ()=>{
@@ -176,9 +179,12 @@ describe('Testing Palette Generator - Split Complementary', ()=>{
                 }
             },
         ]
-        expect(output[0]).toEqual(output0)
-        expect(output[1]).toEqual(output1)
-        expect(output[2]).toEqual(output2)
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value[0]).toEqual(output0)
+            expect(output.value[1]).toEqual(output1)
+            expect(output.value[2]).toEqual(output2)
+        }   
     })
 
     test('Test 3: FFFFFF', ()=>{
@@ -261,12 +267,17 @@ describe('Testing Palette Generator - Split Complementary', ()=>{
                 }
             },
         ]
-        expect(output[0]).toEqual(output0)
-        expect(output[1]).toEqual(output1)
-        expect(output[2]).toEqual(output2)
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value[0]).toEqual(output0)
+            expect(output.value[1]).toEqual(output1)
+            expect(output.value[2]).toEqual(output2)
+        }   
     })
     test('Test 4: !FFFFF', ()=>{
         let output = palette.generateColourVerticies('!FFFFF')
-        expect(output).toEqual([[]])
+        const expectedOutput = "Unable to generate colour verticies !FFFFF.\nrgb input is in invalid format."
+        expect(output.isError()).toEqual(true)
+        if (output.isError()) expect(output.error).toEqual(expectedOutput)
     })
 })

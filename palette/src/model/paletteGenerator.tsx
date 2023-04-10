@@ -266,7 +266,7 @@ abstract class PaletteGenerator {
     }
     protected generateColourVerticiesByHueAngles(rgb:HEX, angleArray:number[][]):Result<Colour[][], string> {
         const hsvResult:Result<HSV,string>  = this.converter.rgb2hsv(rgb)
-        const errorMessage:string = `Unable to generate colour verticies ${rgb}\n.`
+        const errorMessage:string = `Unable to generate colour verticies ${rgb}.\n`
         if (hsvResult.isSuccess()) {
             let output:Result<Colour[][], string> = this.getColoursByHueAngle(rgb, hsvResult.value, angleArray)
             if (output.isSuccess()) {

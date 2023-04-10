@@ -2,7 +2,7 @@ import { IncorrectVertexCountError, NullInputError } from "../exceptions/excepti
 import { Point } from "../types/cartesian";
 import { Colour, HEX, HSV, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
-import { Result, success } from "./common/error";
+import { Result, success, fail } from "./common/error";
 import PaletteGenerator from "./paletteGenerator";
 
 export default class AnalogousSchemeGenerator extends PaletteGenerator {

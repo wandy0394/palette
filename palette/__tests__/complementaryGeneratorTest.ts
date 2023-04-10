@@ -13,116 +13,135 @@ describe('Testing Palette Generator - Complementary', ()=>{
     test('Test 1: FF0000->ffff', ()=>{
         let rgb = 'FF0000'
         let output = palette.generateColourVerticies(rgb)
-        expect(output).toEqual([[
-            {
-                rgb:'ff0000',
-                hsv:{
-                    hue:0,
-                    value:1,
-                    saturation:1
+
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value).toEqual([[
+                {
+                    rgb:'ff0000',
+                    hsv:{
+                        hue:0,
+                        value:1,
+                        saturation:1
+                    }
+                }, 
+                {
+                    rgb:'00ffff',
+                    hsv:{
+                        hue:180,
+                        value:1,
+                        saturation:1
+                    }
                 }
-            }, 
-            {
-                rgb:'00ffff',
-                hsv:{
-                    hue:180,
-                    value:1,
-                    saturation:1
-                }
-            }
-        ]])
+            ]])
+        }
     })
+    
     test('Test 2: 00FF00->ff00ff', ()=>{
         let rgb = '00FF00'
         let output = palette.generateColourVerticies(rgb)
-        expect(output).toEqual([[
-            {
-                rgb:'ff00ff',
-                hsv:{
-                    hue:300,
-                    saturation:1,
-                    value:1
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value).toEqual([[
+                {
+                    rgb:'ff00ff',
+                    hsv:{
+                        hue:300,
+                        saturation:1,
+                        value:1
+                    }
+                }, 
+                {
+                    rgb:'00ff00',
+                    hsv:{
+                        hue:120,
+                        saturation:1,
+                        value:1
+                    }
                 }
-            }, 
-            {
-                rgb:'00ff00',
-                hsv:{
-                    hue:120,
-                    saturation:1,
-                    value:1
-                }
-            }
-        ]])
+            ]])
+        }
     })
     test('Test 3: 0000FF->ffff00', ()=>{
         let rgb = '0000FF'
         let output = palette.generateColourVerticies(rgb)
-        expect(output).toEqual([[
-            {
-                rgb:'ffff00',
-                hsv:{
-                    hue:60,
-                    saturation:1,
-                    value:1
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value).toEqual([[
+                {
+                    rgb:'ffff00',
+                    hsv:{
+                        hue:60,
+                        saturation:1,
+                        value:1
+                    }
+                },
+                {
+                    rgb:'0000ff',
+                    hsv:{
+                        hue:240,
+                        saturation:1,
+                        value:1
+                    }
                 }
-            },
-            {
-                rgb:'0000ff',
-                hsv:{
-                    hue:240,
-                    saturation:1,
-                    value:1
-                }
-            }
-        ]])
+            ]])
+        }
     })
     test('Test 4: 000000->000000', ()=>{
         let rgb = '000000'
         let output = palette.generateColourVerticies(rgb)
-        expect(output).toEqual([[
-            {
-                rgb:'000000',
-                hsv:{
-                    hue:0,
-                    saturation:0,
-                    value:0
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value).toEqual([[
+                {
+                    rgb:'000000',
+                    hsv:{
+                        hue:0,
+                        saturation:0,
+                        value:0
+                    }
+                },
+                {
+                    rgb:'000000',
+                    hsv:{
+                        hue:180,
+                        saturation:0,
+                        value:0
+                    }
                 }
-            },
-            {
-                rgb:'000000',
-                hsv:{
-                    hue:180,
-                    saturation:0,
-                    value:0
-                }
-            }
-        ]])
+            ]])
+        }
     })
     test('Test 5: FFFFFF->ffffff', ()=>{
         let rgb = 'FFFFFF'
         let output = palette.generateColourVerticies(rgb)
-        expect(output).toEqual([[
-            {
-                rgb:'ffffff',
-                hsv:{
-                    hue:0,
-                    saturation:0,
-                    value:1
+        expect(output.isSuccess()).toEqual(true)
+        if (output.isSuccess()) {
+            expect(output.value).toEqual([[
+                {
+                    rgb:'ffffff',
+                    hsv:{
+                        hue:0,
+                        saturation:0,
+                        value:1
+                    }
+                },
+                {
+                    rgb:'ffffff',
+                    hsv:{
+                        hue:180,
+                        saturation:0,
+                        value:1
+                    }
                 }
-            },
-            {
-                rgb:'ffffff',
-                hsv:{
-                    hue:180,
-                    saturation:0,
-                    value:1
-                }
-            }
-        ]])
+            ]])
+        }
     })
     test('Test 6: FFFFF@->null', ()=>{
         let rgb = 'FFFFF@'
         let output = palette.generateColourVerticies(rgb)
-        expect(output).toEqual([[]])
+        const expectedOutput = "Unable to generate colour verticies FFFFF@.\nrgb input is in invalid format."
+        expect(output.isError()).toEqual(true)
+        if (output.isError()) expect(output.error).toEqual(expectedOutput)
     })
 })
