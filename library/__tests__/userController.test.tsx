@@ -40,7 +40,7 @@ describe('Signup Test', ()=>{
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing email field' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Bad request: Missing email field'} })
     })
 
     it('should respond with error, missing password field', async()=>{
@@ -65,7 +65,7 @@ describe('Signup Test', ()=>{
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing password field' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Bad request: Missing password field'} })
     })
 
     it('should respond with error, missing name field', async()=>{
@@ -90,17 +90,24 @@ describe('Signup Test', ()=>{
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing name field' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Bad request: Missing name field'} })
     })
 
     it('should successfully signup', async()=>{
-        const mReq:Request = {body:{
-            email:'test@test.com',
-            password:'password',
-            name:'Test'
-        }} as any
+        const mReq = {
+            body:{
+                email:'test@test.com',
+                password:'password',
+                name:'Test',   
+            },
+            sessionID:'1234567',
+            session:{
+                cookie:'1234567'
+            }
+        } as any
 
         const mRes:Response = {
+            cookie: sandbox.stub().returnsThis(),
             status: sandbox.stub().returnsThis(),
             send: sandbox.stub()
         } as any
@@ -109,10 +116,11 @@ describe('Signup Test', ()=>{
             name:'Test',
             email:'test@test.com'
         })
+        sandbox.stub(UserService, 'addSession').resolves(true)
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'ok', user: { id: 1, name: 'Test', email: 'test@test.com' } })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'ok', data:{user:{name: 'Test'}}})
     })
 
     it('should not successfully signup', async()=>{
@@ -130,7 +138,7 @@ describe('Signup Test', ()=>{
         UserController.signup(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'rejected' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'rejected'} })
     })
     
 })
@@ -166,7 +174,7 @@ describe('Login Test', ()=>{
         UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing email field' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Bad request: Missing email field'} })
     })
 
     it('should respond with error, missing password field', async()=>{
@@ -190,18 +198,25 @@ describe('Login Test', ()=>{
         UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing password field' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Bad request: Missing password field'} })
     })
 
 
     it('should successfully login', async()=>{
-        const mReq:Request = {body:{
-            email:'test@test.com',
-            password:'password',
-            name:'Test'
-        }} as any
+        const mReq:Request = {
+            body:{
+                email:'test@test.com',
+                password:'password',
+                name:'Test',   
+            },
+            sessionID:'1234567',
+            session:{
+                cookie:'1234567'
+            }
+        } as any
 
         const mRes:Response = {
+            cookie: sandbox.stub().returnsThis(),
             status: sandbox.stub().returnsThis(),
             send: sandbox.stub()
         } as any
@@ -210,10 +225,11 @@ describe('Login Test', ()=>{
             name:'Test',
             email:'test@test.com'
         })
+        sandbox.stub(UserService, 'addSession').resolves(true)
         UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status:'ok', user: { id: 1, name: 'Test', email: 'test@test.com' } })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status:'ok', data:{user: {name: 'Test'}} })
     })
 
     it('should not successfully login', async()=>{
@@ -231,7 +247,7 @@ describe('Login Test', ()=>{
         UserController.login(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'error', error: 'rejected' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'error', data:{error: 'rejected'} })
     })
     
 })
@@ -267,7 +283,7 @@ describe('getUser Test', ()=>{
         UserController.getUser(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Bad request: Missing email field' })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Bad request: Missing email field'}})
     })
 
    
@@ -289,7 +305,7 @@ describe('getUser Test', ()=>{
         UserController.getUser(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'ok', user: { id: 1, name: 'Test', email: 'test@test.com' } })
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'ok', data:{user: {name: 'Test', email: 'test@test.com'}}})
     })
 
     it('should not successfully get user', async()=>{
@@ -306,7 +322,7 @@ describe('getUser Test', ()=>{
         UserController.getUser(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'error', error: 'Internal Server Error' } )
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy,  { status: 'error', data:{error: 'Internal Server Error'}} )
     })
     
 })

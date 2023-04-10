@@ -100,27 +100,27 @@ describe('Testing hsv2rgb converter', ()=>{
     })
     test('Test 5: (300, 1, 1)', ()=>{
         let output = converter.hsv2rgb({hue:300, saturation:1, value:1})
-                expect(output.isSuccess()).toEqual(true)
+        expect(output.isSuccess()).toEqual(true)
         if (output.isSuccess()) expect(output.value).toEqual('ff00ff')
     })
     test('Test 6: (0, 1, 0.5)', ()=>{
         let output = converter.hsv2rgb({hue:0, saturation:1, value:0.5})
-                expect(output.isSuccess()).toEqual(true)
+        expect(output.isSuccess()).toEqual(true)
         if (output.isSuccess()) expect(output.value).toEqual('800000')
     })
     test('Test 7: (60, 0.75, 0.5)', ()=>{
         let output = converter.hsv2rgb({hue:60, saturation:0.75, value:0.5})
-                expect(output.isSuccess()).toEqual(true)
+        expect(output.isSuccess()).toEqual(true)
         if (output.isSuccess()) expect(output.value).toEqual('808020')
     })
     test('Test 8: (20, 0.2, 0.4)', ()=>{
         let output = converter.hsv2rgb({hue:20, saturation:0.2, value:0.4})
-                expect(output.isSuccess()).toEqual(true)
+        expect(output.isSuccess()).toEqual(true)
         if (output.isSuccess()) expect(output.value).toEqual('665852')
     })
     test('Test 9: (0, 0, 1)', ()=>{
         let output = converter.hsv2rgb({hue:0, saturation:0, value:1})
-                expect(output.isSuccess()).toEqual(true)
+        expect(output.isSuccess()).toEqual(true)
         if (output.isSuccess()) expect(output.value).toEqual('ffffff')
     })
     test('Test 10: (-5, 1, 1)', ()=>{
@@ -130,27 +130,27 @@ describe('Testing hsv2rgb converter', ()=>{
     })
     test('Test 11: (400, 1, 1)', ()=>{
         let output = converter.hsv2rgb({hue:400, saturation:1, value:1})
-                expect(output.isError()).toEqual(true)
+        expect(output.isError()).toEqual(true)
         if (output.isError()) expect(output.error).toEqual('Input properties out of range.')
     })
     test('Test 12: (0, 2, 1)', ()=>{
         let output = converter.hsv2rgb({hue:0, saturation:2, value:1})
-                expect(output.isError()).toEqual(true)
+        expect(output.isError()).toEqual(true)
         if (output.isError()) expect(output.error).toEqual('Input properties out of range.')
     })
     test('Test 13: (0, 1, 2)', ()=>{
         let output = converter.hsv2rgb({hue:0, saturation:1, value:2})
-                expect(output.isError()).toEqual(true)
+        expect(output.isError()).toEqual(true)
         if (output.isError()) expect(output.error).toEqual('Input properties out of range.')
     })
     test('Test 14: (0, -2, 1)', ()=>{
         let output = converter.hsv2rgb({hue:0, saturation:-2, value:1})
-                expect(output.isError()).toEqual(true)
+        expect(output.isError()).toEqual(true)
         if (output.isError()) expect(output.error).toEqual('Input properties out of range.')
     })
     test('Test 15: (0, 1, -2)', ()=>{
         let output = converter.hsv2rgb({hue:0, saturation:1, value:-2})
-                expect(output.isError()).toEqual(true)
+        expect(output.isError()).toEqual(true)
         if (output.isError()) expect(output.error).toEqual('Input properties out of range.')
     })
 })

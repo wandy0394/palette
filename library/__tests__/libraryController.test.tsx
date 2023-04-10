@@ -20,25 +20,26 @@ describe('getPalette test', ()=>{
     })
 
     it('should respond with error, internal server error', async()=>{
-        const mReq:Request = {params:{
+        const mReq:Request = {body:{
             userId:1
         }} as any
         sandbox.stub(LibraryService, 'getPalette').rejects()
         const mRes:Response = {
             status: sandbox.stub().returnsThis(),
-            send: sandbox.stub()
+            send: sandbox.stub(),
+            json: sandbox.stub().returnsThis()
         } as any
 
         LibraryController.getPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Error' } )
+        sandbox.assert.calledWith(mRes.json as sinon.SinonSpy, { status: 'error', data:{error: 'Error'} } )
     })
 
 
 
     it('should respond with service result', async()=>{
-        const mReq:Request = {params:{
+        const mReq:Request = {body:{
             userId:1
         }} as any
         sandbox.stub(LibraryService, 'getPalette').resolves([
@@ -46,16 +47,18 @@ describe('getPalette test', ()=>{
         ])
         const mRes:Response = {
             status: sandbox.stub().returnsThis(),
-            send: sandbox.stub()
+            send: sandbox.stub(),
+            set: sandbox.stub().returnsThis(),
+            json: sandbox.stub().returnsThis()
         } as any
 
         LibraryController.getPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {status:'ok', data:['testResult']})
+        sandbox.assert.calledWith(mRes.json as sinon.SinonSpy, {status:'ok', data:['testResult']})
     })
     it('should respond with error', async()=>{
-        const mReq:Request = {params:{
+        const mReq:Request = {body:{
             userId:undefined
         }} as any
         sandbox.stub(LibraryService, 'getPalette').resolves([
@@ -63,18 +66,20 @@ describe('getPalette test', ()=>{
         ])
         const mRes:Response = {
             status: sandbox.stub().returnsThis(),
-            send: sandbox.stub()
+            send: sandbox.stub(),
+            set: sandbox.stub().returnsThis(),
+            json: sandbox.stub().returnsThis()
         } as any
 
         LibraryController.getPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {status:'error', response:'Invalid User Id'})
+        sandbox.assert.calledWith(mRes.json as sinon.SinonSpy, {status:'error', data:{error:'Missing User Id'}})
     })
 
 })
 
-describe('getPaletteById test', ()=>{
+describe('getPaletteByUUID test', ()=>{
     var sandbox:any
     beforeEach(function() {
         sandbox = sinon.createSandbox()
@@ -85,20 +90,24 @@ describe('getPaletteById test', ()=>{
     })
 
     it('should respond with service result', async()=>{
-
-        const mReq:Request = {params:{
-            userId:1,
-            paletteId:2
-        }} as any
-        sandbox.stub(LibraryService, 'getPaletteById').resolves([
+        const mReq:Request = {
+            params:{
+                paletteUUID:2
+            },
+            body:{
+                userId:1,
+            }
+        } as any
+        sandbox.stub(LibraryService, 'getPaletteByUUID').resolves([
             'testResult'
         ])
         const mRes:Response = {
             status: sandbox.stub().returnsThis(),
-            send: sandbox.stub()
+            send: sandbox.stub(),
+            set: sandbox.stub().returnsThis()
         } as any
 
-        LibraryController.getPaletteById(mReq, mRes, ()=>true)
+        LibraryController.getPaletteByUUID(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
         sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {status:'ok', data:['testResult']})
@@ -106,20 +115,25 @@ describe('getPaletteById test', ()=>{
 
 
     it('should throw internal server error', async()=>{
-        const mReq:Request = {params:{
-            userId:1,
-            paletteId:2
-        }} as any
-        sandbox.stub(LibraryService, 'getPaletteById').rejects()
+        const mReq:Request = {
+            params:{
+                paletteUUID:2
+            },
+            body:{
+                userId:1,
+            }
+        } as any
+        sandbox.stub(LibraryService, 'getPaletteByUUID').rejects()
         const mRes:Response = {
             status: sandbox.stub().returnsThis(),
-            send: sandbox.stub()
+            send: sandbox.stub(),
+            set: sandbox.stub().returnsThis()
         } as any
 
-        LibraryController.getPaletteById(mReq, mRes, ()=>true)
+        LibraryController.getPaletteByUUID(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Error' } )
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Error'} })
     })
 
 })
@@ -138,7 +152,8 @@ describe('addPalette test', ()=>{
         const mReq:Request = {body:{
             userId:undefined,
             userEmail:'test@test.com',
-            palette:'palette'
+            palette:'palette',
+            name:'PaletteName'
         }} as any
 
         const mRes:Response = {
@@ -149,14 +164,15 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing userId', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing userId'}, status:'error'})        
     })
 
     it('should return error, missing userEmail', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:undefined,
-            palette:'palette'
+            palette:'palette',
+            name:'PaletteName'
         }} as any
 
         const mRes:Response = {
@@ -167,14 +183,15 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing userEmail', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing userEmail'}, status:'error'})        
     })
 
     it('should return error, missing Palette', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
-            palette:undefined
+            palette:undefined,
+            name:'PaletteName'
         }} as any
 
         const mRes:Response = {
@@ -185,7 +202,7 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Palette', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing Palette'}, status:'error'})        
     })
     it('should return error, missing Name', async()=>{
         const mReq:Request = {body:{
@@ -203,7 +220,7 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Name', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing Name'}, status:'error'})        
     })
 
     it('should throw error', async()=>{
@@ -223,7 +240,7 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Internal server error' } )        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error:'Internal server error'} } )        
     })
 
     it('should succeed', async()=>{
@@ -243,7 +260,7 @@ describe('addPalette test', ()=>{
         LibraryController.addPalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'success', status:'ok'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:'success', status:'ok'})        
     })
 })
 
@@ -262,7 +279,7 @@ describe('updatePalette test', ()=>{
             userId:undefined,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:2
+            paletteUUID:2
         }} as any
 
         const mRes:Response = {
@@ -273,7 +290,7 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing userId', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing userId'}, status:'error'})        
     })
 
     it('should return error, missing userEmail', async()=>{
@@ -281,7 +298,7 @@ describe('updatePalette test', ()=>{
             userId:1,
             userEmail:undefined,
             palette:'palette',
-            paletteId:2
+            paletteUUID:2
         }} as any
 
         const mRes:Response = {
@@ -292,7 +309,7 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing userEmail', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing userEmail'}, status:'error'})        
     })
 
     it('should return error, missing Palette', async()=>{
@@ -300,7 +317,7 @@ describe('updatePalette test', ()=>{
             userId:1,
             userEmail:'test@test.com',
             palette:undefined,
-            paletteId:2
+            paletteUUID:2
         }} as any
 
         const mRes:Response = {
@@ -311,14 +328,14 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Palette', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing Palette'}, status:'error'})        
     })
-    it('should return error, missing PaletteId', async()=>{
+    it('should return error, missing paletteUUID', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:undefined
+            paletteUUID:undefined
         }} as any
 
         const mRes:Response = {
@@ -329,14 +346,14 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing PaletteId', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing PaletteUUID'}, status:'error'})        
     })
     it('should return error, missing Name', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:2,
+            paletteUUID:2,
             name:undefined
         }} as any
 
@@ -348,14 +365,14 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing Name', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing Name'}, status:'error'})        
     })
     it('should throw error', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:2,
+            paletteUUID:2,
             name:'Name'
         }} as any
 
@@ -368,7 +385,7 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Internal server error' } )        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error: 'Internal server error'} })        
     })
 
     it('should succeed', async()=>{
@@ -376,7 +393,7 @@ describe('updatePalette test', ()=>{
             userId:1,
             userEmail:'test@test.com',
             palette:'palette',
-            paletteId:2,
+            paletteUUID:2,
             name:'PaletteName'
         }} as any
 
@@ -389,7 +406,7 @@ describe('updatePalette test', ()=>{
         LibraryController.updatePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'success', status:'ok'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:'success', status:'ok'})        
     })
 })
 
@@ -407,7 +424,7 @@ describe('deletePalette test', ()=>{
         const mReq:Request = {body:{
             userId:undefined,
             userEmail:'test@test.com',
-            paletteId:2
+            paletteUUID:2
         }} as any
 
         const mRes:Response = {
@@ -418,33 +435,14 @@ describe('deletePalette test', ()=>{
         LibraryController.deletePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing userId', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing userId'}, status:'error'})        
     })
 
-    it('should return error, missing userEmail', async()=>{
-        const mReq:Request = {body:{
-            userId:1,
-            userEmail:undefined,
-            paletteId:2
-        }} as any
-
-        const mRes:Response = {
-            status: sandbox.stub().returnsThis(),
-            send: sandbox.stub()
-        } as any
-
-        LibraryController.deletePalette(mReq, mRes, ()=>true)
-        await flushPromises()
-        sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing userEmail', status:'error'})        
-    })
-
-
-    it('should return error, missing PaletteId', async()=>{
+    it('should return error, missing paletteUUID', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
-            paletteId:undefined
+            paletteUUID:undefined
         }} as any
 
         const mRes:Response = {
@@ -455,13 +453,13 @@ describe('deletePalette test', ()=>{
         LibraryController.deletePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 400)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'Missing PaletteId', status:'error'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:{error:'Missing PaletteUUID'}, status:'error'})        
     })
     it('should throw error', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
-            paletteId:2
+            paletteUUID:2
         }} as any
 
         sandbox.stub(LibraryService, 'deletePalette').rejects({error:'Error'})
@@ -473,14 +471,14 @@ describe('deletePalette test', ()=>{
         LibraryController.deletePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 500)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', error: 'Internal server error' } )        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, { status: 'error', data:{error:'Internal server error'} })        
     })
 
     it('should succeed', async()=>{
         const mReq:Request = {body:{
             userId:1,
             userEmail:'test@test.com',
-            paletteId:2
+            paletteUUID:2
         }} as any
 
         sandbox.stub(LibraryService, 'deletePalette').resolves('success')
@@ -492,6 +490,6 @@ describe('deletePalette test', ()=>{
         LibraryController.deletePalette(mReq, mRes, ()=>true)
         await flushPromises()
         sandbox.assert.calledWith(mRes.status as sinon.SinonSpy, 200)
-        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {response:'success', status:'ok'})        
+        sandbox.assert.calledWith(mRes.send as sinon.SinonSpy, {data:'success', status:'ok'})        
     })
 })

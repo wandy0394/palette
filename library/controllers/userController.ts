@@ -39,12 +39,13 @@ class UserController {
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
             res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', data:{user:{name:user.name}}})
         }
-        catch(e:any) {
-            if (e.message) {
-                res.status(500).send({status:'error', data:{error:e.message}})
+        catch(error) {
+            if (error instanceof Error) {
+                console.log(error.message)
+                res.status(500).send({status:'error', data:{error:error.message}})
             }
             else {
-                console.log(e)
+                console.log(error)
                 res.status(500).send({status:'error', data:{error:'Internal Server Error'}})
             }
         }
@@ -66,12 +67,13 @@ class UserController {
             res.cookie('user', JSON.stringify({name:user.name}), UserController.userCookieParams)
             res.cookie('sid', req.sessionID, req.session.cookie as CookieOptions).status(200).send({status:'ok', data:{user:{name:user.name}}})
         }
-        catch(e:any) {
-            if (e.message) {
-                res.status(500).send({status:'error', data:{error:e.message}})
+        catch(error:any) {
+            if (error instanceof Error) {
+                console.error(error)
+                res.status(500).send({status:'error', data:{error:error.message}})
             }
             else {
-                console.log(e)
+                console.log(error)
                 res.status(500).send({status:'error', data:{error:'Internal Server Error'}})
             }
         }
