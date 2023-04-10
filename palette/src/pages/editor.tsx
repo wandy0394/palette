@@ -25,6 +25,7 @@ import CustomComplementarySchemeGenerator from "../model/CustomComplementarySche
 import EdtiorSection from "../sections/EditorSection"
 import useEditorAlertReducer from "../hooks/useEditorAlertReducer"
 import useColourControlsReducer, { COLOUR_CONTROLS_ACTION_TYPE, SLIDER_MAX_VALUE } from "../hooks/useColourControlsReducer"
+import useGetPaletteById from "../hooks/useGetPaletteById"
 
 
 
@@ -105,43 +106,31 @@ export default function Editor(props:Props) {
     const location = useLocation()
     const {user, finishedLoading} = useAuthContext() 
     const params = useParams()
+    const [savedPalette, setSavedPalette] = useGetPaletteById({paletteId:params.id})
 
-
-    useEffect(()=>{
-        if (user && params.id) {
-            //get palette by id
-            async function get() {
-                try {
-                    const savedPalette:SavedPalette[] = await LibraryService.getPaletteById(params.id as string)
-                    if (savedPalette && savedPalette.length > 0) {
-                        let payload = {
-                            palette:savedPalette[0].palette,
-                            colour:savedPalette[0].palette.mainColour,
-                            role:ACTION_TYPES.UPDATE_MAINCOLOUR,
-                            index:0
-                        }
-                        setPaletteName(savedPalette[0].name)
-                        dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
-                        setPageLoaded(true)
-                    }
-                    else {
-                        //TODO: Handle no palette case
-                        console.log('no palette')
-                        setPageLoaded(true)
-                    }
-                }
-                catch (e) {
-                    console.error(e)
-                    setPageLoaded(true)
-                }
+    async function loadPage() {
+        if (finishedLoading && savedPalette.finishedLoading && savedPalette.palette && savedPalette.palette.length > 0) {
+            let payload = {
+                palette:savedPalette.palette[0].palette,
+                colour:savedPalette.palette[0].palette.mainColour,
+                role:ACTION_TYPES.UPDATE_MAINCOLOUR,
+                index:0
             }
-            get()
-            console.log(params)
+            setPaletteName(savedPalette.palette[0].name)
+            dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
         }
         else {
-            console.log('no params or paletteId')
+            //TODO: Handle no palette case
+            console.log('no palette')
+        }            
+    }
+
+    useEffect(()=>{
+        if (finishedLoading && savedPalette.finishedLoading) {
+            loadPage()
+            setPageLoaded(true)
         }
-    },[user])
+    }, [finishedLoading, savedPalette.finishedLoading])
 
     useEffect(()=>{
 
@@ -157,10 +146,6 @@ export default function Editor(props:Props) {
                 index:0
             }
             dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
-            setPageLoaded(true)
-        }
-        if (finishedLoading) {
-            setPageLoaded(true)
         }
     }, [location])
 

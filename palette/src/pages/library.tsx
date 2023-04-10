@@ -52,15 +52,11 @@ export default function Library() {
 
     function loadPage() {
         if (finishedLoading && library.finishedLoading) {
-            console.log(user)
-            console.log(library)
             setPageLoaded(true)
         }
     }
 
     useEffect(()=>{
-        console.log(finishedLoading)
-        console.log(library.finishedLoading)
         loadPage()
     }, [finishedLoading, library.finishedLoading])
     
