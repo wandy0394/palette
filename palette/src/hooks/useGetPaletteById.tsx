@@ -9,13 +9,15 @@ type Props = {
 type Palette = {
     palette:SavedPalette[]
     finishedLoading:boolean
+    redirect:boolean
 }
 
 export default function useGetPaletteById(props:Props):[Palette, React.Dispatch<React.SetStateAction<Palette>>] {
     const {paletteId} = props
     const [palette, setPalette] = useState<Palette>({
         palette:[],
-        finishedLoading:false
+        finishedLoading:false,
+        redirect:false
     })
 
     useEffect(()=>{
@@ -24,18 +26,24 @@ export default function useGetPaletteById(props:Props):[Palette, React.Dispatch<
             async function get() {
                 try {
                     const savedPalette:SavedPalette[] = await LibraryService.getPaletteById(paletteId as string)
-                    setPalette({palette:savedPalette, finishedLoading:true})
+                    if (savedPalette.length == 0) {
+                        //if no palette is returned, the paletteId is invalid, redirect the user
+                        setPalette({palette:savedPalette, finishedLoading:true, redirect:true})
+                    }
+                    else {
+                        setPalette({palette:savedPalette, finishedLoading:true, redirect:false})
+                    }
                 }
-                catch (e) {
-                    console.error(e)
-                    setPalette({...palette, finishedLoading:true})
+                catch (error) {
+                    console.error(error)
+                    //something has gone wrong, redirect user
+                    setPalette({...palette, finishedLoading:true, redirect:true})
                 }
             }
             get()
         }
         else {
-            console.log('no params or paletteId')
-            setPalette({...palette, finishedLoading:true})
+            setPalette({...palette, finishedLoading:true, redirect:false})
         }
 
     }, [])

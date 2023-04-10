@@ -126,15 +126,16 @@ export default function Editor(props:Props) {
     }
 
     useEffect(()=>{
+        if (savedPalette.redirect) {
+            setSavedPalette({...savedPalette, redirect:false})
+            navigate('/editor')
+        }
         if (finishedLoading && savedPalette.finishedLoading) {
             loadPage()
             setPageLoaded(true)
         }
-    }, [finishedLoading, savedPalette.finishedLoading])
+    }, [finishedLoading, savedPalette.finishedLoading, savedPalette.redirect])
 
-    useEffect(()=>{
-
-    }, [params.id])
 
     useEffect(()=>{
         if (location.state && location.state.mainColour.rgb) {
