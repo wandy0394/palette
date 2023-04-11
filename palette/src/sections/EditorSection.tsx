@@ -122,12 +122,15 @@ export default function EdtiorSection(props:Props) {
     }
     return (
         <section className='w-full h-screen flex flex-col items-center justify-start lg:px-24'>
-            <input 
-                className='w-full rounded text-2xl py-2 pl-4' 
-                placeholder="Palette name..." 
-                value={paletteName} 
-                onChange={(e)=>setPaletteName(e.target.value)}
-            />
+            {
+               (user && (state.palette.colourVerticies.length>0)) && 
+                    <input 
+                        className='w-full rounded text-2xl py-2 pl-4' 
+                        placeholder="Palette name..." 
+                        value={paletteName} 
+                        onChange={(e)=>setPaletteName(e.target.value)}
+                    />
+            }
             <div className='w-full py-8'>
                 
                 <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'}  grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center`}>

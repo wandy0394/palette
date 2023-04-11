@@ -17,7 +17,7 @@ class LibraryController {
         LibraryService.getPalette(userId)
             .then(response=>{
                 const maxAge = 60 * 10
-                res.set('Cache-control', `public, max-age=${maxAge}`).status(200).json({status:'ok', data:response})
+                res.status(200).json({status:'ok', data:response})
             })
             .catch(response=>{
                 if (response instanceof Error) {
@@ -48,7 +48,7 @@ class LibraryController {
         LibraryService.getPaletteByUUID(userId, paletteUUID)
             .then(response=>{
                 const maxAge = 60 * 10
-                res.set('Cache-control', `public, max-age=${maxAge}`).status(200).send({status:'ok', data:response})
+                res.status(200).send({status:'ok', data:response})
             })
             .catch(response=>{
                 if (response instanceof Error) {

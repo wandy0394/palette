@@ -1,7 +1,7 @@
 import { ACTION_TYPES } from "../components/context/AuthContext"
 import Authenticator from "../service/authentication-service"
+import CacheService from "../service/cache-service"
 import { useAuthContext } from "./useAuthContext"
-import useSessionStorage from "./useSessionStorage"
 
 export function useLogout() {
     const {dispatch} = useAuthContext()
@@ -12,6 +12,7 @@ export function useLogout() {
         try {
             const result = await Authenticator.logout()
             if (dispatch) dispatch({type:ACTION_TYPES.LOGOUT, payload:null})
+            CacheService.clearCacheAll()
         }
         catch(e) {
             //handle error

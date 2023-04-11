@@ -12,4 +12,8 @@ export default class CacheService {
     static clearCache(key:string) {
         localStorage.removeItem(key)
     }
+
+    static clearCacheAll() {
+        localStorage.clear()
+    }
 }
