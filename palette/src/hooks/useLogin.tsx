@@ -14,7 +14,7 @@ export function useLogin() {
         
         try {
             const response = await Authenticator.login(email, password)
-            if (dispatch) dispatch({type:ACTION_TYPES.LOGIN, payload:response})
+            if (dispatch) dispatch({type:ACTION_TYPES.LOGIN, payload:{user:response}})
             setIsLoading(false)
         }
         catch (error) {
