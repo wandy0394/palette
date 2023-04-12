@@ -12,8 +12,8 @@ import { AlertAction, AlertState } from "../hooks/useEditorAlertReducer"
 import { COLOUR_CONTROLS_ACTION_TYPE, ColourControlsAction, ColourControlsState, SLIDER_MAX_VALUE } from "../hooks/useColourControlsReducer"
 
 type Props = {
-    state: PaletteState
-    dispatch: React.Dispatch<PaletteAction>
+    paletteEditorState: PaletteState
+    paletteEditorDispatch: React.Dispatch<PaletteAction>
     paletteName: string,
     setPaletteName: React.Dispatch<React.SetStateAction<string>>
     alertState: AlertState
@@ -24,8 +24,8 @@ type Props = {
 
 export default function EdtiorSection(props:Props) {
     const {
-        state, 
-        dispatch, 
+        paletteEditorState, 
+        paletteEditorDispatch, 
         paletteName, 
         setPaletteName, 
         alertState, 
@@ -58,20 +58,20 @@ export default function EdtiorSection(props:Props) {
     }, [])
 
     function updateValue(value:number) {
-        if (state.colour.hsv) {
+        if (paletteEditorState.colour.hsv) {
             colourControlsDispatch({type:COLOUR_CONTROLS_ACTION_TYPE.SET_SLIDER_VALUE, payload:{sliderValue:value}})
             const newHSV:HSV = {
-                hue:state.colour.hsv.hue,
-                saturation:state.colour.hsv.saturation,
+                hue:paletteEditorState.colour.hsv.hue,
+                saturation:paletteEditorState.colour.hsv.saturation,
                 value:value / SLIDER_MAX_VALUE
             }
             const newColour:Colour = createColour(newHSV)
-            dispatch({type:state.role, payload:{colour:newColour, index:state.index}})
+            paletteEditorDispatch({type:paletteEditorState.role, payload:{colour:newColour, index:paletteEditorState.index}})
         }
     }
 
     function updatePaletteColour(colour:Colour, index:number, type:ACTION_TYPES) {
-        dispatch({type:type, payload:{colour, index:index}})
+        paletteEditorDispatch({type:type, payload:{colour, index:index}})
         if (colour.hsv) {
             colourControlsDispatch({
                 type:COLOUR_CONTROLS_ACTION_TYPE.SET_SLIDER_VALUE, 
@@ -90,10 +90,10 @@ export default function EdtiorSection(props:Props) {
 
 
     function savePalette() {
-        if (state.palette && user) {
+        if (paletteEditorState.palette && user) {
             async function save() {
                 try {
-                    const result = await LibraryService.savePalette(state.palette, paletteName)
+                    const result = await LibraryService.savePalette(paletteEditorState.palette, paletteName)
                     alertDispatch({type:'success', payload:{message:'Palette saved.', visibile:true}})
                 }
                 catch (e) {
@@ -104,7 +104,7 @@ export default function EdtiorSection(props:Props) {
             async function update() {
                 try {
                     if (params.id) {
-                        const result = await LibraryService.updatePalette(state.palette, params.id, paletteName) //TODO: validate params.id
+                        const result = await LibraryService.updatePalette(paletteEditorState.palette, params.id, paletteName) //TODO: validate params.id
                         alertDispatch({type:'success', payload:{message:'Palette updated.', visibile:true}})
                     }
                 }
@@ -123,7 +123,7 @@ export default function EdtiorSection(props:Props) {
     return (
         <section className='w-full h-screen flex flex-col items-center justify-start lg:px-24'>
             {
-               (user && (state.palette.colourVerticies.length>0)) && 
+               (user && (paletteEditorState.palette.colourVerticies.length>0)) && 
                     <input 
                         className='w-full rounded text-2xl py-2 pl-4' 
                         placeholder="Palette name..." 
@@ -133,10 +133,10 @@ export default function EdtiorSection(props:Props) {
             }
             <div className='w-full py-8'>
                 
-                <div className={`${(state.palette.colourVerticies.length>0)?'grid':'hidden'}  grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center`}>
+                <div className={`${(paletteEditorState.palette.colourVerticies.length>0)?'grid':'hidden'}  grid-rows-2 md:grid-rows-1 md:grid-cols-2 items-center justify-center gap-8 justify-items-center`}>
                     
                     <PaletteSwatchEditor 
-                        state={state}
+                        state={paletteEditorState}
                         updatePaletteColour={updatePaletteColour}
                     />
                     
@@ -145,9 +145,9 @@ export default function EdtiorSection(props:Props) {
                         <ColourWheelPicker 
                             ref={wheelRef}
                             colourValue={colourControlsState.sliderValue} 
-                            palette = {state.palette}
-                            chosenColour={state.colour}
-                            setChosenColour = {(colour:Colour)=>dispatch({type:state.role, payload:{colour:colour, index:state.index}})}
+                            palette = {paletteEditorState.palette}
+                            chosenColour={paletteEditorState.colour}
+                            setChosenColour = {(colour:Colour)=>paletteEditorDispatch({type:paletteEditorState.role, payload:{colour:colour, index:paletteEditorState.index}})}
                             wheelWidth={colourControlsState.wheelWidth}
                             handleWidth={colourControlsState.handleWidth}
                             handlePosition={colourControlsState.handlePosition}
@@ -164,7 +164,7 @@ export default function EdtiorSection(props:Props) {
                 </div>
                 
                 {
-                    (user && (state.palette.colourVerticies.length>0)) &&
+                    (user && (paletteEditorState.palette.colourVerticies.length>0)) &&
                         <button 
                             className='btn btn-secondary w-full mt-8' 
                             onClick={()=>savePalette()}

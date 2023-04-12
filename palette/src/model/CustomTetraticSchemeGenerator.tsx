@@ -29,7 +29,6 @@ export default class CustomTetraticSchemeGenerator extends TetraticSchemeGenerat
         }
         const angleArray:number[][] = [
             [30, 180, 210],
-            [-30, 180, -210]
         ]
         const result:Result<Colour[][], string> = this.generateColourVerticiesByHueAngles(rgb, angleArray)
         return (result.isSuccess()) ? success(result.value) : fail(result.error)      

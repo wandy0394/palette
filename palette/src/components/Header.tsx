@@ -12,7 +12,7 @@ type Props = {
     title:string
 }
 function NavLink(props:Props) {
-    
+    const location = useLocation()
     function isActive(target:string):boolean {
         if (target === ROOT_PAGE) {
           return location.pathname === target
@@ -36,15 +36,9 @@ function NavLink(props:Props) {
   }
 
 export default function Header() {
-    const {user, finishedLoading} = useAuthContext()
+    const {user} = useAuthContext()
     const {logout} = useLogout()
     const [visible, setVisible] = useState<boolean>(false)
-    const location = useLocation()
-
-
-    useEffect(()=>{
-        console.log(finishedLoading)
-    }, [finishedLoading])
 
     function toggleMenu() {
       setVisible(p=>!p)

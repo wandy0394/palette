@@ -24,6 +24,7 @@ import EdtiorSection from "../sections/EditorSection"
 import useEditorAlertReducer from "../hooks/useEditorAlertReducer"
 import useColourControlsReducer, { COLOUR_CONTROLS_ACTION_TYPE, SLIDER_MAX_VALUE } from "../hooks/useColourControlsReducer"
 import useGetPaletteById from "../hooks/useGetPaletteById"
+import { createColour } from "../model/common/utils"
 
 
 
@@ -32,7 +33,8 @@ type Harmonies = {
         id:number, 
         label:string, 
         generator:PaletteGenerator,
-        isCustom:boolean
+        isCustom:boolean,
+        numVertex?:number
     },
 }
 
@@ -43,9 +45,9 @@ const colourHarmonies:Harmonies = {
     analogous: {id:4, label:'Analogous', generator:new AnalogousSchemeGenerator(new ColourConverter()), isCustom:false},
     tetratic: {id:5, label:'Tetratic', generator:new TetraticSchemeGenerator(new ColourConverter()), isCustom:false},
     square: {id:6, label:'Square', generator:new SquareSchemeGenerator(new ColourConverter()), isCustom:false},
-    custom2: {id:7, label:'Custom(2)', generator:new CustomComplementarySchemeGenerator(new ColourConverter()), isCustom:true},
-    custom3: {id:8, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter()), isCustom:true},
-    custom4: {id:9, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true},
+    custom2: {id:7, label:'Custom(2)', generator:new CustomComplementarySchemeGenerator(new ColourConverter()), isCustom:true, numVertex:2},
+    custom3: {id:8, label:'Custom(3)', generator:new CustomTriadicSchemeGenerator(new ColourConverter()), isCustom:true, numVertex:3},
+    custom4: {id:9, label:'Custom(4)', generator:new CustomTetraticSchemeGenerator(new ColourConverter()), isCustom:true, numVertex:4},
 }
 
 const cc = new ColourConverter()
@@ -73,7 +75,7 @@ const initialState = {
             value:1
         }
     },
-    role:ACTION_TYPES.UPDATE_MAINCOLOUR,
+    role:ACTION_TYPES.INITIALISE,
     index:0,
 }
 
@@ -82,13 +84,13 @@ type Props = {
 }
 export default function Editor(props:Props) {
     const [pageLoaded, setPageLoaded] = useState<boolean>(false)
-    const [colours, setColours] = useState<HEX[]>(['ff0000'])
+    const [inputColours, setInputColours] = useState<HEX[]>(['ff0000'])
     const [selectedHarmony, setSelectedHarmony] = useState<string>('')
     const [generator, setGenerator] = useState<PaletteGenerator|undefined>(colourHarmonies.complementary.generator)
     const [paletteName, setPaletteName] = useState<string>('')
     
     const [colourControlsState, colourControlsDispatch] = useColourControlsReducer()
-    const [state, dispatch] = usePaletteEditorReducer(initialState)
+    const [paletteEditorState, paletteEditorDispatch] = usePaletteEditorReducer(initialState)
     const [alertState, alertDispatch] = useEditorAlertReducer({message:'', alertType:'none', visible:false})
     
     const navigate = useNavigate()
@@ -106,12 +108,29 @@ export default function Editor(props:Props) {
                 index:0
             }
             setPaletteName(savedPalette.palette[0].name)
-            dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+            paletteEditorDispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+            initHarmony(payload.palette)
         }
         else {
             //TODO: Handle no palette case
             console.log('no palette')
         }            
+    }
+
+
+    function initHarmony(palette:Palette) {
+        const numVertex:number = palette.colourVerticies.length
+        const harmony:string[] = Object.keys(colourHarmonies).filter(key=>{
+            if (colourHarmonies[key].numVertex) {
+                return (colourHarmonies[key].numVertex === numVertex)
+            }
+        })
+        setSelectedHarmony(harmony[0])
+        if (harmony[0] in colourHarmonies) {
+            let gen = colourHarmonies[harmony[0] as keyof Harmonies].generator
+            setGenerator(gen)
+            initialiseCustomColours(harmony[0],  palette)           
+        }
     }
 
     useEffect(()=>{
@@ -127,33 +146,53 @@ export default function Editor(props:Props) {
 
 
     useEffect(()=>{
+        //assumes location.state is a Palette object. need to validate that
         if (location.state && location.state.mainColour.rgb) {
             console.log(JSON.stringify(location.state))
             let payload = {
                 palette:location.state,
                 colour:location.state.mainColour,
-                role:ACTION_TYPES.UPDATE_MAINCOLOUR,
+                role:ACTION_TYPES.INITIALISE,
                 index:0
             }
-            dispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+            paletteEditorDispatch({type:ACTION_TYPES.INITIALISE, payload:payload})
+            initHarmony(payload.palette)            
         }
     }, [location])
-
+     
+    
+    //fix this section
     useEffect(()=>{
-        if (state.colour && state.role === ACTION_TYPES.UPDATE_MAINCOLOUR) {
-            let currColours = [...colours]
-            currColours[0] = state.colour.rgb
-            setColours(currColours)
+        if (paletteEditorState.colour && 
+                paletteEditorState.role === ACTION_TYPES.UPDATE_MAINCOLOUR) {
+            let currColours = [...inputColours]
+            currColours[0] = paletteEditorState.colour.rgb
+            setInputColours(currColours)
         }
-        else if (state.colour && state.role === ACTION_TYPES.UPDATE_ACCENTCOLOUR && 
-                    colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
-            let currColours = [colours[0]]
-            state.palette.accentColours.forEach(colour=>{
+        else if (paletteEditorState.colour && 
+                    paletteEditorState.role === ACTION_TYPES.UPDATE_ACCENTCOLOUR && 
+                    colourHarmonies[selectedHarmony]?.isCustom) {
+            let currColours = [inputColours[0]]
+            paletteEditorState.palette.accentColours.forEach(colour=>{
                 currColours.push(colour.rgb)
             })
-            setColours(currColours)
+            setInputColours(currColours)
         }
-    }, [state.colour, selectedHarmony, state.role])
+    }, [paletteEditorState.colour, paletteEditorState.role])
+
+   
+    useEffect(()=>{
+        // if (colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
+        //     let newColours:string[] = [inputColours[0]]
+        //     state.palette.accentColours.forEach(colour=>{
+        //         newColours.push(colour.rgb)
+        //     })
+        //     setInputColours(newColours)
+        // }
+        // else {
+        //     setInputColours([state.palette.mainColour.rgb])
+        // }
+    }, [paletteEditorState.palette.accentColours])
 
     function initHandlePosition(colour:Colour) {
         let result:Result<HSV, string> = cc.rgb2hsv(colour.rgb)
@@ -176,20 +215,20 @@ export default function Editor(props:Props) {
     }
 
     useEffect(()=>{
-        if (state && state.colour) initHandlePosition(state.colour)
+        if (paletteEditorState && paletteEditorState.colour) initHandlePosition(paletteEditorState.colour)
     }, [colourControlsState.wheelWidth, colourControlsState.handleWidth])
 
     function generatePalettes(targetGenerator:PaletteGenerator|undefined=generator) {
         
         if (targetGenerator) {
-            let result:Result<Colour[][], string> = targetGenerator.generateColourVerticies(colours[0], colours)
+            let result:Result<Colour[][], string> = targetGenerator.generateColourVerticies(inputColours[0], inputColours)
             if (result.isSuccess()) {
                 let verticies:Colour[][] = result.value
-                let paletteResult:Result<Palette,string> = targetGenerator.generatePalette(colours[0], verticies[0])
+                let paletteResult:Result<Palette,string> = targetGenerator.generatePalette(inputColours[0], verticies[0])
                 if (paletteResult.isSuccess()) {
                     let newPalette:Palette = paletteResult.value
-                    dispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
-                    dispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:newPalette.mainColour}})
+                    paletteEditorDispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
+                    paletteEditorDispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:newPalette.mainColour}})
                     initHandlePosition(newPalette.mainColour)
                     alertDispatch({type:'info', payload:{message:'Palette generated', visibile:true}})
                 }
@@ -205,34 +244,70 @@ export default function Editor(props:Props) {
         }
     }
 
-    function makeSelection(value:string) {
-        setSelectedHarmony(value)
-        if (value in colourHarmonies) {
-            let gen = colourHarmonies[value as keyof Harmonies].generator
-            setGenerator(gen)
-            generatePalettes(gen)
-            
+    function makeSelection(targetHarmony:string) {
+        setSelectedHarmony(targetHarmony)
+        if (targetHarmony in colourHarmonies) {
+            const harmony = colourHarmonies[targetHarmony as keyof Harmonies] 
+            setGenerator(harmony.generator)
+            if (harmony.isCustom && harmony.numVertex !== undefined) {
+                const newInputColours:string[] = initialiseCustomColours(targetHarmony, paletteEditorState.palette)       
+                resetPalette(newInputColours, paletteEditorState.palette)
+            }
+            else {
+                setInputColours([inputColours[0]])
+            }    
         }
     }
 
-    useEffect(()=>{
-        if (colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
-            let newColours:string[] = [colours[0]]
-                state.palette.accentColours.forEach(colour=>{
-                    newColours.push(colour.rgb)
-            })
-            setColours(newColours)
+    function initialiseCustomColours(targetHarmony:string, palette:Palette):string[] {
+        const harmony = colourHarmonies[targetHarmony as keyof Harmonies] 
+        if (harmony.isCustom && harmony.numVertex !== undefined) {
+            //the number of inputColours to initialise depends on the difference between 
+            //the number of accent inputColours and the number of verticies of the chosen custom colour scheme
+            const numVertex = harmony.numVertex as number
+            const remainingVerticies = numVertex - palette.accentColours.length - 1 //number of verticies is equal to the number of accent inputColours + the main colour 
+            let newInputColours = Array.prototype.concat([palette.mainColour.rgb], palette.accentColours.map(colour=>colour.rgb))
+            if (remainingVerticies === 0) {
+                //do nothing
+            }
+            if (remainingVerticies < 0) {
+                //we have more inputColours than we need, pop off
+                for (let i = 0; i < Math.abs(remainingVerticies); i++) {
+                    newInputColours.pop()
+                }
+            }
+            else if (remainingVerticies > 0) {
+                //we dont have enough inputColours, add gray
+                for (let i = newInputColours.length; i < numVertex; i++) {
+                    newInputColours.push('7F7F7F')
+                }
+            }
+            setInputColours(newInputColours)
+            return newInputColours
         }
         else {
-            setColours([state.palette.mainColour.rgb])
+            //if we have more inputColours than required and we're not choosing a custom scheme, set the number to 1 by default
+            setInputColours([inputColours[0]])
+            return [inputColours[0]]
         }
-    }, [state.palette.accentColours])
+    }
+
+    function resetPalette(newInputColours:string[], palette:Palette) {
+        const newVerticies:Colour[] = newInputColours.map(hexColour=>createColour(hexColour))
+        const newAccentColours:Colour[] = newVerticies.filter(vertex=>vertex.rgb !== palette.mainColour.rgb)
+        const newPalette:Palette = {...palette}
+        newPalette.accentColours = newAccentColours
+        newPalette.colourVerticies = newVerticies
+        paletteEditorDispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:newPalette}})
+        paletteEditorDispatch({type:ACTION_TYPES.INITIALISE_MAINCOLOUR, payload:{colour:newPalette.mainColour}})
+    }
+
 
     return (
         <ContentBox finishedLoading={pageLoaded}>
             <section className='w-full py-16 lg:px-24'>
                 <div className='w-full flex flex-col items-center justify-center gap-4'>
-                    <ColourPickerSection colours={colours} setColours={setColours}/>
+                    <ColourPickerSection colours={inputColours} setColours={setInputColours}/>
                     <HarmonySelector 
                         value={selectedHarmony} 
                         setValue={makeSelection} 
@@ -247,8 +322,8 @@ export default function Editor(props:Props) {
                 </div>
             </section>
             <EdtiorSection
-                state={state}
-                dispatch={dispatch}
+                paletteEditorState={paletteEditorState}
+                paletteEditorDispatch={paletteEditorDispatch}
                 paletteName={paletteName}
                 setPaletteName={setPaletteName}
                 alertState={alertState}
