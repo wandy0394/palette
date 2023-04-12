@@ -159,9 +159,7 @@ export default function Editor(props:Props) {
             initHarmony(payload.palette)            
         }
     }, [location])
-     
     
-    //fix this section
     useEffect(()=>{
         if (paletteEditorState.colour && 
                 paletteEditorState.role === ACTION_TYPES.UPDATE_MAINCOLOUR) {
@@ -179,20 +177,6 @@ export default function Editor(props:Props) {
             setInputColours(currColours)
         }
     }, [paletteEditorState.colour, paletteEditorState.role])
-
-   
-    useEffect(()=>{
-        // if (colourHarmonies[selectedHarmony as keyof Harmonies]?.isCustom) {
-        //     let newColours:string[] = [inputColours[0]]
-        //     state.palette.accentColours.forEach(colour=>{
-        //         newColours.push(colour.rgb)
-        //     })
-        //     setInputColours(newColours)
-        // }
-        // else {
-        //     setInputColours([state.palette.mainColour.rgb])
-        // }
-    }, [paletteEditorState.palette.accentColours])
 
     function initHandlePosition(colour:Colour) {
         let result:Result<HSV, string> = cc.rgb2hsv(colour.rgb)
@@ -292,6 +276,7 @@ export default function Editor(props:Props) {
         }
     }
 
+    //synchronise palette with new inputColours
     function resetPalette(newInputColours:string[], palette:Palette) {
         const newVerticies:Colour[] = newInputColours.map(hexColour=>createColour(hexColour))
         const newAccentColours:Colour[] = newVerticies.filter(vertex=>vertex.rgb !== palette.mainColour.rgb)
