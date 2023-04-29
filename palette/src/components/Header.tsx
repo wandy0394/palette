@@ -63,6 +63,7 @@ export default function Header() {
                         <NavLink targetPath='/' title='Generator'/>
                         <NavLink targetPath='/editor' title='Editor'/>
                         <NavLink targetPath='/library' title='Library'/>
+                        <NavLink targetPath='/visualiser' title='Visualiser'/>
                     </div>
                     </div>
                     {

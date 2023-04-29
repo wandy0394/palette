@@ -8,6 +8,7 @@ import Library from './pages/library'
 import { useAuthContext } from './hooks/useAuthContext'
 import Header from './components/Header'
 import ContentBox from './components/common/ContentBox'
+import Visualiser from './pages/visualiser'
 
 function App() {
   const {finishedLoading} = useAuthContext()
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/editor" element={<Editor/>}/>
                 <Route path="/editor/:id/" element={<Editor/>}/>
                 <Route path="/library" element={<Library/>}/>
+                <Route path="/visualiser" element={<Visualiser/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="*" element={<h1>Error 404: Page not found</h1>}/>
