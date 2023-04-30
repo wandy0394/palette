@@ -4,12 +4,12 @@ export default function tiles(p:p5) {
 
     //code adapted from '220530a' by Okazz
     //CreativeCommons Attribution NonCommercial ShareAlike
+    //original source: https://openprocessing.org/sketch/1588171
     let colors = ['#f73939', '#ffda33', '#0c4896', '#48b7f7', '#f7f7f7', '#2b2b2b', '#f78e2c', '#3BD89F', '#a4459f'];
     let maxSize;
     let SEED = Math.floor(Math.random()*10000);
     
     p.setup = () => {
-        console.log('setup again')
         p.createCanvas(800, 800);
         p.angleMode(p.DEGREES);
         p.rectMode(p.CENTER);
