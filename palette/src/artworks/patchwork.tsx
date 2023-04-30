@@ -1,6 +1,7 @@
 import p5 from "p5";
+import { Palette } from "../types/colours";
 
-export default function patchwork(p:p5) {
+export default function patchwork(p:p5, palette:Palette) {
     //adaptive from work by Manolov AC as below
 
     //////////////////////////////////////////////////////////////////////////

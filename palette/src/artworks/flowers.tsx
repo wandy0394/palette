@@ -1,18 +1,22 @@
 import p5 from "p5";
+import { Palette } from "../types/colours";
 
-export default function flowers(p:p5) {
-    //adapted from work by Keeth kuwahara
+export default function flowers(p:p5, palette:Palette) {
+    //adapted from work by Keeth Kuwahara
     //https://openprocessing.org/sketch/1891173
-    let colors = [
-        "#e6302b",
-        "#fd7800",
-        "#fbd400",
-        "#51b72d",
-        "#2abde4",
-        "#4e59a4",
-        "#085a9b",
-        "#f477c3",
-    ];
+    // let colors = [
+    //     "#e6302b",
+    //     "#fd7800",
+    //     "#fbd400",
+    //     "#51b72d",
+    //     "#2abde4",
+    //     "#4e59a4",
+    //     "#085a9b",
+    //     "#f477c3",
+    // ];
+    let colors = palette.colourVerticies.map((colour)=>{
+        return `#${colour.rgb}`
+    })
     const c = 50;
     const minDistance = 100;
     let w;

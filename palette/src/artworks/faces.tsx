@@ -1,6 +1,7 @@
 import p5 from "p5";
+import { Palette } from "../types/colours";
 
-export default function faces(p:p5) {
+export default function faces(p:p5, palette:Palette) {
 
     //adapted from design by takawo
     //https://openprocessing.org/sketch/1223485
@@ -10,7 +11,7 @@ export default function faces(p:p5) {
         "https://coolors.co/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226",
         "https://coolors.co/9b5de5-f15bb5-fee440-00bbf9-00f5d4",
     ];
-    let palette:any;
+    let canvasPalette:any;
     let noiseGra:p5.Graphics;
     let sw:number;
     
@@ -32,7 +33,7 @@ export default function faces(p:p5) {
     }
     
     p.draw = () => {
-        palette = createPalette(p.random(url), 100);
+        canvasPalette = createPalette(p.random(url), 100);
         p.background(0, 0, 0);
         // p.blendMode(p.ADD);
     
@@ -91,7 +92,7 @@ export default function faces(p:p5) {
                 let shape_num = p.int(p.random(6));
                 let sep = p.int(p.random(1, 5));
                 p.drawingContext.shadowBlur = p.max(w, h) / 30;
-                p.drawingContext.shadowColor = p.color(p.random(palette));
+                p.drawingContext.shadowColor = p.color(p.random(canvasPalette));
                 p.ellipseMode(p.CENTER);
                 p.rectMode(p.CENTER);
                 let m = p.random(0.5, 10);
@@ -100,7 +101,7 @@ export default function faces(p:p5) {
                     let counter_angle = angle > 180 ? angle + p.abs(270 - angle) * 2 : angle - p.abs(angle - 90) * 2;
                     let shear_x = p.random(15/2) * (p.random() > 0.5 ? -1:1);
                     let shear_y = p.random(15/2) * (p.random() > 0.5 ? -1:1);
-                    let colors = p.shuffle(palette.concat());
+                    let colors = p.shuffle(canvasPalette.concat());
                     p.push();
                     p.translate(x + xStep / 2, y + yStep / 2);
                     let t = 0;

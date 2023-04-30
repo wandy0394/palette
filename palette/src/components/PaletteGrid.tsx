@@ -47,6 +47,10 @@ export default function PaletteGrid(props:Props) {
         navigate('/editor', {state:palette})
     }
 
+    function visualisePalette(palette:Palette) {
+        navigate('/visualiser', {state:palette})
+    }
+
     useEffect(()=>{
         setPalettes(initPalettes)
     }, [initPalettes])
@@ -68,8 +72,24 @@ export default function PaletteGrid(props:Props) {
                                                 </div>
                                             </div>
                                             <div className='w-full flex flex-wrap items-center justify-end gap-4 p-4'>
-                                                <button className='btn btn-xs btn-primary md:btn-sm' onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}>Randomize</button>
-                                                <button className='btn btn-xs btn-secondary md:btn-sm' onClick={()=>editPalette(palette)}>Edit</button>
+                                                <button 
+                                                    className='btn btn-xs btn-primary md:btn-sm' 
+                                                    onClick={()=>generateNewScheme(palette.mainColour, palette?.colourVerticies, index)}
+                                                >
+                                                    Randomize
+                                                </button>
+                                                <button 
+                                                    className='btn btn-xs btn-secondary md:btn-sm' 
+                                                    onClick={()=>editPalette(palette)}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button 
+                                                    className='btn btn-xs btn-secondary md:btn-sm' 
+                                                    onClick={()=>visualisePalette(palette)}
+                                                >
+                                                    Visualise
+                                                </button>
                                             </div>
                                         </div>
 

@@ -117,7 +117,7 @@ export default function Editor(props:Props) {
         }            
     }
 
-
+    //suggest rename or refactor this function
     function initHarmony(palette:Palette) {
         const numVertex:number = palette.colourVerticies.length
         const harmony:string[] = Object.keys(colourHarmonies).filter(key=>{
@@ -133,6 +133,7 @@ export default function Editor(props:Props) {
         }
     }
 
+    //handle page redirection
     useEffect(()=>{
         if (savedPalette.redirect) {
             setSavedPalette({...savedPalette, redirect:false})
@@ -145,6 +146,7 @@ export default function Editor(props:Props) {
     }, [finishedLoading, savedPalette.finishedLoading, savedPalette.redirect])
 
 
+    //update palette and harmony if location.state is set
     useEffect(()=>{
         //assumes location.state is a Palette object. need to validate that
         if (location.state && location.state.mainColour.rgb) {
@@ -160,6 +162,8 @@ export default function Editor(props:Props) {
         }
     }, [location])
     
+
+    //synchornise the colours of the user input controls with the palette
     useEffect(()=>{
         if (paletteEditorState.colour && 
                 paletteEditorState.role === ACTION_TYPES.UPDATE_MAINCOLOUR) {
@@ -198,6 +202,7 @@ export default function Editor(props:Props) {
         })
     }
 
+    //change handle position if the window size changes
     useEffect(()=>{
         if (paletteEditorState && paletteEditorState.colour) initHandlePosition(paletteEditorState.colour)
     }, [colourControlsState.wheelWidth, colourControlsState.handleWidth])

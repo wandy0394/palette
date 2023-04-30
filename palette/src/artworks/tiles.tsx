@@ -1,6 +1,7 @@
 import p5 from "p5";
+import { Palette } from "../types/colours";
 
-export default function tiles(p:p5) {
+export default function tiles(p:p5, palette:Palette) {
 
     //code adapted from '220530a' by Okazz
     //CreativeCommons Attribution NonCommercial ShareAlike

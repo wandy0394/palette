@@ -1,6 +1,7 @@
 import p5 from "p5";
+import { Palette } from "../types/colours";
 
-export default function wetpaint(p:p5) {
+export default function wetpaint(p:p5, palette:Palette) {
     //adapted from work by Okazz
     //https://openprocessing.org/sketch/945207
     let colors = ["#7209b7", "#3a0ca3", "#4361ee", "#4cc9f0", "#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c", "#ffffff"];
