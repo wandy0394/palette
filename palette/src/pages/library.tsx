@@ -15,6 +15,9 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     function handleEditClick() {
         navigate('/editor/'+savedPalette.uuid)
     }
+    function handleVisualiseClick() {
+        navigate('/visualiser', {state:savedPalette.palette})
+    }
     return (
         <ContentBox>
             <div className='bg-base-300 shadow-lg flex flex-col items-center justify-center w-full h-full'>
@@ -29,6 +32,12 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
                             onClick={handleEditClick}
                             >
                             Edit
+                        </button>
+                        <button 
+                            className='btn btn-xs lg:btn-md btn-secondary' 
+                            onClick={handleVisualiseClick}
+                            >
+                            Visualise
                         </button>
                         <button className='btn btn-xs lg:btn-md btn-secondary' 
                             onClick={()=>handleDeleteClick(savedPalette.uuid)}
