@@ -1,13 +1,20 @@
 import p5 from "p5";
 import { Palette } from "../types/colours";
+import { ArtworkProps } from "./utils/types";
+import { extractColours } from "./utils/utils";
 
-export default function wetpaint(p:p5, palette:Palette) {
+export default function wetpaint(props:ArtworkProps) {
+    const {p, palette, dim} = props
+
     //adapted from work by Okazz
     //https://openprocessing.org/sketch/945207
-    let colors = ["#7209b7", "#3a0ca3", "#4361ee", "#4cc9f0", "#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c", "#ffffff"];
-
+    // let colors = ["#7209b7", "#3a0ca3", "#4361ee", "#4cc9f0", "#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c", "#ffffff"];
+    // let colors = palette.colourVerticies.map((colour)=>{
+    //     return `#${colour.rgb}`
+    // })
+    let colors = extractColours(palette)
     p.setup = () => {
-        p.createCanvas(800, 800);
+        p.createCanvas(dim[0], dim[1]);
 
         p.rectMode(p.CENTER);
 

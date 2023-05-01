@@ -1,7 +1,10 @@
 import p5 from "p5";
 import { Palette } from "../types/colours";
+import { ArtworkProps } from "./utils/types";
+import { extractColours } from "./utils/utils";
 
-export default function faces(p:p5, palette:Palette) {
+export default function faces(props:ArtworkProps) {
+    const {p, palette, dim} = props
 
     //adapted from design by takawo
     //https://openprocessing.org/sketch/1223485
@@ -16,7 +19,7 @@ export default function faces(p:p5, palette:Palette) {
     let sw:number;
     
     p.setup = () => {
-        p.createCanvas(800, 800);
+        p.createCanvas(dim[0], dim[1]);
         p.colorMode(p.HSB, 360, 100, 100, 100);
         p.angleMode(p.DEGREES);
     
@@ -177,13 +180,17 @@ export default function faces(p:p5, palette:Palette) {
     }
     
     function createPalette(_url:string, percent = 100) {
-        let slash_index = _url.lastIndexOf('/');
-        let pallate_str = _url.slice(slash_index + 1);
-        let arr:any = pallate_str.split('-');
-        for (let i = 0; i < arr.length; i++) {
-            arr[i] = p.color('#' + arr[i] + p.hex(p.int(percent / 100 * 255), 2));
-        }
-        return arr;
+        // let slash_index = _url.lastIndexOf('/');
+        // let pallate_str = _url.slice(slash_index + 1);
+        // let arr:any = pallate_str.split('-');
+        // for (let i = 0; i < arr.length; i++) {
+        //     arr[i] = p.color('#' + arr[i] + p.hex(p.int(percent / 100 * 255), 2));
+        // }
+        // let arr:string[] = palette.colourVerticies.map((colour)=>{
+        //     return `#${colour.rgb}`
+        // })
+        
+        return extractColours(palette);
     }
     
     function drawSuperEllipes(x:number, y:number, w:number, h:number, n:number) {

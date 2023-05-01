@@ -10,11 +10,12 @@ import { Palette } from "../types/colours"
 import PaletteSwatch from "../components/PaletteSwatch"
 import { useLocation } from "react-router-dom"
 import PaletteRow from "../components/PaletteRow"
+import { ArtworkProps } from "../artworks/utils/types"
 
 type Artworks = {
     [key:string]:{
         id:string,
-        art:(p:p5, palette:Palette)=>void,
+        art:(props:ArtworkProps)=>void,
         label:string
     }
 }
@@ -50,7 +51,7 @@ export default function Visualiser() {
 
     function drawArtwork(p:p5) {
         if (artSelect) {
-            artworks[artSelect].art(p, palette)
+            artworks[artSelect].art({p:p, palette:palette, dim:[600,600]})
         }
     }
 

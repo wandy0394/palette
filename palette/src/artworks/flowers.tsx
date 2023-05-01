@@ -1,7 +1,10 @@
 import p5 from "p5";
 import { Palette } from "../types/colours";
+import { ArtworkProps } from "./utils/types";
+import { extractColours } from "./utils/utils";
 
-export default function flowers(p:p5, palette:Palette) {
+export default function flowers(props:ArtworkProps) {
+    const {p, palette, dim} = props
     //adapted from work by Keeth Kuwahara
     //https://openprocessing.org/sketch/1891173
     // let colors = [
@@ -14,9 +17,10 @@ export default function flowers(p:p5, palette:Palette) {
     //     "#085a9b",
     //     "#f477c3",
     // ];
-    let colors = palette.colourVerticies.map((colour)=>{
-        return `#${colour.rgb}`
-    })
+    // let colors = palette.colourVerticies.map((colour)=>{
+    //     return `#${colour.rgb}`
+    // })
+    let colors = extractColours(palette)
     const c = 50;
     const minDistance = 100;
     let w;
@@ -24,7 +28,7 @@ export default function flowers(p:p5, palette:Palette) {
     let boff = 0;
     
     p.setup = () => {
-        p.createCanvas(800, 800);
+        p.createCanvas(dim[0], dim[1]);
         w = p.width / 60;
         p.noStroke();
         // blendMode(HARD_LIGHT);

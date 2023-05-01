@@ -1,7 +1,12 @@
 import p5 from "p5";
 import { Palette } from "../types/colours";
+import { ArtworkProps } from "./utils/types";
+import { extractColours } from "./utils/utils";
+import ColourScheme from "../sections/ColourScheme";
 
-export default function patchwork(p:p5, palette:Palette) {
+export default function patchwork(props:ArtworkProps) {
+    const {p, palette, dim} = props
+
     //adaptive from work by Manolov AC as below
 
     //////////////////////////////////////////////////////////////////////////
@@ -32,18 +37,22 @@ export default function patchwork(p:p5, palette:Palette) {
     //    https://www.facebook.com/epistolariy                              //
     //////////////////////////////////////////////////////////////////////////
 
-    var blockSize = 50;
     var countBorder = 10;
+    var blockSize = Math.floor(dim[0] / countBorder);
     var wdt = blockSize * countBorder;
     var hgt = blockSize * countBorder;
     var modes = [semiDual, shark, oneSemi, mess, rotateSemi, pear, chain];
     var currModeFn = chain;
-    var colorSchemes = [
+    var colorSchemes1 = [
         [ '#152A3B', '#158ca7', '#F5C03E', '#D63826', '#F5F5EB' ],
         [ '#0F4155', '#288791', '#7ec873', '#F04132', '#fcf068' ],
         [ '#E8614F', '#F3F2DB', '#79C3A7', '#668065', '#4B3331' ]
     ];
-    var queueNum = [ 0, 1, 2, 3, 4 ];
+    var colorSchemes = [
+        extractColours(palette)
+    ]
+    // var queueNum = [ 0, 1, 2, 3, 4 ];
+    var queueNum = [...Array(colorSchemes[0].length).keys()]
     var clrs = colorSchemes[Math.floor(p.random(colorSchemes.length))];
 
     p.setup = () => {
