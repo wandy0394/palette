@@ -13,11 +13,10 @@ export default function ContentBox(props:Props) {
     return (
         <ErrorBoundary>
             
-            <div className='w-full h-full flex flex-col items-center justify-center bg-neutral-700'>
+            <div className='w-full min-h flex flex-col items-center justify-center bg-neutral-700'>
             
                 {
                     (finishedLoading !== undefined && finishedLoading === true) && children
-                    
                 }
                 {
                     (finishedLoading !== undefined && finishedLoading === false) && <LoadingSection/>

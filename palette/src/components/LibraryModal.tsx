@@ -1,3 +1,7 @@
+type Props = {
+    loadPaletteHandler:(palette:Palette)=>void
+}
+
 import { useNavigate } from "react-router-dom";
 import ContentBox from "../components/common/ContentBox";
 import PaletteSwatch from "../components/PaletteSwatch";
@@ -6,15 +10,12 @@ import useLibrary from "../hooks/useLibrary";
 import LibraryService from "../service/library-service";
 import { SavedPalette } from "../types/library";
 import { useEffect, useState } from 'react'
+import { Palette } from "../types/colours";
 
 
-function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(uuid:string)=>void}) {
-    const {savedPalette, handleDeleteClick} = props
-    const navigate = useNavigate()
+function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleLoadClick:()=>void}) {
+    const {savedPalette, handleLoadClick} = props
 
-    function handleEditClick() {
-        navigate('/editor/'+savedPalette.uuid)
-    }
     return (
         <ContentBox>
             <div className='bg-base-300 shadow-lg flex flex-col items-center justify-center w-full h-full'>
@@ -26,14 +27,9 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
                     <div className='flex gap-4 pr-8'>
                         <button 
                             className='btn btn-xs lg:btn-md btn-primary' 
-                            onClick={handleEditClick}
+                            onClick={handleLoadClick}
                             >
-                            Edit
-                        </button>
-                        <button className='btn btn-xs lg:btn-md btn-secondary' 
-                            onClick={()=>handleDeleteClick(savedPalette.uuid)}
-                            >
-                            Delete
+                            Load
                         </button>
                     </div>
                 </div>
@@ -45,7 +41,9 @@ function SavedPaletteEntry(props:{savedPalette:SavedPalette, handleDeleteClick:(
     )
 }
 
-export default function Library() {
+export default function LibraryModal(props:Props) {
+    const {loadPaletteHandler} = props
+
     const {user, finishedLoading} = useAuthContext()
     const [library, setLibrary] = useLibrary({token:user?.token})
     const [pageLoaded, setPageLoaded] = useState<boolean>(false)
@@ -62,28 +60,17 @@ export default function Library() {
     
 
 
-    function handleDeleteClick(paletteUUID:string) {
-        //call api service to delete
-        async function deletePalette() {
-            try {
-                await LibraryService.deletePalette(paletteUUID)
-                const newPalette:SavedPalette[] = library.savedPalette.filter(savedPalette=>savedPalette.uuid !== paletteUUID)
-                setLibrary({...library, savedPalette:newPalette})
-            }
-            catch (e) {
-                console.log('Could not delete')
-            }
-        }
-        deletePalette();
+    function handleLoadClick(palette:Palette) {
+        loadPaletteHandler(palette)
     }
 
     return (
         <ContentBox finishedLoading={pageLoaded}>
             {
                 (library.savedPalette.length <= 0) &&
-                (<section className='text-2xl h-screen'>You have no palettes saved.</section>)
+                (<section className='text-2xl'>You have no palettes saved.</section>)
             }
-            <div className='w-full min-h-screen'>
+            <div className='w-full h-full px-8'>
                 <div className='w-full grid lg:grid-cols-2 gap-16 py-16'>
                 {
                     
@@ -92,7 +79,7 @@ export default function Library() {
                         return <SavedPaletteEntry 
                             key={'palette'+index} 
                             savedPalette={savedPalette} 
-                            handleDeleteClick={()=>handleDeleteClick(savedPalette.uuid)}
+                            handleLoadClick={()=>handleLoadClick(savedPalette.palette)}
                         />
                     })
                 }
