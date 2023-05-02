@@ -5,4 +5,5 @@ export type ArtworkProps = {
     p:p5
     palette:Palette 
     dim:[number, number]
+    percentages:number[]
 }

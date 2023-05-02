@@ -1,18 +1,14 @@
-import p5 from "p5";
-import { Palette } from "../types/colours";
+
 import { ArtworkProps } from "./utils/types";
-import { extractColours } from "./utils/utils";
+import { extractColours, randomColourSelect } from "./utils/utils";
 
 export default function tiles(props:ArtworkProps) {
-    const {p, palette, dim} = props
+    const {p, palette, dim, percentages} = props
 
     //code adapted from '220530a' by Okazz
     //CreativeCommons Attribution NonCommercial ShareAlike
     //original source: https://openprocessing.org/sketch/1588171
-    // let colors = ['#f73939', '#ffda33', '#0c4896', '#48b7f7', '#f7f7f7', '#2b2b2b', '#f78e2c', '#3BD89F', '#a4459f'];
-    // let colors = palette.colourVerticies.map((colour)=>{
-    //     return `#${colour.rgb}`
-    // })
+
     let colors = extractColours(palette)
     let maxSize;
     let SEED = Math.floor(Math.random()*10000);
@@ -43,10 +39,10 @@ export default function tiles(props:ArtworkProps) {
     
     function randomShape(x:number, y:number, w:number, a:number) {
         let rnd = p.int(p.random(9));
-        let col1 = colors[p.int(p.random(colors.length))];
-        let col2 = colors[p.int(p.random(colors.length))];
-        let col3 = colors[p.int(p.random(colors.length))];
-    
+        let col1 = randomColourSelect(palette, percentages)
+        let col2 = randomColourSelect(palette, percentages)
+        let col3 = randomColourSelect(palette, percentages)
+
         p.push();
         p.translate(x, y);
         p.rotate(a);

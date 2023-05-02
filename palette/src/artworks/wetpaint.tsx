@@ -1,10 +1,10 @@
 import p5 from "p5";
 import { Palette } from "../types/colours";
 import { ArtworkProps } from "./utils/types";
-import { extractColours } from "./utils/utils";
+import { extractColours, randomColourSelect } from "./utils/utils";
 
 export default function wetpaint(props:ArtworkProps) {
-    const {p, palette, dim} = props
+    const {p, palette, dim, percentages} = props
 
     //adapted from work by Okazz
     //https://openprocessing.org/sketch/945207
@@ -26,7 +26,8 @@ export default function wetpaint(props:ArtworkProps) {
             let ang = p.int(p.random(8)) * p.PI * 0.25;
             p.push();
             p.noStroke();
-            p.fill(p.random(colors));
+            // p.fill(p.random(colors));
+            p.fill(randomColourSelect(palette, percentages))
             p.translate(x, y);
             p.rotate(ang);
             p.rect(x, y, w, h);
@@ -44,14 +45,16 @@ export default function wetpaint(props:ArtworkProps) {
             let x = p.random(p.width);
             let y = p.random(p.height);
             let s = p.random(p.random(p.random(20)));
-            p.fill(p.random(colors));
+            // p.fill(p.random(colors));
+            p.fill(randomColourSelect(palette, percentages))
             p.noStroke();
             p.circle(x, y, s);
         }
     }
 
     function dripCircle(x:number, y:number, s:number) {
-        let col = p.random(colors);
+        // let col = p.random(colors);
+        let col = randomColourSelect(palette, percentages)
         let cc = p.int(p.random(5, 30));
         p.push();
         p.translate(x, y);
@@ -76,7 +79,8 @@ export default function wetpaint(props:ArtworkProps) {
         while (s > 0) {
             let ps = s;
             s -= p.random(30);
-            p.fill(p.random(colors));
+            // p.fill(p.random(colors));
+            p.fill(randomColourSelect(palette, percentages))
             p.ellipse(0, 0, s * p.random(0.9, 1), s * p.random(0.9, 1));
         }
         p.pop();

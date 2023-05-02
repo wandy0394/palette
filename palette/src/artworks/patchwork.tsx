@@ -1,14 +1,13 @@
 import p5 from "p5";
-import { Palette } from "../types/colours";
+import { HEX, Palette } from "../types/colours";
 import { ArtworkProps } from "./utils/types";
-import { extractColours } from "./utils/utils";
+import { extractColours, randomColourSelect } from "./utils/utils";
 import ColourScheme from "../sections/ColourScheme";
 
 export default function patchwork(props:ArtworkProps) {
-    const {p, palette, dim} = props
-
+    
     //adaptive from work by Manolov AC as below
-
+    
     //////////////////////////////////////////////////////////////////////////
     //                       //                                             //
     //   -~=Manoylov AC=~-   //           Semi Circle Patchwork             //
@@ -36,24 +35,34 @@ export default function patchwork(props:ArtworkProps) {
     //    https://www.openprocessing.org/user/23616/                        //
     //    https://www.facebook.com/epistolariy                              //
     //////////////////////////////////////////////////////////////////////////
-
+    const {p, palette, dim, percentages} = props
+    
     var countBorder = 10;
     var blockSize = Math.floor(dim[0] / countBorder);
     var wdt = blockSize * countBorder;
     var hgt = blockSize * countBorder;
     var modes = [semiDual, shark, oneSemi, mess, rotateSemi, pear, chain];
-    var currModeFn = chain;
+    var currModeFn = pear;
     var colorSchemes1 = [
         [ '#152A3B', '#158ca7', '#F5C03E', '#D63826', '#F5F5EB' ],
         [ '#0F4155', '#288791', '#7ec873', '#F04132', '#fcf068' ],
         [ '#E8614F', '#F3F2DB', '#79C3A7', '#668065', '#4B3331' ]
     ];
-    var colorSchemes = [
-        extractColours(palette)
-    ]
+    // var colorSchemes = [
+    //     extractColours(palette)
+    // ]
     // var queueNum = [ 0, 1, 2, 3, 4 ];
-    var queueNum = [...Array(colorSchemes[0].length).keys()]
-    var clrs = colorSchemes[Math.floor(p.random(colorSchemes.length))];
+    const numColours = 12
+    
+    // var queueNum = [...Array(colorSchemes[0].length).keys()]
+    let queueNum = [...Array(numColours).keys()]
+    // var clrs = colorSchemes[Math.floor(p.random(colorSchemes.length))];
+    let clrs:HEX[] = []
+    for (let i = 0; i < numColours; i++) {
+        clrs.push(randomColourSelect(palette, percentages))
+    }
+
+    
 
     p.setup = () => {
         p.createCanvas(wdt, hgt);
@@ -66,7 +75,8 @@ export default function patchwork(props:ArtworkProps) {
         p.background(25);
         for (var y = blockSize / 2; y < p.height; y+=blockSize) {
             for (var x = blockSize / 2; x < p.width; x+=blockSize) {
-                queueNum = shuffleArray([ 0, 1, 2, 3, 4 ]);
+                queueNum = shuffleArray([...Array(numColours).keys()]);
+
                 p.fill(clrs[queueNum[0]]);
                 p.rect(x, y, blockSize, blockSize);
 
@@ -159,29 +169,29 @@ export default function patchwork(props:ArtworkProps) {
         return array;
     }
 
-    function resetPatchwork(modeFn?:(x: any, y: any, clrs: any) => void) {
-        currModeFn = modeFn || modes[Math.floor(p.random(modes.length))];
-        clrs = colorSchemes[Math.floor(p.random(colorSchemes.length))];
-        p.redraw();
-    }
+    // function resetPatchwork(modeFn?:(x: any, y: any, clrs: any) => void) {
+    //     currModeFn = modeFn || modes[Math.floor(p.random(modes.length))];
+    //     clrs = colorSchemes[Math.floor(p.random(colorSchemes.length))];
+    //     p.redraw();
+    // }
 
-    function mousePressed(){
-        resetPatchwork();
-    }
+    // function mousePressed(){
+    //     resetPatchwork();
+    // }
 
-    function keyPressed(e:KeyboardEvent){
-        switch(e.key.toLowerCase()){
-            case '1': resetPatchwork(semiDual); break;
-            case '2': resetPatchwork(shark); break;
-            case '3': resetPatchwork(oneSemi); break;
-            case '4': resetPatchwork(mess); break;
-            case '5': resetPatchwork(rotateSemi); break;
-            case '6': resetPatchwork(pear); break;
-            case '7': resetPatchwork(chain); break;
-            case 's': p.save('img_' + ~~p.random(100, 900) + '.jpg'); break;
-            default: resetPatchwork(); break;
-        }
-    }
+    // function keyPressed(e:KeyboardEvent){
+    //     switch(e.key.toLowerCase()){
+    //         case '1': resetPatchwork(semiDual); break;
+    //         case '2': resetPatchwork(shark); break;
+    //         case '3': resetPatchwork(oneSemi); break;
+    //         case '4': resetPatchwork(mess); break;
+    //         case '5': resetPatchwork(rotateSemi); break;
+    //         case '6': resetPatchwork(pear); break;
+    //         case '7': resetPatchwork(chain); break;
+    //         case 's': p.save('img_' + ~~p.random(100, 900) + '.jpg'); break;
+    //         default: resetPatchwork(); break;
+    //     }
+    // }
 
     function paper() {
         p.push();

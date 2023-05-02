@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { ChangeEvent, ChangeEventHandler, useEffect, useRef, useState } from "react"
 import p5 from 'p5'
 import ContentBox from "../components/common/ContentBox"
 import tiles from "../artworks/tiles"
@@ -25,7 +25,7 @@ type Artworks = {
     [key:string]:{
         id:string,
         art:(props:ArtworkProps)=>void,
-        label:string
+        label:string,
     }
 }
 
@@ -74,20 +74,37 @@ function getRandomPalette():Palette {
     }
     return palette
 }
-
+type Percentages = {
+    mainColourPercentage:number
+    accentColourPercentage:number
+    supportColourPercentage:number
+}
 export default function Visualiser() {
     const canvasRef = useRef<HTMLDivElement>(null)
     const [artwork, setArtwork] = useState<p5>()
     const [artSelect, setArtSelect] = useState<string>('tiles')
     const [palette, setPalette] = useState<Palette>(emptyPalette)
-    const [modalVisible, setModalVisible] = useState<boolean>(false)
+    const [percentages, setPercentages] = useState<Percentages>({
+        mainColourPercentage:60,
+        accentColourPercentage:30,
+        supportColourPercentage:10
+    })
 
     const location = useLocation()
 
 
     function drawArtwork(p:p5) {
         if (artSelect) {
-            artworks[artSelect].art({p:p, palette:palette, dim:[600,600]})
+            artworks[artSelect].art({
+                p:p, 
+                palette:palette, 
+                dim:[600,600], 
+                percentages:[
+                    percentages.mainColourPercentage,
+                    percentages.accentColourPercentage,
+                    percentages.supportColourPercentage
+                ]
+            })
         }
     }
 
@@ -128,6 +145,50 @@ export default function Visualiser() {
         setPalette(palette)
     }
 
+    function handleMainColourPercentageChange(e:ChangeEvent<HTMLInputElement>) {
+        //ensure percentages add up to 100, change support percentage to compensate
+        let newPercentages = {...percentages}
+        newPercentages.mainColourPercentage = Number(e.target.value)
+        const newSupportColourPercentage = 100 - newPercentages.mainColourPercentage - newPercentages.accentColourPercentage
+        if (newSupportColourPercentage < 0) {
+            newPercentages.supportColourPercentage = 0
+            newPercentages.accentColourPercentage = 100 - newPercentages.mainColourPercentage 
+        }
+        else {
+            newPercentages.supportColourPercentage = 100 - newPercentages.mainColourPercentage - newPercentages.accentColourPercentage
+        }
+        setPercentages(newPercentages)
+    }
+    function handleAccentColourPercentageChange(e:ChangeEvent<HTMLInputElement>) {
+        //ensure percentages add up to 100, change support percentage to compensate
+        let newPercentages = {...percentages}
+        newPercentages.accentColourPercentage = Number(e.target.value)
+        const newSupportColourPercentage = 100 - newPercentages.mainColourPercentage - newPercentages.accentColourPercentage
+
+        if (newSupportColourPercentage < 0) {
+            newPercentages.supportColourPercentage = 0
+            newPercentages.mainColourPercentage = 100 - newPercentages.accentColourPercentage 
+        }
+        else {
+            newPercentages.supportColourPercentage = 100 - newPercentages.mainColourPercentage - newPercentages.accentColourPercentage
+        }
+        setPercentages(newPercentages)
+    }
+    function handleSupportColourPercentageChange(e:ChangeEvent<HTMLInputElement>) {
+        //ensure percentages add up to 100, change accent percentage to compensate
+        let newPercentages = {...percentages}
+        newPercentages.supportColourPercentage = Number(e.target.value)
+        const newAccentColourPercentage = 100 - newPercentages.mainColourPercentage - newPercentages.supportColourPercentage
+        if (newAccentColourPercentage < 0) {
+            newPercentages.accentColourPercentage = 0
+            newPercentages.mainColourPercentage = 100 - newPercentages.supportColourPercentage
+        }
+        else {
+            newPercentages.accentColourPercentage = 100 - newPercentages.mainColourPercentage - newPercentages.supportColourPercentage
+        }
+        setPercentages(newPercentages)
+    }
+
     return (
         <ContentBox>
             <div className='w-full min-h-screen flex flex-col items-center gap-4'>
@@ -151,6 +212,47 @@ export default function Visualiser() {
                     <label htmlFor="library-modal" className="btn btn-secondary">Library</label>
                 </div>
                 <div ref = {canvasRef} />
+                <div className='w-full flex items-center justify-between'>
+                    <div>
+                        <label className='label'>
+                            <span className='label-text text-white'>Main Colour Proportion</span>
+                        </label>
+                        <input 
+                            className='input' 
+                            type="number" 
+                            min={0} 
+                            max={100} 
+                            value={percentages.mainColourPercentage} 
+                            onChange={(e:ChangeEvent<HTMLInputElement>)=>handleMainColourPercentageChange(e)}
+                        />
+                    </div>
+                    <div>
+                        <label className='label'>   
+                            <span className='label-text text-white'>Accent Colour Proportion</span>
+                        </label>
+                        <input 
+                            className='input' 
+                            type="number" 
+                            min={0} 
+                            max={100} 
+                            value={percentages.accentColourPercentage} 
+                            onChange={(e:ChangeEvent<HTMLInputElement>)=>handleAccentColourPercentageChange(e)}
+                        />
+                    </div>
+                    <div>
+                        <label className='label'>
+                            <span className='label-text text-white'>Support Colour Proportion</span>
+                        </label>
+                        <input 
+                            className='input' 
+                            type="number" 
+                            min={0} 
+                            max={100} 
+                            value={percentages.supportColourPercentage} 
+                            onChange={(e:ChangeEvent<HTMLInputElement>)=>handleSupportColourPercentageChange(e)}
+                        />
+                    </div>
+                </div>
                 <div className='w-full h-48'>
                     <PaletteRow palette={palette}/>
                 </div>

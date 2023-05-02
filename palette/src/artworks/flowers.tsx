@@ -1,10 +1,8 @@
-import p5 from "p5";
-import { Palette } from "../types/colours";
 import { ArtworkProps } from "./utils/types";
-import { extractColours } from "./utils/utils";
+import { extractColours, randomColourSelect } from "./utils/utils";
 
 export default function flowers(props:ArtworkProps) {
-    const {p, palette, dim} = props
+    const {p, palette, dim, percentages} = props
     //adapted from work by Keeth Kuwahara
     //https://openprocessing.org/sketch/1891173
     // let colors = [
@@ -77,9 +75,11 @@ export default function flowers(props:ArtworkProps) {
             this.v = p.random(10);
             this.n = p.int(p.random(5, 10));
             this.size = p.random(0.5, 2);
-            this.color1 = p.random(colors);
-            this.color2 = p.random(colors);
-            if (this.color1 === this.color2) this.color2 = p.random(colors);
+            // this.color1 = p.random(colors);
+            this.color1 = randomColourSelect(palette, percentages)
+            // this.color2 = p.random(colors);
+            this.color2 = randomColourSelect(palette, percentages)
+            if (this.color1 === this.color2) this.color2 = randomColourSelect(palette, percentages)
             this.rotationSpeed = p.random(0.005, 0.02);
             this.rotationDirection = p.random([1, -1]);
         }

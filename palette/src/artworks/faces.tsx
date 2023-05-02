@@ -1,10 +1,10 @@
 import p5 from "p5";
 import { Palette } from "../types/colours";
 import { ArtworkProps } from "./utils/types";
-import { extractColours } from "./utils/utils";
+import { extractColours, randomColourSelect } from "./utils/utils";
 
 export default function faces(props:ArtworkProps) {
-    const {p, palette, dim} = props
+    const {p, palette, dim, percentages} = props
 
     //adapted from design by takawo
     //https://openprocessing.org/sketch/1223485
@@ -117,7 +117,8 @@ export default function faces(props:ArtworkProps) {
                         p.shearY(shear_y);
                         p.rotate(angle);
                         p.translate(-xStep / 2, -yStep / 2);
-                        p.stroke(colors[(t + v) % colors.length]);
+                        // p.stroke(colors[(t + v) % colors.length]);
+                        p.stroke(randomColourSelect(palette, percentages))
                         p.noFill();
                         drawRandomShape(0, 0, xStep, yStep, shape_num, m);
                         v++;
@@ -137,8 +138,8 @@ export default function faces(props:ArtworkProps) {
                         p.shearY(shear_y);
                         p.rotate(angle);
                         p.translate(-xStep / 2, -yStep / 2);
-                        p.stroke(colors[(t + v) % colors.length]);
-                        // p.stroke(colors[[t + v] % colors.length]);
+                        // p.stroke(colors[(t + v) % colors.length]);
+                        p.stroke(randomColourSelect(palette, percentages))
                         p.noFill();
                         drawRandomShape(0, 0, xStep, yStep, shape_num, m);
                         v++;
