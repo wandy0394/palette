@@ -15,8 +15,10 @@ import ContentBox from "../components/common/ContentBox";
 const converter = new ColourConverter()
 
 export default function Palette() {
-    const [colours, setColours] = useState<HEX[]>(['1f1f6b'])
-    const [dominantColour, setDominantColour] = useState<HEX>('1f1f6b')
+    let rgb:HEX = Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')
+    
+    const [colours, setColours] = useState<HEX[]>([rgb])
+    const [dominantColour, setDominantColour] = useState<HEX>(rgb)
     function generatePalettes() {
         setDominantColour(colours[0])
     }

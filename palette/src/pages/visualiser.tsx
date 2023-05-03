@@ -1,4 +1,4 @@
-import { ChangeEvent, ChangeEventHandler, useEffect, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import p5 from 'p5'
 import ContentBox from "../components/common/ContentBox"
 import tiles from "../artworks/tiles"
@@ -7,7 +7,6 @@ import faces from "../artworks/faces"
 import wetpaint from "../artworks/wetpaint"
 import flowers from "../artworks/flowers"
 import { Colour, HEX, Palette } from "../types/colours"
-import PaletteSwatch from "../components/PaletteSwatch"
 import { useLocation } from "react-router-dom"
 import PaletteRow from "../components/PaletteRow"
 import { ArtworkProps } from "../artworks/utils/types"
@@ -20,6 +19,8 @@ import AnalogousSchemeGenerator from "../model/AnalogousSchemeGenerator"
 import SplitComplementarySchemeGenerator from "../model/SplitComplementarySchemeGenerator"
 import SquareSchemeGenerator from "../model/SquareSchemeGenerator"
 import ComplementarySchemeGenerator from "../model/ComplementarySchemeGenerator"
+import { ACTION_TYPES, usePaletteEditorReducer } from "../hooks/usePaletteEditorReducer"
+import EditablePaletteRow from "../components/EditablePaletteRow"
 
 type Artworks = {
     [key:string]:{
@@ -30,11 +31,31 @@ type Artworks = {
 }
 
 const artworks:Artworks = {
-    tiles:{id:'tiles', art:tiles, label:'Tiles'},
-    patchwork:{id:'patchwork', art:patchwork, label:'Patchwork'},
-    faces:{id:'faces', art:faces, label:'Faces'},
-    wetpaint:{id:'wetpaint', art:wetpaint, label:'Wet Paint'},
-    flowers:{id:'flowers', art:flowers, label:'Flowers'}
+    tiles:{
+        id:'tiles', 
+        art:tiles, 
+        label:'Tiles'
+    },
+    patchwork:{
+        id:'patchwork', 
+        art:patchwork, 
+        label:'Patchwork'
+    },
+    faces:{
+        id:'faces', 
+        art:faces, 
+        label:'Faces'
+    },
+    wetpaint:{
+        id:'wetpaint', 
+        art:wetpaint, 
+        label:'Wet Paint'
+    },
+    flowers:{
+        id:'flowers', 
+        art:flowers, 
+        label:'Flowers'
+    }
 }
 const emptyPalette:Palette = {
     mainColour:{
@@ -48,6 +69,19 @@ const emptyPalette:Palette = {
     colourVerticies:[],
     accentColours:[],
     supportColours:[]
+}
+const initialState = {
+    palette:emptyPalette,
+    colour:{
+        rgb:'000000',
+        hsv:{
+            hue:0,
+            saturation:0,
+            value:0
+        }
+    },
+    role:ACTION_TYPES.INITIALISE,
+    index:0,
 }
 
 function getRandomPalette():Palette {
@@ -64,7 +98,7 @@ function getRandomPalette():Palette {
 
     let generator = generators[Math.floor(Math.random() * (generators.length-1))]
     let palette:Palette = emptyPalette
-    let rgb:HEX = '349594'
+    let rgb:HEX = Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')
     let result:Result<Colour[][], string> = generator.generateColourVerticies(rgb)
     if (result.isSuccess()) {
         let paletteResult:Result<Palette, string> = generator.generatePalette(rgb, result.value[Math.floor(Math.random() * (result.value.length-1))])
@@ -83,12 +117,13 @@ export default function Visualiser() {
     const canvasRef = useRef<HTMLDivElement>(null)
     const [artwork, setArtwork] = useState<p5>()
     const [artSelect, setArtSelect] = useState<string>('tiles')
-    const [palette, setPalette] = useState<Palette>(emptyPalette)
+    // const [palette, setPalette] = useState<Palette>(emptyPalette)
     const [percentages, setPercentages] = useState<Percentages>({
         mainColourPercentage:60,
         accentColourPercentage:30,
         supportColourPercentage:10
     })
+    const [paletteState, paletteStateDispatch] = usePaletteEditorReducer(initialState)
 
     const location = useLocation()
 
@@ -97,7 +132,7 @@ export default function Visualiser() {
         if (artSelect) {
             artworks[artSelect].art({
                 p:p, 
-                palette:palette, 
+                palette:paletteState.palette, 
                 dim:[600,600], 
                 percentages:[
                     percentages.mainColourPercentage,
@@ -118,31 +153,29 @@ export default function Visualiser() {
 
     let called = false
     useEffect(()=>{
-        console.log('mounted')
-        console.log(called)
-        console.log(canvasRef.current)
-        console.log(location.state)
         if (!called && 
             canvasRef.current && 
             (location.state === null || location.state === undefined)) {
-
-            console.log('yes')
-            let palette:Palette = getRandomPalette()
-            setPalette(palette)
+            // setPalette(getRandomPalette())
+            paletteStateDispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:getRandomPalette()}})
             called = true
         }
     }, [canvasRef.current])
 
-    //update palette and harmony if location.state is set
+    //update palette if location.state is set
     useEffect(()=>{
         //assumes location.state is a Palette object. need to validate that
         if (location.state && location.state.mainColour.rgb) {
-            setPalette(location.state)
+            // setPalette(location.state)
+            paletteStateDispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:location.state}})
+
         }
     }, [location])
 
     function loadPalette(palette:Palette) {
-        setPalette(palette)
+        // setPalette(palette)
+        paletteStateDispatch({type:ACTION_TYPES.SET_PALETTE, payload:{palette:palette}})
+
     }
 
     function handleMainColourPercentageChange(e:ChangeEvent<HTMLInputElement>) {
@@ -254,7 +287,8 @@ export default function Visualiser() {
                     </div>
                 </div>
                 <div className='w-full h-48'>
-                    <PaletteRow palette={palette}/>
+                    {/* <PaletteRow palette={paletteState.palette}/> */}
+                    <EditablePaletteRow palette={paletteState.palette} paletteDispatch={paletteStateDispatch}/>
                 </div>
                 <input type='checkbox' id='library-modal' className='modal-toggle'/>
                 <label htmlFor='library-modal' className='h-full modal modal-bottom flex flex-col items-center justify-center'>

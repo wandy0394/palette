@@ -34,7 +34,7 @@ export type PaletteState = {
 }
 
 export function usePaletteEditorReducer(initialState:PaletteState):[PaletteState, React.Dispatch<PaletteAction>] {
-    const [chosenColour, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, initialState)
 
     function reducer(state:PaletteState, action:PaletteAction):PaletteState {
         const {type, payload} = action
@@ -185,5 +185,5 @@ export function usePaletteEditorReducer(initialState:PaletteState):[PaletteState
         return newPalette
     }
 
-    return [chosenColour, dispatch as React.Dispatch<PaletteAction>]
+    return [state, dispatch as React.Dispatch<PaletteAction>]
 }
