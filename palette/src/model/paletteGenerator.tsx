@@ -1,5 +1,3 @@
-import { palette } from "@mui/system";
-import { InvalidInputError, NullInputError } from "../exceptions/exceptions";
 import { Point } from "../types/cartesian";
 import { Colour, HEX, HSV, Palette, Scheme } from "../types/colours";
 import ColourConverter from "./colourConverter";
